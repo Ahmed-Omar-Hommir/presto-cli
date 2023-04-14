@@ -1,4 +1,4 @@
-import 'package:cli/utils/model/arguments.dart';
+import 'package:presto_cli/utils/model/arguments.dart';
 
 abstract class HandleArguments {
   static Arguments getArgumentType(List<String> arguments) {

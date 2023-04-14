@@ -1,1 +1,1 @@
-export './create_package_command.dart';
+export './feature_package_command.dart';
