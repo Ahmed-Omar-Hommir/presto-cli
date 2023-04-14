@@ -1,16 +1,18 @@
 import 'package:args/command_runner.dart';
-import 'package:cli/commands/package_manager.dart';
-import 'package:cli/commands/user_input.dart';
+import 'package:presto_cli/commands/create/templates/feature_bloc_temp.dart';
+import 'package:presto_cli/commands/create/templates/localization_temp.dart';
+import 'package:presto_cli/commands/create/templates/set_up_feature_files_temp.dart';
+import 'package:presto_cli/commands/package_manager.dart';
+import 'package:presto_cli/commands/user_input.dart';
 
 import 'commands/commands.dart';
-import 'commands/feature_command.dart';
+import 'commands/feature_package_command.dart';
 
 class CreateCommand extends Command {
   CreateCommand() {
-    addSubcommand(CreatePackageCommand(packageManager: PackageManager()));
-    addSubcommand(CreateFeatureCommand(
+    addSubcommand(CreateFeaturePackageCommand(
       locTemp: LocalizationTemp(),
-      featTemp: FeaturePackageTemp(),
+      featTemp: SetUpFeatureFilesTemp(),
       userInput: UserInput(),
       packageManager: PackageManager(),
       featBlocTemp: FeatureBlocTemp(),
