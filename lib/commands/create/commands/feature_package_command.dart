@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:presto_cli/commands/create/templates/feature_bloc_temp.dart';
 import 'package:presto_cli/commands/create/templates/localization_temp.dart';
 import 'package:presto_cli/commands/create/templates/set_up_feature_files_temp.dart';
-import 'package:presto_cli/commands/package_manager.dart';
-import 'package:presto_cli/commands/template_generator.dart';
-import 'package:presto_cli/commands/user_input.dart';
+import 'package:presto_cli/package_manager.dart';
+import 'package:presto_cli/template_generator.dart';
+import 'package:presto_cli/user_input.dart';
 
 class CreateFeaturePackageCommand extends Command {
   CreateFeaturePackageCommand({
@@ -16,10 +17,12 @@ class CreateFeaturePackageCommand extends Command {
     required TemplateGenerator featBlocTemp,
     required IUserInput userInput,
     required IPackageManager packageManager,
+    required Logger logger,
   })  : _locTemp = locTemp,
         _featTemp = featTemp,
         _featBlocTemp = featBlocTemp,
         _userInput = userInput,
+        _logger = logger,
         _packageManager = packageManager;
 
   final TemplateGenerator _locTemp;
@@ -27,6 +30,7 @@ class CreateFeaturePackageCommand extends Command {
   final TemplateGenerator _featBlocTemp;
   final IUserInput _userInput;
   final IPackageManager _packageManager;
+  final Logger _logger;
 
   @override
   String get name => 'feature';
@@ -46,20 +50,22 @@ class CreateFeaturePackageCommand extends Command {
       (name) => name,
     );
 
+    final createPackageProgress =
+        _logger.progress('Creating $packageName package for you');
     final createNewPackageOption =
         await _packageManager.createNewPackage(packageName: packageName);
+    createPackageProgress.complete('Package created!');
 
     if (createNewPackageOption.isLeft()) exit(0);
 
     final useLocalization = _userInput.askCreateLocalization();
 
     if (useLocalization) {
+      final locProgress = _logger.progress('Creating L10N files');
       await _locTemp.generate(
         vars: LocalizationTempModel(packageName: packageName),
       );
-
-      await _packageManager.getL10N(packagePath: './$packageName');
-
+      locProgress.update('add flutter localization');
       await _packageManager.addDependencies(
         packagePath: './$packageName',
         dependencies: {
@@ -68,6 +74,11 @@ class CreateFeaturePackageCommand extends Command {
           }
         },
       );
+
+      locProgress.update('generating localization');
+      await _packageManager.getL10N(packagePath: './$packageName');
+      locProgress
+          .complete(lightCyan.wrap(styleBold.wrap('Localization Done!')));
     }
 
     final result = _userInput.askSelectPackages(
@@ -77,6 +88,7 @@ class CreateFeaturePackageCommand extends Command {
         AddPackage(packageName: 'flutter_bloc', isActive: true),
         AddPackage(packageName: 'bloc_concurrency', isActive: true),
         AddPackage(packageName: 'flutter_screenutil', isActive: true),
+        AddPackage(packageName: 'flutter_phosphor_icons'),
         AddPackage(packageName: 'build_runner'),
         AddPackage(packageName: 'infinite_scroll_pagination'),
         AddPackage(packageName: 'dartz'),

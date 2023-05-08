@@ -1,0 +1,27 @@
+targets:
+  $default:
+    builders:
+      auto_route_generator|autoRouteGenerator:
+        enabled: true
+        generate_for:
+          - lib/src/auto_route/material_auto_route.dart
+      retrofit_generator|retrofit:
+        enabled: true
+        generate_for:
+          - lib/src/retrofit/rest_api.dart
+      hive_generator|hive_generator:
+        enabled: true
+        generate_for:
+          - lib/src/hive/hive_type.dart
+      freezed|freezed:
+        enabled: true
+        generate_for:
+          - lib/src/freezed/small_annotation.dart
+          - lib/src/freezed/large_annotation.dart
+          - lib/src/freezed/with_json_serializable.dart
+      json_serializable|json_serializable:
+        enabled: true
+        generate_for:
+          - lib/src/freezed/small_annotation.dart
+          - lib/src/freezed/large_annotation.dart
+          - lib/src/freezed/with_json_serializable.dart

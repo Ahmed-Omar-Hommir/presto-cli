@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:presto_cli/commands/template_generator.dart';
 import 'package:mason/mason.dart';
+import 'package:presto_cli/template_generator.dart';
 
 class FeatureBlocTemp implements TemplateGenerator<FeatureBlocTempModel> {
   @override
