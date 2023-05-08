@@ -30,4 +30,4 @@ dev_dependencies:
   build_runner: ^2.3.3
 
 executables:
-  presto: bin/presto_cli.dart
+  presto: presto_cli.dart
