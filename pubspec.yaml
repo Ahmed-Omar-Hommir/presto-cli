@@ -19,6 +19,9 @@ dependencies:
   json2yaml: ^3.0.1
   mason: ^0.1.0-dev.49
   mason_logger: ^0.2.5
+  image: ^4.0.15
+  archive: ^3.3.7
+  analyzer: ^5.10.0
 
 dev_dependencies:
   lints: ^2.0.0
