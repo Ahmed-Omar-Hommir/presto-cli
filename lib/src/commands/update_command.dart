@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
@@ -7,7 +6,8 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:http/http.dart' as http;
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
-import 'package:presto_cli/src/package_manager.dart';
+import 'package:mason_logger/mason_logger.dart';
+import 'package:presto_cli/src/version.dart';
 
 Future<Either<None, String>> get _sdkPath async {
   try {
@@ -41,6 +41,8 @@ class UpdateCommand extends Command {
 
   @override
   FutureOr? run() async {
+    final _logger = Logger();
+    final progress = _logger.progress('Checking for updates...');
     final repository = "https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli";
     final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
@@ -71,44 +73,54 @@ class UpdateCommand extends Command {
 
     final result = await context.currentSession.getResolvedLibrary(path);
 
+    String? latestVersion;
+
     if (result is ResolvedLibraryResult) {
       for (var value in result.element.units) {
         print(value.topLevelVariables.first);
       }
 
-      final latestVersion = result
-          .element.definingCompilationUnit.topLevelVariables
+      latestVersion = result.element.definingCompilationUnit.topLevelVariables
           .firstWhere((element) => element.name == 'packageVersion')
           .computeConstantValue()
           ?.toStringValue();
     }
 
-    try {
-      final process = await Process.start('dart', [
-        'pub',
-        'global',
-        'activate',
-        '--source',
-        'git',
-        repository,
-      ]);
-
-      await for (var line in process.stdout.transform(utf8.decoder)) {
-        print('stdout: $line');
-      }
-      await for (var line in process.stderr.transform(utf8.decoder)) {
-        print('stderr: $line');
-      }
-      final exitCode = await process.exitCode;
-      print('exit code: $exitCode');
-    } catch (e) {
-      print(e);
+    if (latestVersion == null) {
+      progress.cancel();
+      _logger.err("Cannot get latest version");
+      exit(1);
     }
 
-    // get current version
-    // get latest version
-    // compare
-    // if latest > current
-    // update by run command in terminal -> dart pub global activate --source git https://repo
+    if (latestVersion == packageVersion) {
+      progress.cancel();
+      _logger.info("You are already on the latest version");
+      exit(0);
+    }
+
+    progress.update('Current version: $packageVersion');
+    progress.update('Lates version: $latestVersion');
+
+    progress.update('Updating...');
+    final process = await Process.start('dart', [
+      'pub',
+      'global',
+      'activate',
+      '--source',
+      'git',
+      repository,
+    ]);
+
+    final exitCode = await process.exitCode;
+
+    if (exitCode == 0) {
+      progress.update('Updated successfully');
+      progress.cancel();
+      exit(0);
+    } else {
+      progress.cancel();
+      _logger.err('Failed to update');
+      exit(1);
+    }
   }
 }
