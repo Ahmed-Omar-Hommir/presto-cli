@@ -1,6 +1,0 @@
-arb-dir: lib/src/l10n
-template-arb-file: en.arb
-output-localization-file: {{name.snakeCase()}}_localizations.dart
-output-class: {{name.pascalCase()}}Localizations
-nullable-getter: false
-synthetic-package: false

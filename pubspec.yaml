@@ -12,7 +12,6 @@ dependencies:
   freezed: ^2.3.2
   freezed_annotation: ^2.2.0
   args: ^2.4.0
-  yaml: ^3.1.1
   dart_console: ^1.1.2
   interact: ^2.2.0
   dartz: ^0.10.1
@@ -23,11 +22,13 @@ dependencies:
   image: ^4.0.15
   archive: ^3.3.7
   analyzer: ^5.10.0
+  yaml: ^3.1.2
 
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.21.0
   build_runner: ^2.3.3
+  build_version: ^2.1.1
 
 executables:
   presto: presto_cli.dart
