@@ -10,10 +10,17 @@ import 'package:presto_cli/src/package_manager.dart';
 
 Future<Either<None, String>> get _sdkPath async {
   try {
-    final command = Platform.isWindows ? 'where' : 'which';
-    final processResult = await Process.run(command, ['flutter']);
+    final isWindows = Platform.isWindows;
+    final command = isWindows ? 'where' : 'which';
+    final arguments = isWindows ? ['flutter'] : ['-a', 'flutter'];
+    final processResult = await Process.run(command, arguments);
 
-    final String flutterPath = processResult.stdout.trim();
+    final String flutterPath = processResult.stdout
+        .toString()
+        .split('\n')
+        .map((path) => path.trim())
+        .where((path) => path.isNotEmpty)
+        .first;
 
     final flutterFile = File(flutterPath);
 
