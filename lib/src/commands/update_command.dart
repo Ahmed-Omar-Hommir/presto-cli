@@ -86,8 +86,8 @@ class UpdateCommand extends Command {
           ?.toStringValue();
     }
 
-    progress.update('Current version: $packageVersion');
-    progress.update('Lates version: $latestVersion');
+    _logger.info('Current version: $packageVersion');
+    _logger.info('Lates version: $latestVersion');
 
     if (latestVersion == null) {
       progress.cancel();
