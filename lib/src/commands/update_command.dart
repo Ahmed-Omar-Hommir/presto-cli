@@ -28,7 +28,7 @@ Future<Either<None, String>> get _sdkPath async {
 
     final path = flutterFile.parent.path;
 
-    return right('${path_pkg.normalize(path)}/cache/dart-sdk');
+    return right('${path_pkg.normalize(path)}\\cache\\dart-sdk');
   } catch (e) {
     print(e);
     return left(const None());
