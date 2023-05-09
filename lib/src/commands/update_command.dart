@@ -64,6 +64,7 @@ class UpdateCommand extends Command {
 
     _logger.info("5");
     final sdkPath = await _sdkPath;
+    _logger.info("SdkPath: $sdkPath");
 
     _logger.info("6");
     AnalysisContextCollection contextCollection = AnalysisContextCollection(
