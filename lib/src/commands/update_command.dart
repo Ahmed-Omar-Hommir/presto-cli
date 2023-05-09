@@ -86,6 +86,9 @@ class UpdateCommand extends Command {
           ?.toStringValue();
     }
 
+    progress.update('Current version: $packageVersion');
+    progress.update('Lates version: $latestVersion');
+
     if (latestVersion == null) {
       progress.cancel();
       _logger.err("Cannot get latest version");
@@ -97,9 +100,6 @@ class UpdateCommand extends Command {
       _logger.info("You are already on the latest version: $packageVersion");
       exit(0);
     }
-
-    progress.update('Current version: $packageVersion');
-    progress.update('Lates version: $latestVersion');
 
     progress.update('Updating...');
     final process = await Process.start('dart', [
