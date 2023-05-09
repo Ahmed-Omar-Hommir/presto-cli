@@ -75,10 +75,9 @@ class UpdateCommand extends Command {
 
     try {
       contextCollection = AnalysisContextCollection(
-        includedPaths: [path],
-        resourceProvider: PhysicalResourceProvider.INSTANCE,
-        sdkPath: 'C:/Users/HP1/flutter/bin/cache/dart-sdk',
-      );
+          includedPaths: [path_pkg.normalize(path_pkg.absolute(path))],
+          resourceProvider: PhysicalResourceProvider.INSTANCE,
+          sdkPath: sdkPath.fold((_) => null, (sdkPath) => sdkPath));
     } catch (e) {
       _logger.info(e.toString());
       print(e);
