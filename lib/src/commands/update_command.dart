@@ -19,6 +19,7 @@ Future<Either<None, String>> get _sdkPath async {
 
     return right('${flutterFile.parent.path}/cache/dart-sdk');
   } catch (e) {
+    print(e);
     return left(const None());
   }
 }
