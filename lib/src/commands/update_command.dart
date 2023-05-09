@@ -68,11 +68,16 @@ class UpdateCommand extends Command {
 
     _logger.info("6");
     _logger.info("Path: $path");
-    AnalysisContextCollection contextCollection = AnalysisContextCollection(
-      includedPaths: [],
-      resourceProvider: PhysicalResourceProvider.INSTANCE,
-      sdkPath: 'C:/Users/HP1/flutter/bin/cache/dart-sdk',
-    );
+    try {
+      AnalysisContextCollection contextCollection = AnalysisContextCollection(
+        includedPaths: [],
+        resourceProvider: PhysicalResourceProvider.INSTANCE,
+        sdkPath: 'C:/Users/HP1/flutter/bin/cache/dart-sdk',
+      );
+    } catch (e) {
+      _logger.info(e.toString());
+      print(e);
+    }
 
     _logger.info("7");
     final context = contextCollection.contextFor(path);
