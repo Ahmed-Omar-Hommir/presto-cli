@@ -69,7 +69,7 @@ class UpdateCommand extends Command {
     _logger.info("6");
     _logger.info("Path: $path");
     AnalysisContextCollection contextCollection = AnalysisContextCollection(
-      includedPaths: [path],
+      includedPaths: [],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
       sdkPath: 'C:/Users/HP1/flutter/bin/cache/dart-sdk',
     );
