@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
-import 'package:presto_cli/commands/create/create.dart';
-import 'package:presto_cli/commands/make/make.dart';
-import 'package:presto_cli/dependency_composer.dart';
+import 'package:presto_cli/src/commands/commands.dart';
+import 'package:presto_cli/src/dependency_composer.dart';
+import 'package:presto_cli/src/version.dart';
 
 void main(List<String> args) async {
   final dependencyComposer = DependencyComposer();
@@ -10,7 +12,18 @@ void main(List<String> args) async {
   final runner =
       CommandRunner('presto_cli', 'Manage all packages in the project.')
         ..addCommand(CreateCommand())
-        ..addCommand(MakeCommand());
+        ..addCommand(MakeCommand())
+        ..argParser.addFlag(
+          'version',
+          help: 'Print the current version.',
+        );
+
+  final result = runner.parse(args);
+
+  if (result.wasParsed('version')) {
+    logger.info(packageVersion);
+    exit(0);
+  }
 
   try {
     await runner.run(args);
