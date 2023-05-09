@@ -47,19 +47,25 @@ class UpdateCommand extends Command {
     final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
     // Make an HTTP request to the URI
+    _logger.info("1");
     final response = await http.get(Uri.parse('$repository$pathToDartVersion'));
 
     // Create a temporary file
+    _logger.info("2");
     final tempDir = await Directory.systemTemp.createTemp();
+    _logger.info("3");
     final tempFile = File('${tempDir.path}/version.dart');
 
     // Write the response content to the temporary file
+    _logger.info("4");
     await tempFile.writeAsBytes(response.bodyBytes);
 
     final path = tempFile.path;
 
+    _logger.info("5");
     final sdkPath = await _sdkPath;
 
+    _logger.info("6");
     AnalysisContextCollection contextCollection = AnalysisContextCollection(
       includedPaths: [path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
@@ -69,12 +75,15 @@ class UpdateCommand extends Command {
       ),
     );
 
+    _logger.info("7");
     final context = contextCollection.contextFor(path);
 
+    _logger.info("8");
     final result = await context.currentSession.getResolvedLibrary(path);
 
     String? latestVersion;
 
+    _logger.info("9");
     if (result is ResolvedLibraryResult) {
       for (var value in result.element.units) {
         print(value.topLevelVariables.first);
