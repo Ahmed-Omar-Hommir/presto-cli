@@ -8,6 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:presto_cli/src/version.dart';
+import 'package:path/path.dart' as path_pkg;
 
 Future<Either<None, String>> get _sdkPath async {
   try {
@@ -25,7 +26,9 @@ Future<Either<None, String>> get _sdkPath async {
 
     final flutterFile = File(flutterPath);
 
-    return right('${flutterFile.parent.path}/cache/dart-sdk');
+    final path = flutterFile.parent.path;
+
+    return right('${path_pkg.normalize(path)}/cache/dart-sdk');
   } catch (e) {
     print(e);
     return left(const None());
@@ -72,7 +75,7 @@ class UpdateCommand extends Command {
 
     try {
       contextCollection = AnalysisContextCollection(
-        includedPaths: [],
+        includedPaths: [path],
         resourceProvider: PhysicalResourceProvider.INSTANCE,
         sdkPath: 'C:/Users/HP1/flutter/bin/cache/dart-sdk',
       );
