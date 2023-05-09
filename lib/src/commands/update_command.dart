@@ -51,6 +51,7 @@ class UpdateCommand extends Command {
     final path = tempFile.path;
 
     final sdkPath = await _sdkPath;
+    print(sdkPath);
     AnalysisContextCollection contextCollection = AnalysisContextCollection(
       includedPaths: [path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
