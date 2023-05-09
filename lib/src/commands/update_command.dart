@@ -19,6 +19,7 @@ Future<Either<None, String>> get _sdkPath async {
 
     return right('${flutterFile.parent.path}/cache/dart-sdk');
   } catch (e) {
+    print(e);
     return left(const None());
   }
 }
@@ -51,6 +52,7 @@ class UpdateCommand extends Command {
     final path = tempFile.path;
 
     final sdkPath = await _sdkPath;
+    print(sdkPath);
     AnalysisContextCollection contextCollection = AnalysisContextCollection(
       includedPaths: [path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
