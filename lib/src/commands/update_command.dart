@@ -94,7 +94,7 @@ class UpdateCommand extends Command {
 
     if (latestVersion == packageVersion) {
       progress.cancel();
-      _logger.info("You are already on the latest version");
+      _logger.info("You are already on the latest version: $packageVersion");
       exit(0);
     }
 
