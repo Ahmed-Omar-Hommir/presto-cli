@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
@@ -32,9 +33,6 @@ Future<Either<None, String>> get _sdkPath async {
 }
 
 class UpdateCommand extends Command {
-  UpdateCommand();
-
-  final IPackageManager _packageManager = PackageManager();
   @override
   String get name => 'update';
 
@@ -59,7 +57,7 @@ class UpdateCommand extends Command {
     final path = tempFile.path;
 
     final sdkPath = await _sdkPath;
-    print(sdkPath);
+
     AnalysisContextCollection contextCollection = AnalysisContextCollection(
       includedPaths: [path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
@@ -78,11 +76,33 @@ class UpdateCommand extends Command {
         print(value.topLevelVariables.first);
       }
 
-      final version = result.element.definingCompilationUnit.topLevelVariables
+      final latestVersion = result
+          .element.definingCompilationUnit.topLevelVariables
           .firstWhere((element) => element.name == 'packageVersion')
           .computeConstantValue()
           ?.toStringValue();
-      print("Latest Version: $version");
+    }
+
+    try {
+      final process = await Process.start('dart', [
+        'pub',
+        'global',
+        'activate',
+        '--source',
+        'git',
+        repository,
+      ]);
+
+      await for (var line in process.stdout.transform(utf8.decoder)) {
+        print('stdout: $line');
+      }
+      await for (var line in process.stderr.transform(utf8.decoder)) {
+        print('stderr: $line');
+      }
+      final exitCode = await process.exitCode;
+      print('exit code: $exitCode');
+    } catch (e) {
+      print(e);
     }
 
     // get current version
