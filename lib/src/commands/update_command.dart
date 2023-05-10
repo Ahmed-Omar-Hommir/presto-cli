@@ -28,7 +28,7 @@ Future<Either<None, String>> get _sdkPath async {
 
     final path = flutterFile.parent.path;
 
-    return right('${path_pkg.normalize(path)}\\cache\\dart-sdk');
+    return right('$path\\cache\\dart-sdk');
   } catch (e) {
     print(e);
     return left(const None());
@@ -57,13 +57,13 @@ class UpdateCommand extends Command {
     _logger.info("2");
     final tempDir = await Directory.systemTemp.createTemp();
     _logger.info("3");
-    final tempFile = File('${tempDir.path}/version.dart');
+    final tempFile = File('${tempDir.path}\\version.dart');
 
     // Write the response content to the temporary file
     _logger.info("4");
     await tempFile.writeAsBytes(response.bodyBytes);
 
-    final path = tempFile.path;
+    final path = tempFile.path.replaceAll('/', '\\');
 
     _logger.info("5");
     final sdkPath = await _sdkPath;
@@ -75,7 +75,7 @@ class UpdateCommand extends Command {
 
     try {
       contextCollection = AnalysisContextCollection(
-          includedPaths: [path_pkg.normalize(path_pkg.absolute(path))],
+          includedPaths: [path],
           resourceProvider: PhysicalResourceProvider.INSTANCE,
           sdkPath: sdkPath.fold((_) => null, (sdkPath) => sdkPath));
     } catch (e) {
