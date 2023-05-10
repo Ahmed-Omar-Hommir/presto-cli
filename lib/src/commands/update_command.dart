@@ -57,7 +57,6 @@ class UpdateCommand extends Command {
     final tempFile = File(join(tempDir.path, 'version.dart'));
 
     // Write the response content to the temporary file
-    logger.info("4");
     await tempFile.writeAsBytes(response.bodyBytes);
 
     final path = tempFile.path;
