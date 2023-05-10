@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:presto_cli/src/commands/commands.dart';
 import 'package:presto_cli/src/dependency_composer.dart';
+import 'package:presto_cli/src/logger.dart';
+import 'package:presto_cli/src/package_manager.dart';
 import 'package:presto_cli/src/version.dart';
 
 void main(List<String> args) async {
@@ -16,7 +18,11 @@ void main(List<String> args) async {
         ..argParser.addFlag(
           'version',
           help: 'Print the current version.',
-        );
+        )
+        ..addCommand(UpdateCommand(
+          packageManager: PackageManager(),
+          logger: Logger(),
+        ));
 
   final result = runner.parse(args);
 
