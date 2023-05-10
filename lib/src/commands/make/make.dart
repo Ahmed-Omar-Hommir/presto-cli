@@ -1,5 +1,4 @@
 import 'package:args/command_runner.dart';
-import 'package:presto_cli/src/commands/update_command.dart';
 import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/package_manager.dart';
 
@@ -12,10 +11,7 @@ class MakeCommand extends Command {
       packageManager: PackageManager(),
       logger: Logger(),
     ));
-    addSubcommand(UpdateCommand(
-      packageManager: PackageManager(),
-      logger: Logger(),
-    ));
+
     // addSubcommand(BuildYamlCommand(
     //   buildYamlGenerator: BuildYamlGenerator(
     //     packageManager: PackageManager(),
