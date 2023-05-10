@@ -71,10 +71,6 @@ class UpdateCommand extends Command {
       String? latestVersion;
 
       if (result is ResolvedLibraryResult) {
-        for (var value in result.element.units) {
-          print(value.topLevelVariables.first);
-        }
-
         latestVersion = result.element.definingCompilationUnit.topLevelVariables
             .firstWhere((element) => element.name == 'packageVersion')
             .computeConstantValue()
