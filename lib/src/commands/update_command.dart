@@ -8,7 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:presto_cli/src/version.dart';
-import 'package:path/path.dart' as path_pkg;
+import 'package:path/path.dart';
 
 Future<Either<None, String>> get _sdkPath async {
   try {
@@ -44,54 +44,40 @@ class UpdateCommand extends Command {
 
   @override
   FutureOr? run() async {
-    final _logger = Logger();
-    final progress = _logger.progress('Checking for updates...');
+    final logger = Logger();
+    final progress = logger.progress('Checking for updates...');
     final repository = "https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli";
     final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
     // Make an HTTP request to the URI
-    _logger.info("1");
     final response = await http.get(Uri.parse('$repository$pathToDartVersion'));
 
     // Create a temporary file
-    _logger.info("2");
     final tempDir = await Directory.systemTemp.createTemp();
-    _logger.info("3");
-    final tempFile = File('${tempDir.path}\\version.dart');
+    final tempFile = File(join(tempDir.path, 'version.dart'));
 
     // Write the response content to the temporary file
-    _logger.info("4");
+    logger.info("4");
     await tempFile.writeAsBytes(response.bodyBytes);
 
-    final path = tempFile.path.replaceAll('/', '\\');
+    final path = tempFile.path;
 
-    _logger.info("5");
     final sdkPath = await _sdkPath;
-    _logger.info("SdkPath: $sdkPath");
 
-    _logger.info("6");
-    _logger.info("Path: $path");
     late final AnalysisContextCollection contextCollection;
 
-    try {
-      contextCollection = AnalysisContextCollection(
-          includedPaths: [path],
-          resourceProvider: PhysicalResourceProvider.INSTANCE,
-          sdkPath: sdkPath.fold((_) => null, (sdkPath) => sdkPath));
-    } catch (e) {
-      _logger.info(e.toString());
-      print(e);
-    }
+    contextCollection = AnalysisContextCollection(
+      includedPaths: [path],
+      resourceProvider: PhysicalResourceProvider.INSTANCE,
+      sdkPath: sdkPath.fold((_) => null, (sdkPath) => sdkPath),
+    );
 
-    _logger.info("7");
     final context = contextCollection.contextFor(path);
 
-    _logger.info("8");
     final result = await context.currentSession.getResolvedLibrary(path);
 
     String? latestVersion;
 
-    _logger.info("9");
     if (result is ResolvedLibraryResult) {
       for (var value in result.element.units) {
         print(value.topLevelVariables.first);
@@ -103,18 +89,18 @@ class UpdateCommand extends Command {
           ?.toStringValue();
     }
 
-    _logger.info('Current version: $packageVersion');
-    _logger.info('Lates version: $latestVersion');
+    logger.info('Current version: $packageVersion');
+    logger.info('Lates version: $latestVersion');
 
     if (latestVersion == null) {
       progress.cancel();
-      _logger.err("Cannot get latest version");
+      logger.err("Cannot get latest version");
       exit(1);
     }
 
     if (latestVersion == packageVersion) {
       progress.cancel();
-      _logger.info("You are already on the latest version: $packageVersion");
+      logger.info("You are already on the latest version: $packageVersion");
       exit(0);
     }
 
@@ -136,7 +122,7 @@ class UpdateCommand extends Command {
       exit(0);
     } else {
       progress.cancel();
-      _logger.err('Failed to update');
+      logger.err('Failed to update');
       exit(1);
     }
   }
