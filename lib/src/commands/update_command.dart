@@ -28,7 +28,7 @@ class UpdateCommand extends Command {
 
   @override
   FutureOr? run() async {
-    final checkUpdateProgress = _logger.progress('Checking for updates...');
+    final checkUpdateProgress = _logger.progress('Checking for updates');
     final repository = "https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli";
     final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
@@ -85,17 +85,14 @@ class UpdateCommand extends Command {
       exit(1);
     }
 
-    checkUpdateProgress.update('Checked for updates');
+    checkUpdateProgress.complete('Checked for updates');
 
     if (latestVersion == packageVersion) {
-      checkUpdateProgress.complete();
       _logger.info("Presto CLI is already at the latest version.");
       exit(0);
     }
 
-    checkUpdateProgress.complete();
-
-    final updatingProgress = _logger.progress('Updating to $latestVersion...');
+    final updatingProgress = _logger.progress('Updating to $latestVersion');
 
     final process = await Process.start('dart', [
       'pub',
@@ -109,8 +106,7 @@ class UpdateCommand extends Command {
     final exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      updatingProgress.update('Updated to $latestVersion');
-      updatingProgress.complete();
+      updatingProgress.complete('Updated to $latestVersion');
       exit(0);
     } else {
       updatingProgress.cancel();
