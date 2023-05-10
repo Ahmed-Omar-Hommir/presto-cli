@@ -33,6 +33,8 @@ abstract class IPackageManager {
   Future<List<GenerateInfo>> packagesGenerateInfo({
     required List<String> dirs,
   });
+
+  Future<Either<None, String>> sdkPath();
 }
 
 class PackageManager implements IPackageManager {
@@ -161,6 +163,31 @@ class PackageManager implements IPackageManager {
       }
     }
     return paths;
+  }
+
+  @override
+  Future<Either<None, String>> sdkPath() async {
+    try {
+      final isWindows = Platform.isWindows;
+      final command = isWindows ? 'where' : 'which';
+      final arguments = isWindows ? ['flutter'] : ['-a', 'flutter'];
+      final processResult = await Process.run(command, arguments);
+
+      final String flutterPath = processResult.stdout
+          .toString()
+          .split('\n')
+          .map((path) => path.trim())
+          .where((path) => path.isNotEmpty)
+          .first;
+
+      final flutterFile = File(flutterPath);
+
+      final path = flutterFile.parent.path;
+
+      return right('$path\\cache\\dart-sdk');
+    } catch (e) {
+      return left(const None());
+    }
   }
 }
 

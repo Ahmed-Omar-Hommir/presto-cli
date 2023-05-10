@@ -5,37 +5,21 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:http/http.dart' as http;
 import 'package:args/command_runner.dart';
-import 'package:dartz/dartz.dart';
-import 'package:mason_logger/mason_logger.dart';
+import 'package:presto_cli/src/logger.dart';
+import 'package:presto_cli/src/package_manager.dart';
 import 'package:presto_cli/src/version.dart';
 import 'package:path/path.dart';
 
-Future<Either<None, String>> get _sdkPath async {
-  try {
-    final isWindows = Platform.isWindows;
-    final command = isWindows ? 'where' : 'which';
-    final arguments = isWindows ? ['flutter'] : ['-a', 'flutter'];
-    final processResult = await Process.run(command, arguments);
-
-    final String flutterPath = processResult.stdout
-        .toString()
-        .split('\n')
-        .map((path) => path.trim())
-        .where((path) => path.isNotEmpty)
-        .first;
-
-    final flutterFile = File(flutterPath);
-
-    final path = flutterFile.parent.path;
-
-    return right('$path\\cache\\dart-sdk');
-  } catch (e) {
-    print(e);
-    return left(const None());
-  }
-}
-
 class UpdateCommand extends Command {
+  UpdateCommand({
+    required IPackageManager packageManager,
+    required ILogger logger,
+  })  : _packageManager = packageManager,
+        _logger = logger;
+
+  final IPackageManager _packageManager;
+  final ILogger _logger;
+
   @override
   String get name => 'update';
 
@@ -44,8 +28,7 @@ class UpdateCommand extends Command {
 
   @override
   FutureOr? run() async {
-    final logger = Logger();
-    final progress = logger.progress('Checking for updates...');
+    final checkUpdateProgress = _logger.progress('Checking for updates...');
     final repository = "https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli";
     final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
@@ -61,14 +44,22 @@ class UpdateCommand extends Command {
 
     final path = tempFile.path;
 
-    final sdkPath = await _sdkPath;
+    final sdkPath = await _packageManager.sdkPath().then(
+          (value) => value.fold(
+            (_) {
+              checkUpdateProgress.cancel();
+              _logger.error('Cannot find sdk path');
+              exit(1);
+            },
+            (sdkPath) => sdkPath,
+          ),
+        );
 
-    late final AnalysisContextCollection contextCollection;
-
-    contextCollection = AnalysisContextCollection(
+    final AnalysisContextCollection contextCollection =
+        AnalysisContextCollection(
       includedPaths: [path],
       resourceProvider: PhysicalResourceProvider.INSTANCE,
-      sdkPath: sdkPath.fold((_) => null, (sdkPath) => sdkPath),
+      sdkPath: sdkPath,
     );
 
     final context = contextCollection.contextFor(path);
@@ -88,22 +79,24 @@ class UpdateCommand extends Command {
           ?.toStringValue();
     }
 
-    logger.info('Current version: $packageVersion');
-    logger.info('Lates version: $latestVersion');
-
     if (latestVersion == null) {
-      progress.cancel();
-      logger.err("Cannot get latest version");
+      checkUpdateProgress.cancel();
+      _logger.error("Cannot get latest version");
       exit(1);
     }
 
+    checkUpdateProgress.update('Checked for updates');
+
     if (latestVersion == packageVersion) {
-      progress.cancel();
-      logger.info("You are already on the latest version: $packageVersion");
+      checkUpdateProgress.complete();
+      _logger.info("Presto CLI is already at the latest version.");
       exit(0);
     }
 
-    progress.update('Updating...');
+    checkUpdateProgress.complete();
+
+    final updatingProgress = _logger.progress('Updating to $latestVersion...');
+
     final process = await Process.start('dart', [
       'pub',
       'global',
@@ -116,12 +109,12 @@ class UpdateCommand extends Command {
     final exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      progress.update('Updated successfully');
-      progress.cancel();
+      updatingProgress.update('Updated to $latestVersion');
+      updatingProgress.complete();
       exit(0);
     } else {
-      progress.cancel();
-      logger.err('Failed to update');
+      updatingProgress.cancel();
+      _logger.error('Failed to update');
       exit(1);
     }
   }
