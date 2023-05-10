@@ -12,7 +12,10 @@ class MakeCommand extends Command {
       packageManager: PackageManager(),
       logger: Logger(),
     ));
-    addSubcommand(UpdateCommand());
+    addSubcommand(UpdateCommand(
+      packageManager: PackageManager(),
+      logger: Logger(),
+    ));
     // addSubcommand(BuildYamlCommand(
     //   buildYamlGenerator: BuildYamlGenerator(
     //     packageManager: PackageManager(),

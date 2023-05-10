@@ -1,3 +1,4 @@
+import 'package:mason/mason.dart';
 import 'package:mason_logger/mason_logger.dart' as mason_logger;
 
 abstract class ILogger {
@@ -5,6 +6,7 @@ abstract class ILogger {
   void info(String message);
   void warn(String message);
   void write(String message);
+  Progress progress(String message);
 }
 
 class Logger implements ILogger {
@@ -28,5 +30,10 @@ class Logger implements ILogger {
   @override
   void write(String message) {
     _masonLogger.write(message);
+  }
+
+  @override
+  Progress progress(String message) {
+    return _masonLogger.progress(message);
   }
 }
