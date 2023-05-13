@@ -24,6 +24,8 @@ dependencies:
   analyzer: ^5.10.0
   yaml: ^3.1.2
   http: ^0.13.6
+  mockito: ^5.4.0
+  mocktail: ^0.3.0
 
 dev_dependencies:
   lints: ^2.0.0
