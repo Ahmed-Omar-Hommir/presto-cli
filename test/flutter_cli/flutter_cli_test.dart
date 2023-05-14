@@ -40,6 +40,7 @@ void main() {
               processManager: processManager,
               answer: processResult,
               dependencies: [DependencyA.dependency],
+              packagePath: packagePath,
             );
 
             // Act
@@ -81,6 +82,7 @@ void main() {
             whenRunPubAdd(
               processManager: processManager,
               answer: processResult,
+              packagePath: packagePath,
               dependencies: [
                 DependencyA.dependency,
                 DependencyB.dependency,
@@ -129,111 +131,151 @@ void main() {
       },
     );
 
-    group('Failure cases', () {
-      test(
-        'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
-        () async {
-          // Arrange
-          final tempDir = Directory.systemTemp.createTempSync();
-          final packagePath = tempDir.path;
+    group(
+      'Failure cases',
+      () {
+        test(
+          'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
+          () async {
+            // Arrange
+            final tempDir = Directory.systemTemp.createTempSync();
+            final packagePath = tempDir.path;
 
-          await createPubspecFile(packagePath);
+            await createPubspecFile(packagePath);
 
-          when(processManager.run(
-            'flutter',
-            ['pub', 'add', DependencyA.dependency],
-            workingDirectory: packagePath,
-          )).thenThrow(Exception());
+            when(processManager.run(
+              'flutter',
+              ['pub', 'add', DependencyA.dependency],
+              workingDirectory: packagePath,
+            )).thenThrow(Exception());
 
-          // Act
-          final result = await sut.pubAdd(
-            packagePath: packagePath,
-            dependencies: {
-              PackageDependency(
-                name: DependencyA.name,
-                version: DependencyA.version,
+            // Act
+            final result = await sut.pubAdd(
+              packagePath: packagePath,
+              dependencies: {
+                PackageDependency(
+                  name: DependencyA.name,
+                  version: DependencyA.version,
+                ),
+              },
+            );
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
               ),
-            },
-          );
+              isA<CliFailureUnknown>(),
+            );
 
-          // Assert
-          expect(result, isA<Left>());
-          expect(
-            result.fold(
-              (failure) => failure,
-              (_) => fail('Result returned a Right'),
-            ),
-            isA<CliFailureUnknown>(),
-          );
+            verifyPubAdd(
+              processManager: processManager,
+              dependencies: [DependencyA.dependency],
+              packagePath: packagePath,
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+          },
+        );
 
-          verifyPubAdd(
-            processManager: processManager,
-            dependencies: [DependencyA.dependency],
-            packagePath: packagePath,
-          ).called(1);
-          verifyNoMoreInteractions(processManager);
-        },
-      );
+        test(
+          'should return a Left<$CliFailurePubspecFileNotFound> when pubspec.yaml file not found.',
+          () async {
+            // Arrange
+            final tempDir = Directory.systemTemp.createTempSync();
+            final packagePath = tempDir.path;
 
-      test(
-        'should return a Left<$CliFailurePubspecFileNotFound> when pubspec.yaml file not found.',
-        () async {
-          // Arrange
-          final tempDir = Directory.systemTemp.createTempSync();
-          final packagePath = tempDir.path;
+            // Act
+            final result = await sut.pubAdd(
+              packagePath: packagePath,
+              dependencies: {
+                PackageDependency(
+                  name: DependencyA.name,
+                  version: DependencyA.version,
+                ),
+              },
+            );
 
-          // Act
-          final result = await sut.pubAdd(
-            packagePath: packagePath,
-            dependencies: {
-              PackageDependency(
-                name: DependencyA.name,
-                version: DependencyA.version,
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
               ),
-            },
-          );
+              isA<CliFailurePubspecFileNotFound>(),
+            );
 
-          // Assert
-          expect(result, isA<Left>());
-          expect(
-            result.fold(
-              (failure) => failure,
-              (_) => fail('Result returned a Right'),
-            ),
-            isA<CliFailurePubspecFileNotFound>(),
-          );
+            verifyZeroInteractions(processManager);
+          },
+        );
 
-          verifyZeroInteractions(processManager);
-        },
-      );
+        test(
+          'should return a Left<$CliFailureEmptyDependencies> when dependencies is empty.',
+          () async {
+            // Arrange
+            final tempDir = Directory.systemTemp.createTempSync();
+            final packagePath = tempDir.path;
 
-      test(
-        'should return a Left<$CliFailureEmptyDependencies> when dependencies is empty.',
-        () async {
-          // Arrange
-          final tempDir = Directory.systemTemp.createTempSync();
-          final packagePath = tempDir.path;
+            // Act
+            final result = await sut.pubAdd(
+              packagePath: packagePath,
+              dependencies: {},
+            );
 
-          // Act
-          final result = await sut.pubAdd(
-            packagePath: packagePath,
-            dependencies: {},
-          );
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureEmptyDependencies>(),
+            );
 
-          // Assert
-          expect(result, isA<Left>());
-          expect(
-            result.fold(
-              (failure) => failure,
-              (_) => fail('Result returned a Right'),
-            ),
-            isA<CliFailureEmptyDependencies>(),
-          );
+            verifyZeroInteractions(processManager);
+          },
+        );
+        test(
+          'should return a Left<$CliFailureInvalidPackagePath> when package path does not exist.',
+          () async {
+            // Arrange
+            final tempDir = Directory.systemTemp.createTempSync();
+            final packagePath = join(
+              tempDir.path,
+              'path',
+              'does',
+              'not',
+              'exist',
+            );
 
-          verifyZeroInteractions(processManager);
-        },
-      );
-    });
+            // Act
+            final result = await sut.pubAdd(
+              packagePath: packagePath,
+              dependencies: {
+                PackageDependency(
+                  name: DependencyA.name,
+                  version: DependencyA.version,
+                ),
+              },
+            );
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureInvalidPackagePath>(),
+            );
+
+            verifyZeroInteractions(processManager);
+          },
+        );
+      },
+    );
   });
 
   group(
@@ -252,6 +294,7 @@ void main() {
             whenCreateNewPackage(
               packageName: packageName,
               processManager: processManager,
+              packagePath: packagePath,
             ).thenAnswer((_) async => processResult);
 
             // Act
@@ -264,8 +307,8 @@ void main() {
 
             verifyCreateNewPackage(
               packageName: packageName,
-              packagePath: packagePath,
               processManager: processManager,
+              packagePath: packagePath,
             ).called(1);
 
             verifyNoMoreInteractions(processManager);
@@ -294,6 +337,7 @@ void main() {
               whenCreateNewPackage(
                 packageName: packageName,
                 processManager: processManager,
+                packagePath: packagePath,
               ).thenAnswer((_) async => processResult);
 
               // Act
@@ -327,6 +371,7 @@ void main() {
               whenCreateNewPackage(
                 processManager: processManager,
                 packageName: packageName,
+                packagePath: packagePath,
               ).thenThrow(Exception());
 
               // Act
@@ -347,8 +392,8 @@ void main() {
 
               verifyCreateNewPackage(
                 packageName: packageName,
-                packagePath: packagePath,
                 processManager: processManager,
+                packagePath: packagePath,
               ).called(1);
               verifyNoMoreInteractions(processManager);
             },
@@ -370,6 +415,7 @@ void main() {
               whenCreateNewPackage(
                 processManager: processManager,
                 packageName: packageName,
+                packagePath: packagePath,
               ).thenAnswer((_) async => processResult);
 
               // Act
@@ -386,6 +432,184 @@ void main() {
                   (_) => fail('Result returned a Right'),
                 ),
                 isA<CliFailurePackageAlreadyExists>(),
+              );
+
+              verifyZeroInteractions(processManager);
+            },
+          );
+
+          test(
+            'should return a Left<$CliFailureInvalidPackagePath> when package path does not exist.',
+            () async {
+              // Arrange
+              const packageName = 'test_package';
+
+              final tempDir = Directory.systemTemp.createTempSync();
+
+              final packagePath = join(
+                tempDir.path,
+                'path',
+                'does',
+                'not',
+                'exist',
+              );
+
+              whenCreateNewPackage(
+                processManager: processManager,
+                packageName: packageName,
+                packagePath: packagePath,
+              ).thenAnswer((_) async => processResult);
+
+              // Act
+              final result = await sut.createNewPackage(
+                packageName: packageName,
+                packagePath: packagePath,
+              );
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailureInvalidPackagePath>(),
+              );
+
+              verifyZeroInteractions(processManager);
+            },
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Generate L10N',
+    () {
+      group(
+        'Success cases',
+        () {
+          test(
+            'should generate package successfully and call processManager.run with correct values.',
+            () async {
+              // Arrange
+              final tempDir = Directory.systemTemp.createTempSync();
+              final packagePath = tempDir.path;
+
+              await createPubspecFile(packagePath);
+
+              whenGenL10N(
+                processManager: processManager,
+                packagePath: packagePath,
+              ).thenAnswer(
+                (_) async => processResult,
+              );
+
+              // Act
+              final result = await sut.genL10N(packagePath: packagePath);
+
+              // Assert
+              expect(result, isA<Right>());
+              expect(
+                result.getOrElse(() => fail('Result returned a Left')),
+                isA<ProcessResponse>(),
+              );
+
+              verifyGenL10N(
+                processManager: processManager,
+                packagePath: packagePath,
+              ).called(1);
+              verifyNoMoreInteractions(processManager);
+            },
+          );
+        },
+      );
+
+      group(
+        'Failure cases',
+        () {
+          test(
+            'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
+            () async {
+              // Arrange
+              final tempDir = Directory.systemTemp.createTempSync();
+              final packagePath = tempDir.path;
+              createPubspecFile(packagePath);
+
+              whenGenL10N(
+                processManager: processManager,
+                packagePath: packagePath,
+              ).thenThrow(Exception());
+
+              // Act
+              final result = await sut.genL10N(packagePath: packagePath);
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailureUnknown>(),
+              );
+
+              verifyGenL10N(
+                processManager: processManager,
+                packagePath: packagePath,
+              ).called(1);
+              verifyNoMoreInteractions(processManager);
+            },
+          );
+
+          test(
+            'should return a Left<$CliFailurePubspecFileNotFound> when pubspec.yaml file not found.',
+            () async {
+              // Arrange
+              final tempDir = Directory.systemTemp.createTempSync();
+              final packagePath = tempDir.path;
+
+              // Act
+              final result = await sut.genL10N(packagePath: packagePath);
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailurePubspecFileNotFound>(),
+              );
+
+              verifyZeroInteractions(processManager);
+            },
+          );
+          test(
+            'should return a Left<$CliFailureInvalidPackagePath> when package path does not exist.',
+            () async {
+              // Arrange
+              final tempDir = Directory.systemTemp.createTempSync();
+              final packagePath = join(
+                tempDir.path,
+                'path',
+                'does',
+                'not',
+                'exist',
+              );
+
+              // Act
+              final result = await sut.genL10N(packagePath: packagePath);
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailureInvalidPackagePath>(),
               );
 
               verifyZeroInteractions(processManager);

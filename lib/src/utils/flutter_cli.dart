@@ -18,6 +18,8 @@ abstract class IFlutterCLI {
     required String packageName,
     String? packagePath,
   });
+
+  Future<Either<CliFailure, ProcessResponse>> genL10N({String? packagePath});
 }
 
 class FlutterCLI implements IFlutterCLI {
@@ -27,9 +29,16 @@ class FlutterCLI implements IFlutterCLI {
 
   final IProcessManager _processManager;
 
-  bool _checkPubspecFile(String packagePath) {
-    final pubspecFile = File(join(packagePath, 'pubspec.yaml'));
+  bool _checkPubspecFile(String? packagePath) {
+    final path = packagePath ?? Directory.current.path;
+    final pubspecFile = File(join(path, 'pubspec.yaml'));
     return pubspecFile.existsSync();
+  }
+
+  bool _checkPathExist(String? packagePath) {
+    final path = packagePath ?? Directory.current.path;
+    final packageDir = Directory(path);
+    return packageDir.existsSync();
   }
 
   @override
@@ -37,10 +46,13 @@ class FlutterCLI implements IFlutterCLI {
     required String packagePath,
     required Set<PackageDependency> dependencies,
   }) async {
-    if (dependencies.isEmpty) {
-      return const Left(CliFailure.emptyDependencies());
-    }
     try {
+      if (dependencies.isEmpty) {
+        return const Left(CliFailure.emptyDependencies());
+      }
+      if (!_checkPathExist(packagePath)) {
+        return const Left(CliFailure.invalidPackagePath());
+      }
       if (!_checkPubspecFile(packagePath)) {
         return const Left(CliFailure.pubspecFileNotFound());
       }
@@ -84,6 +96,10 @@ class FlutterCLI implements IFlutterCLI {
         return const Left(CliFailure.invalidPackageName());
       }
 
+      if (!_checkPathExist(packagePath)) {
+        return const Left(CliFailure.invalidPackagePath());
+      }
+
       if (_packageIsExist(
         packageName: packageName,
         packagePath: packagePath ?? Directory.current.path,
@@ -98,6 +114,29 @@ class FlutterCLI implements IFlutterCLI {
           '--template=package',
           packageName,
         ],
+        workingDirectory: packagePath,
+      );
+
+      return right(ProcessResponse.fromProcessResult(result));
+    } catch (e) {
+      return left(CliFailure.unknown(e));
+    }
+  }
+
+  @override
+  Future<Either<CliFailure, ProcessResponse>> genL10N({
+    String? packagePath,
+  }) async {
+    try {
+      if (!_checkPathExist(packagePath)) {
+        return const Left(CliFailure.invalidPackagePath());
+      }
+      if (!_checkPubspecFile(packagePath)) {
+        return const Left(CliFailure.pubspecFileNotFound());
+      }
+      final result = await _processManager.run(
+        'flutter',
+        ['gen-l10n'],
         workingDirectory: packagePath,
       );
 
