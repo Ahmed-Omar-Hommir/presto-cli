@@ -1,13 +1,10 @@
 import 'dart:io';
-import 'package:dart_console/dart_console.dart';
 import 'package:dartz/dartz.dart';
 import 'package:json2yaml/json2yaml.dart';
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
 
 abstract class IPackageManager {
-  Future<Either<None, None>> createNewPackage({required String packageName});
-
   Future<void> addDependencies({
     required String packagePath,
     required Map<String, dynamic> dependencies,
@@ -34,25 +31,6 @@ abstract class IPackageManager {
 }
 
 class PackageManager implements IPackageManager {
-  @override
-  Future<Either<None, None>> createNewPackage({
-    required String packageName,
-  }) async {
-    try {
-      final console = Console();
-      console.writeLine('Creating $packageName Package...');
-      final process = await Process.start('flutter', [
-        'create',
-        '--template=package',
-        packageName,
-      ]);
-      await process.exitCode;
-      return right(None());
-    } catch (_) {
-      return left(None());
-    }
-  }
-
   @override
   Future<void> addDependencies({
     required String packagePath,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/create/templates/feature_bloc_temp.dart';
@@ -57,11 +58,22 @@ class CreateFeaturePackageCommand extends Command {
 
     final createPackageProgress =
         _logger.progress('Creating $packageName package for you');
-    final createNewPackageOption =
-        await _packageManager.createNewPackage(packageName: packageName);
-    createPackageProgress.complete('Package created!');
 
-    if (createNewPackageOption.isLeft()) exit(0);
+    final createNewPackageResult = await _flutterCli.createNewPackage(
+      packageName: packageName,
+    );
+
+    createNewPackageResult.fold(
+      (failure) {
+        _logger.err("Couldn't create package $packageName");
+        createPackageProgress.cancel;
+      },
+      (response) => createPackageProgress.complete('Package created!'),
+    );
+
+    if (createNewPackageResult is Left) {
+      exit(1);
+    }
 
     final useLocalization = _userInput.askCreateLocalization();
 
@@ -116,7 +128,7 @@ class CreateFeaturePackageCommand extends Command {
 
     await x.fold(
       (failure) {
-        failure.map(
+        failure.maybeMap(
           pubspecFileNotFound: (_) {
             _logger.err('pubspec.yaml file not found');
           },
@@ -126,6 +138,7 @@ class CreateFeaturePackageCommand extends Command {
           unknown: (value) {
             _logger.err('unknown error\n${value.e}');
           },
+          orElse: () => null,
         );
       },
       (response) async {
