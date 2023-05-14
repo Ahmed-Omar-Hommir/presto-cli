@@ -93,7 +93,7 @@ class CreateFeaturePackageCommand extends Command {
       );
 
       locProgress.update('generating localization');
-      await _packageManager.getL10N(packagePath: './$packageName');
+      await _flutterCli.genL10N(packagePath: './$packageName');
       locProgress
           .complete(lightCyan.wrap(styleBold.wrap('Localization Done!')));
     }
