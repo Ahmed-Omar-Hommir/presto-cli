@@ -8,11 +8,6 @@ import 'package:yaml/yaml.dart';
 abstract class IPackageManager {
   Future<Either<None, None>> createNewPackage({required String packageName});
 
-  Future<void> pubAdd({
-    required String packagePath,
-    required List<String> dependencies,
-  });
-
   Future<void> addDependencies({
     required String packagePath,
     required Map<String, dynamic> dependencies,
@@ -56,20 +51,6 @@ class PackageManager implements IPackageManager {
     } catch (_) {
       return left(None());
     }
-  }
-
-  @override
-  Future<void> pubAdd({
-    required String packagePath,
-    required List<String> dependencies,
-  }) async {
-    final proccess = await Process.start(
-      'flutter',
-      ['pub', 'add', ...dependencies],
-      workingDirectory: packagePath,
-    );
-
-    await proccess.exitCode;
   }
 
   @override
