@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
+import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/create/templates/feature_bloc_temp.dart';
 import 'package:presto_cli/src/commands/create/templates/set_up_feature_files_temp.dart';
 import 'package:presto_cli/src/package_manager.dart';
@@ -18,13 +19,15 @@ class CreateFeaturePackageCommand extends Command {
     required TemplateGenerator featBlocTemp,
     required IUserInput userInput,
     required IPackageManager packageManager,
+    required IFlutterCLI flutterCli,
     required Logger logger,
   })  : _locTemp = locTemp,
         _featTemp = featTemp,
         _featBlocTemp = featBlocTemp,
         _userInput = userInput,
         _logger = logger,
-        _packageManager = packageManager;
+        _packageManager = packageManager,
+        _flutterCli = flutterCli;
 
   final TemplateGenerator _locTemp;
   final TemplateGenerator _featTemp;
@@ -32,6 +35,7 @@ class CreateFeaturePackageCommand extends Command {
   final IUserInput _userInput;
   final IPackageManager _packageManager;
   final Logger _logger;
+  final IFlutterCLI _flutterCli;
 
   @override
   String get name => 'feature';
@@ -98,24 +102,54 @@ class CreateFeaturePackageCommand extends Command {
       ],
     );
 
-    await _packageManager.pubAdd(
-      packagePath: './$packageName',
-      dependencies: result,
+    final packagePath = File(packageName);
+
+    final x = await _flutterCli.pubAdd(
+      packagePath: packagePath.path,
+      dependencies: result
+          .map((name) => PackageDependency(
+                name: name,
+                version: null,
+              ))
+          .toSet(),
     );
 
-    await _featTemp.generate(
-      vars: SetUpFeatureFilesTempModel(
-        packageName: packageName,
-        useLocaization: useLocalization,
-      ),
-    );
+    await x.fold(
+      (failure) {
+        failure.map(
+          pubspecFileNotFound: (_) {
+            _logger.err('pubspec.yaml file not found');
+          },
+          emptyDependencies: (_) {
+            _logger.err('dependencies is empty');
+          },
+          unknown: (value) {
+            _logger.err('unknown error\n${value.e}');
+          },
+        );
+      },
+      (response) async {
+        _logger.detail(response.output);
+        await response.exitCodeStatus.map(
+          success: (value) async {
+            await _featTemp.generate(
+              vars: SetUpFeatureFilesTempModel(
+                packageName: packageName,
+                useLocaization: useLocalization,
+              ),
+            );
 
-    if (result.contains('bloc')) {
-      await _featBlocTemp.generate(
-        vars: FeatureBlocTempModel(
-          packageName: packageName,
-        ),
-      );
-    }
+            if (result.contains('bloc')) {
+              await _featBlocTemp.generate(
+                vars: FeatureBlocTempModel(
+                  packageName: packageName,
+                ),
+              );
+            }
+          },
+          failure: (value) {},
+        );
+      },
+    );
   }
 }
