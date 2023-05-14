@@ -15,8 +15,6 @@ abstract class IPackageManager {
     required Map<String, dynamic> dependencies,
   });
 
-  Future<void> getL10N({required String packagePath});
-
   Future<List<String>> findPackages({required Directory dir});
 
   Future<List<File>> dartFilesCollection({
@@ -66,17 +64,6 @@ class PackageManager implements IPackageManager {
     required String packagePath,
     required Map<String, dynamic> dependencies,
   }) async {}
-
-  @override
-  Future<void> getL10N({required String packagePath}) async {
-    final proccess = await Process.start(
-      'flutter',
-      ['gen-l10n'],
-      workingDirectory: packagePath,
-    );
-
-    await proccess.exitCode;
-  }
 
   @override
   Future<List<String>> findPackages({required Directory dir}) async {
