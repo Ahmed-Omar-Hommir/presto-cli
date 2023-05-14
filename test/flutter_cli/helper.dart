@@ -25,17 +25,19 @@ void whenRunPubAdd({
   required IProcessManager processManager,
   required ProcessResult answer,
   required List<String> dependencies,
+  required String packagePath,
 }) {
   when(processManager.run(
     'flutter',
     ['pub', 'add', ...dependencies],
-    workingDirectory: anyNamed('workingDirectory'),
+    workingDirectory: packagePath,
   )).thenAnswer((_) async => answer);
 }
 
 PostExpectation whenCreateNewPackage({
   required IProcessManager processManager,
   required String packageName,
+  required String packagePath,
 }) {
   return when(processManager.run(
     'flutter',
@@ -44,14 +46,38 @@ PostExpectation whenCreateNewPackage({
       '--template=package',
       packageName,
     ],
-    workingDirectory: anyNamed('workingDirectory'),
+    workingDirectory: packagePath,
   ));
+}
+
+PostExpectation whenGenL10N({
+  required IProcessManager processManager,
+  required String packagePath,
+}) {
+  return when(processManager.run(
+    'flutter',
+    ['gen-l10n'],
+    workingDirectory: packagePath,
+  ));
+}
+
+VerificationResult verifyGenL10N({
+  required IProcessManager processManager,
+  required String packagePath,
+}) {
+  return verify(
+    processManager.run(
+      'flutter',
+      ['gen-l10n'],
+      workingDirectory: packagePath,
+    ),
+  );
 }
 
 VerificationResult verifyCreateNewPackage({
   required IProcessManager processManager,
-  required String packagePath,
   required String packageName,
+  required String packagePath,
 }) {
   return verify(
     processManager.run(
@@ -61,7 +87,7 @@ VerificationResult verifyCreateNewPackage({
         '--template=package',
         packageName,
       ],
-      workingDirectory: anyNamed('workingDirectory'),
+      workingDirectory: packagePath,
     ),
   );
 }
