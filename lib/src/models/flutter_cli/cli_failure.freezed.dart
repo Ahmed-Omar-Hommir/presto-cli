@@ -19,6 +19,8 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
     required TResult Function() emptyDependencies,
     required TResult Function(Object? e) unknown,
   }) =>
@@ -26,6 +28,8 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
     TResult? Function()? emptyDependencies,
     TResult? Function(Object? e)? unknown,
   }) =>
@@ -33,6 +37,8 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
     TResult Function()? emptyDependencies,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
@@ -42,6 +48,10 @@ mixin _$CliFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
     required TResult Function(CliFailureEmptyDependencies value)
         emptyDependencies,
     required TResult Function(CliFailureUnknown value) unknown,
@@ -50,6 +60,9 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult? Function(CliFailureUnknown value)? unknown,
   }) =>
@@ -57,6 +70,9 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult Function(CliFailureUnknown value)? unknown,
     required TResult orElse(),
@@ -124,6 +140,8 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
     required TResult Function() emptyDependencies,
     required TResult Function(Object? e) unknown,
   }) {
@@ -134,6 +152,8 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
     TResult? Function()? emptyDependencies,
     TResult? Function(Object? e)? unknown,
   }) {
@@ -144,6 +164,8 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
     TResult Function()? emptyDependencies,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
@@ -159,6 +181,10 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
     required TResult Function(CliFailureEmptyDependencies value)
         emptyDependencies,
     required TResult Function(CliFailureUnknown value) unknown,
@@ -170,6 +196,9 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult? Function(CliFailureUnknown value)? unknown,
   }) {
@@ -180,6 +209,9 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult Function(CliFailureUnknown value)? unknown,
     required TResult orElse(),
@@ -194,6 +226,266 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
 abstract class CliFailurePubspecFileNotFound implements CliFailure {
   const factory CliFailurePubspecFileNotFound() =
       _$CliFailurePubspecFileNotFound;
+}
+
+/// @nodoc
+abstract class _$$CliFailureInvalidPackageNameCopyWith<$Res> {
+  factory _$$CliFailureInvalidPackageNameCopyWith(
+          _$CliFailureInvalidPackageName value,
+          $Res Function(_$CliFailureInvalidPackageName) then) =
+      __$$CliFailureInvalidPackageNameCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$CliFailureInvalidPackageNameCopyWithImpl<$Res>
+    extends _$CliFailureCopyWithImpl<$Res, _$CliFailureInvalidPackageName>
+    implements _$$CliFailureInvalidPackageNameCopyWith<$Res> {
+  __$$CliFailureInvalidPackageNameCopyWithImpl(
+      _$CliFailureInvalidPackageName _value,
+      $Res Function(_$CliFailureInvalidPackageName) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
+  const _$CliFailureInvalidPackageName();
+
+  @override
+  String toString() {
+    return 'CliFailure.invalidPackageName()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CliFailureInvalidPackageName);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() pubspecFileNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
+    required TResult Function() emptyDependencies,
+    required TResult Function(Object? e) unknown,
+  }) {
+    return invalidPackageName();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
+    TResult? Function()? emptyDependencies,
+    TResult? Function(Object? e)? unknown,
+  }) {
+    return invalidPackageName?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? pubspecFileNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
+    TResult Function()? emptyDependencies,
+    TResult Function(Object? e)? unknown,
+    required TResult orElse(),
+  }) {
+    if (invalidPackageName != null) {
+      return invalidPackageName();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(CliFailurePubspecFileNotFound value)
+        pubspecFileNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
+    required TResult Function(CliFailureEmptyDependencies value)
+        emptyDependencies,
+    required TResult Function(CliFailureUnknown value) unknown,
+  }) {
+    return invalidPackageName(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
+    TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
+    TResult? Function(CliFailureUnknown value)? unknown,
+  }) {
+    return invalidPackageName?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
+    TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
+    TResult Function(CliFailureUnknown value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (invalidPackageName != null) {
+      return invalidPackageName(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CliFailureInvalidPackageName implements CliFailure {
+  const factory CliFailureInvalidPackageName() = _$CliFailureInvalidPackageName;
+}
+
+/// @nodoc
+abstract class _$$CliFailurePackageAlreadyExistsCopyWith<$Res> {
+  factory _$$CliFailurePackageAlreadyExistsCopyWith(
+          _$CliFailurePackageAlreadyExists value,
+          $Res Function(_$CliFailurePackageAlreadyExists) then) =
+      __$$CliFailurePackageAlreadyExistsCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$CliFailurePackageAlreadyExistsCopyWithImpl<$Res>
+    extends _$CliFailureCopyWithImpl<$Res, _$CliFailurePackageAlreadyExists>
+    implements _$$CliFailurePackageAlreadyExistsCopyWith<$Res> {
+  __$$CliFailurePackageAlreadyExistsCopyWithImpl(
+      _$CliFailurePackageAlreadyExists _value,
+      $Res Function(_$CliFailurePackageAlreadyExists) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$CliFailurePackageAlreadyExists
+    implements CliFailurePackageAlreadyExists {
+  const _$CliFailurePackageAlreadyExists();
+
+  @override
+  String toString() {
+    return 'CliFailure.packageAlreadyExists()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CliFailurePackageAlreadyExists);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() pubspecFileNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
+    required TResult Function() emptyDependencies,
+    required TResult Function(Object? e) unknown,
+  }) {
+    return packageAlreadyExists();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
+    TResult? Function()? emptyDependencies,
+    TResult? Function(Object? e)? unknown,
+  }) {
+    return packageAlreadyExists?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? pubspecFileNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
+    TResult Function()? emptyDependencies,
+    TResult Function(Object? e)? unknown,
+    required TResult orElse(),
+  }) {
+    if (packageAlreadyExists != null) {
+      return packageAlreadyExists();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(CliFailurePubspecFileNotFound value)
+        pubspecFileNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
+    required TResult Function(CliFailureEmptyDependencies value)
+        emptyDependencies,
+    required TResult Function(CliFailureUnknown value) unknown,
+  }) {
+    return packageAlreadyExists(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
+    TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
+    TResult? Function(CliFailureUnknown value)? unknown,
+  }) {
+    return packageAlreadyExists?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
+    TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
+    TResult Function(CliFailureUnknown value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (packageAlreadyExists != null) {
+      return packageAlreadyExists(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CliFailurePackageAlreadyExists implements CliFailure {
+  const factory CliFailurePackageAlreadyExists() =
+      _$CliFailurePackageAlreadyExists;
 }
 
 /// @nodoc
@@ -238,6 +530,8 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
     required TResult Function() emptyDependencies,
     required TResult Function(Object? e) unknown,
   }) {
@@ -248,6 +542,8 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
     TResult? Function()? emptyDependencies,
     TResult? Function(Object? e)? unknown,
   }) {
@@ -258,6 +554,8 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
     TResult Function()? emptyDependencies,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
@@ -273,6 +571,10 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
     required TResult Function(CliFailureEmptyDependencies value)
         emptyDependencies,
     required TResult Function(CliFailureUnknown value) unknown,
@@ -284,6 +586,9 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult? Function(CliFailureUnknown value)? unknown,
   }) {
@@ -294,6 +599,9 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult Function(CliFailureUnknown value)? unknown,
     required TResult orElse(),
@@ -372,6 +680,8 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
     required TResult Function() emptyDependencies,
     required TResult Function(Object? e) unknown,
   }) {
@@ -382,6 +692,8 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
     TResult? Function()? emptyDependencies,
     TResult? Function(Object? e)? unknown,
   }) {
@@ -392,6 +704,8 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
     TResult Function()? emptyDependencies,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
@@ -407,6 +721,10 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
     required TResult Function(CliFailureEmptyDependencies value)
         emptyDependencies,
     required TResult Function(CliFailureUnknown value) unknown,
@@ -418,6 +736,9 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult? Function(CliFailureUnknown value)? unknown,
   }) {
@@ -428,6 +749,9 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
     TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
     TResult Function(CliFailureUnknown value)? unknown,
     required TResult orElse(),

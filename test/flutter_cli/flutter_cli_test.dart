@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:test/test.dart';
 import 'flutter_cli_test.mocks.dart';
@@ -15,7 +16,7 @@ void main() {
 
   setUp(() {
     processResult = MockProcessResult();
-    setUpProcessResult(processResult);
+    whenProcessResult(processResult);
 
     processManager = MockIProcessManager();
 
@@ -234,4 +235,164 @@ void main() {
       );
     });
   });
+
+  group(
+    'Create New Package',
+    () {
+      group('Success cases', () {
+        test(
+          'should create new package successfully and call processManager.run with correct values.',
+          () async {
+            // Arrange
+            final tempDir = Directory.systemTemp.createTempSync();
+            final packagePath = tempDir.path;
+
+            const packageName = 'test_package';
+
+            whenCreateNewPackage(
+              packageName: packageName,
+              processManager: processManager,
+            ).thenAnswer((_) async => processResult);
+
+            // Act
+            final result = await sut.createNewPackage(
+              packageName: packageName,
+              packagePath: packagePath,
+            );
+
+            // Assert
+
+            verifyCreateNewPackage(
+              packageName: packageName,
+              packagePath: packagePath,
+              processManager: processManager,
+            ).called(1);
+
+            verifyNoMoreInteractions(processManager);
+
+            expect(result, isA<Right>());
+            expect(
+              result.getOrElse(() => fail('Result returned a Left')),
+              isA<ProcessResponse>(),
+            );
+          },
+        );
+      });
+
+      group(
+        'Failure cases',
+        () {
+          test(
+            'should return Left<$CliFailureInvalidPackageName> when package name is invalid and call processManager.run with correct values.',
+            () async {
+              // Arrange
+              final tempDir = Directory.systemTemp.createTempSync();
+              final packagePath = tempDir.path;
+
+              const packageName = 'INVALID_PACKAGE_NAME';
+
+              whenCreateNewPackage(
+                packageName: packageName,
+                processManager: processManager,
+              ).thenAnswer((_) async => processResult);
+
+              // Act
+              final result = await sut.createNewPackage(
+                packageName: packageName,
+                packagePath: packagePath,
+              );
+
+              // Assert
+              verifyZeroInteractions(processManager);
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailureInvalidPackageName>(),
+              );
+            },
+          );
+
+          test(
+            'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
+            () async {
+              // Arrange
+              final tempDir = Directory.systemTemp.createTempSync();
+              final packagePath = tempDir.path;
+
+              const packageName = 'test_package';
+
+              whenCreateNewPackage(
+                processManager: processManager,
+                packageName: packageName,
+              ).thenThrow(Exception());
+
+              // Act
+              final result = await sut.createNewPackage(
+                packageName: packageName,
+                packagePath: packagePath,
+              );
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailureUnknown>(),
+              );
+
+              verifyCreateNewPackage(
+                packageName: packageName,
+                packagePath: packagePath,
+                processManager: processManager,
+              ).called(1);
+              verifyNoMoreInteractions(processManager);
+            },
+          );
+
+          test(
+            'should return a Left<$CliFailurePackageAlreadyExists> when package already exists.',
+            () async {
+              // Arrange
+              const packageName = 'test_package';
+
+              final tempDir = Directory.systemTemp.createTempSync();
+
+              final newDir = Directory(join(tempDir.path, packageName));
+              newDir.createSync();
+
+              final packagePath = tempDir.path;
+
+              whenCreateNewPackage(
+                processManager: processManager,
+                packageName: packageName,
+              ).thenAnswer((_) async => processResult);
+
+              // Act
+              final result = await sut.createNewPackage(
+                packageName: packageName,
+                packagePath: packagePath,
+              );
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (_) => fail('Result returned a Right'),
+                ),
+                isA<CliFailurePackageAlreadyExists>(),
+              );
+
+              verifyZeroInteractions(processManager);
+            },
+          );
+        },
+      );
+    },
+  );
 }
