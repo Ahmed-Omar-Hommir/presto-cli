@@ -6,6 +6,9 @@ part 'cli_failure.freezed.dart';
 class CliFailure with _$CliFailure {
   const factory CliFailure.pubspecFileNotFound() =
       CliFailurePubspecFileNotFound;
+  const factory CliFailure.invalidPackageName() = CliFailureInvalidPackageName;
+  const factory CliFailure.packageAlreadyExists() =
+      CliFailurePackageAlreadyExists;
   const factory CliFailure.emptyDependencies() = CliFailureEmptyDependencies;
   const factory CliFailure.unknown(Object? e) = CliFailureUnknown;
 }

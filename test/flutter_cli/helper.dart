@@ -3,7 +3,7 @@ import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 
-void setUpProcessResult(
+void whenProcessResult(
   ProcessResult processResult, {
   int exitCode = 0,
   String stdout = 'stdout',
@@ -31,6 +31,39 @@ void whenRunPubAdd({
     ['pub', 'add', ...dependencies],
     workingDirectory: anyNamed('workingDirectory'),
   )).thenAnswer((_) async => answer);
+}
+
+PostExpectation whenCreateNewPackage({
+  required IProcessManager processManager,
+  required String packageName,
+}) {
+  return when(processManager.run(
+    'flutter',
+    [
+      'create',
+      '--template=package',
+      packageName,
+    ],
+    workingDirectory: anyNamed('workingDirectory'),
+  ));
+}
+
+VerificationResult verifyCreateNewPackage({
+  required IProcessManager processManager,
+  required String packagePath,
+  required String packageName,
+}) {
+  return verify(
+    processManager.run(
+      'flutter',
+      [
+        'create',
+        '--template=package',
+        packageName,
+      ],
+      workingDirectory: anyNamed('workingDirectory'),
+    ),
+  );
 }
 
 VerificationResult verifyPubAdd({

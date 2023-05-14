@@ -13,6 +13,11 @@ abstract class IFlutterCLI {
     required String packagePath,
     required Set<PackageDependency> dependencies,
   });
+
+  Future<Either<CliFailure, ProcessResponse>> createNewPackage({
+    required String packageName,
+    String? packagePath,
+  });
 }
 
 class FlutterCLI implements IFlutterCLI {
@@ -46,6 +51,52 @@ class FlutterCLI implements IFlutterCLI {
           'pub',
           'add',
           ...dependencies.map((e) => '${e.name}:${e.version}'),
+        ],
+        workingDirectory: packagePath,
+      );
+
+      return right(ProcessResponse.fromProcessResult(result));
+    } catch (e) {
+      return left(CliFailure.unknown(e));
+    }
+  }
+
+  bool _isValidPackageName(String packageName) {
+    final RegExp pattern = RegExp(r'^[a-z0-9]+(_[a-z0-9]+)*$');
+    return pattern.hasMatch(packageName);
+  }
+
+  bool _packageIsExist({
+    required String packageName,
+    required String packagePath,
+  }) {
+    final packageDir = Directory(join(packagePath, packageName));
+    return packageDir.existsSync();
+  }
+
+  @override
+  Future<Either<CliFailure, ProcessResponse>> createNewPackage({
+    required String packageName,
+    @visibleForTesting String? packagePath,
+  }) async {
+    try {
+      if (!_isValidPackageName(packageName)) {
+        return const Left(CliFailure.invalidPackageName());
+      }
+
+      if (_packageIsExist(
+        packageName: packageName,
+        packagePath: packagePath ?? Directory.current.path,
+      )) {
+        return const Left(CliFailure.packageAlreadyExists());
+      }
+
+      final result = await _processManager.run(
+        'flutter',
+        [
+          'create',
+          '--template=package',
+          packageName,
         ],
         workingDirectory: packagePath,
       );
