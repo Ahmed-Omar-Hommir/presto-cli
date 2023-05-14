@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:mason/mason.dart';
+import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/create/templates/feature_bloc_temp.dart';
 import 'package:presto_cli/src/commands/create/templates/localization_temp.dart';
 import 'package:presto_cli/src/commands/create/templates/set_up_feature_files_temp.dart';
@@ -12,6 +13,7 @@ import 'commands/feature_package_command.dart';
 class CreateCommand extends Command {
   CreateCommand() {
     addSubcommand(CreateFeaturePackageCommand(
+      flutterCli: FlutterCLI(),
       locTemp: LocalizationTemp(),
       featTemp: SetUpFeatureFilesTemp(),
       userInput: UserInput(),
