@@ -60,7 +60,7 @@ class MagicRunnerCommand extends Command {
 
     final String packageName = yaml['name'];
 
-    if (packageName != 'presto_eat') {
+    if (packageName != 'prestoeat') {
       _logger.error('You are not in the root project.');
       exit(1);
     }
