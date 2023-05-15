@@ -1,6 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/package_manager.dart';
+import 'package:presto_cli/src/utils/file_manager.dart';
 
 import 'commands/commands.dart';
 
@@ -8,6 +9,7 @@ class MakeCommand extends Command {
   MakeCommand() {
     addSubcommand(BuildRunnerCommand());
     addSubcommand(MagicRunnerCommand(
+      fileManager: FileManager(),
       packageManager: PackageManager(),
       logger: Logger(),
     ));
