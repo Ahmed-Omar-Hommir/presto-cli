@@ -3,14 +3,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:path/path.dart';
+import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/package_manager.dart';
 
 class MagicRunnerCommand extends Command {
   MagicRunnerCommand({
     required IPackageManager packageManager,
+    required IFileManager fileManager,
     required ILogger logger,
   })  : _packageManager = packageManager,
+        _fileManager = fileManager,
         _logger = logger {
     argParser.addFlag(
       'delete-conflicting-outputs',
@@ -27,6 +31,7 @@ class MagicRunnerCommand extends Command {
   }
 
   final IPackageManager _packageManager;
+  final IFileManager _fileManager;
   final ILogger _logger;
 
   @override
@@ -38,6 +43,45 @@ class MagicRunnerCommand extends Command {
 
   @override
   FutureOr? run() async {
+    final pubspecFile = File(join(Directory.current.path, 'pubspec.yaml'));
+    final readYamlResult = await _fileManager.readYaml(pubspecFile);
+
+    if (readYamlResult.isLeft()) {
+      readYamlResult.leftMap((failure) {
+        failure.map(
+          fileNotFound: (value) => _logger.error('pubspec.yaml not found.'),
+          unknown: (value) => _logger.error(value.toString()),
+        );
+        exit(1);
+      });
+    }
+
+    final yaml = readYamlResult.getOrElse(() => {});
+
+    final String packageName = yaml['name'];
+
+    if (packageName != 'presto_eat') {
+      _logger.error('You are not in the root project.');
+      exit(1);
+    }
+
+    _logger.info('You are in the root project.');
+    exit(0);
+
+    // check user in root project.
+    //    - try read pubspec.yaml.
+    //    - check project name is presto eat.
+
+    // if user not in root project, exit.
+
+    // find all packages in project [./packages_dir] has build_runner in pubspec.
+
+    // run build_runner for each package.
+
+    // Last Steps:
+    // make parallel process for each package.
+    // handle logs.
+
     // Setup
     final List<String> execludes = [];
 
