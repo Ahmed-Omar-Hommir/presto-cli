@@ -61,6 +61,28 @@ PostExpectation whenGenL10N({
   ));
 }
 
+PostExpectation whenBuildRunner({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return when(processManager.run(
+    'flutter',
+    ['pub', 'run', 'build_runner', 'build'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
+VerificationResult verifyBuildRunner({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return verify(processManager.run(
+    'flutter',
+    ['pub', 'run', 'build_runner', 'build'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
 VerificationResult verifyGenL10N({
   required IProcessManager processManager,
   required String packagePath,

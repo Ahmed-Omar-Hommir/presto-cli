@@ -19,6 +19,7 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -29,6 +30,7 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -39,6 +41,7 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -51,6 +54,8 @@ mixin _$CliFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -65,6 +70,7 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -76,6 +82,7 @@ mixin _$CliFailure {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -147,6 +154,7 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -160,6 +168,7 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -173,6 +182,7 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -191,6 +201,8 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -208,6 +220,7 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -222,6 +235,7 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -240,6 +254,149 @@ class _$CliFailurePubspecFileNotFound implements CliFailurePubspecFileNotFound {
 abstract class CliFailurePubspecFileNotFound implements CliFailure {
   const factory CliFailurePubspecFileNotFound() =
       _$CliFailurePubspecFileNotFound;
+}
+
+/// @nodoc
+abstract class _$$CliFailureDirectoryNotFoundCopyWith<$Res> {
+  factory _$$CliFailureDirectoryNotFoundCopyWith(
+          _$CliFailureDirectoryNotFound value,
+          $Res Function(_$CliFailureDirectoryNotFound) then) =
+      __$$CliFailureDirectoryNotFoundCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$CliFailureDirectoryNotFoundCopyWithImpl<$Res>
+    extends _$CliFailureCopyWithImpl<$Res, _$CliFailureDirectoryNotFound>
+    implements _$$CliFailureDirectoryNotFoundCopyWith<$Res> {
+  __$$CliFailureDirectoryNotFoundCopyWithImpl(
+      _$CliFailureDirectoryNotFound _value,
+      $Res Function(_$CliFailureDirectoryNotFound) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$CliFailureDirectoryNotFound implements CliFailureDirectoryNotFound {
+  const _$CliFailureDirectoryNotFound();
+
+  @override
+  String toString() {
+    return 'CliFailure.directoryNotFound()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CliFailureDirectoryNotFound);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
+    required TResult Function() invalidPackageName,
+    required TResult Function() packageAlreadyExists,
+    required TResult Function() invalidPackagePath,
+    required TResult Function() emptyDependencies,
+    required TResult Function(Object? e) unknown,
+  }) {
+    return directoryNotFound();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
+    TResult? Function()? invalidPackageName,
+    TResult? Function()? packageAlreadyExists,
+    TResult? Function()? invalidPackagePath,
+    TResult? Function()? emptyDependencies,
+    TResult? Function(Object? e)? unknown,
+  }) {
+    return directoryNotFound?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
+    TResult Function()? invalidPackageName,
+    TResult Function()? packageAlreadyExists,
+    TResult Function()? invalidPackagePath,
+    TResult Function()? emptyDependencies,
+    TResult Function(Object? e)? unknown,
+    required TResult orElse(),
+  }) {
+    if (directoryNotFound != null) {
+      return directoryNotFound();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(CliFailurePubspecFileNotFound value)
+        pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
+    required TResult Function(CliFailureInvalidPackageName value)
+        invalidPackageName,
+    required TResult Function(CliFailurePackageAlreadyExists value)
+        packageAlreadyExists,
+    required TResult Function(CliFailureInvalidPackagePath value)
+        invalidPackagePath,
+    required TResult Function(CliFailureEmptyDependencies value)
+        emptyDependencies,
+    required TResult Function(CliFailureUnknown value) unknown,
+  }) {
+    return directoryNotFound(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
+    TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult? Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
+    TResult? Function(CliFailureInvalidPackagePath value)? invalidPackagePath,
+    TResult? Function(CliFailureEmptyDependencies value)? emptyDependencies,
+    TResult? Function(CliFailureUnknown value)? unknown,
+  }) {
+    return directoryNotFound?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
+    TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
+    TResult Function(CliFailurePackageAlreadyExists value)?
+        packageAlreadyExists,
+    TResult Function(CliFailureInvalidPackagePath value)? invalidPackagePath,
+    TResult Function(CliFailureEmptyDependencies value)? emptyDependencies,
+    TResult Function(CliFailureUnknown value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (directoryNotFound != null) {
+      return directoryNotFound(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CliFailureDirectoryNotFound implements CliFailure {
+  const factory CliFailureDirectoryNotFound() = _$CliFailureDirectoryNotFound;
 }
 
 /// @nodoc
@@ -284,6 +441,7 @@ class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -297,6 +455,7 @@ class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -310,6 +469,7 @@ class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -328,6 +488,8 @@ class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -345,6 +507,7 @@ class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -359,6 +522,7 @@ class _$CliFailureInvalidPackageName implements CliFailureInvalidPackageName {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -421,6 +585,7 @@ class _$CliFailurePackageAlreadyExists
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -434,6 +599,7 @@ class _$CliFailurePackageAlreadyExists
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -447,6 +613,7 @@ class _$CliFailurePackageAlreadyExists
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -465,6 +632,8 @@ class _$CliFailurePackageAlreadyExists
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -482,6 +651,7 @@ class _$CliFailurePackageAlreadyExists
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -496,6 +666,7 @@ class _$CliFailurePackageAlreadyExists
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -558,6 +729,7 @@ class _$CliFailureInvalidPackagePath implements CliFailureInvalidPackagePath {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -571,6 +743,7 @@ class _$CliFailureInvalidPackagePath implements CliFailureInvalidPackagePath {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -584,6 +757,7 @@ class _$CliFailureInvalidPackagePath implements CliFailureInvalidPackagePath {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -602,6 +776,8 @@ class _$CliFailureInvalidPackagePath implements CliFailureInvalidPackagePath {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -619,6 +795,7 @@ class _$CliFailureInvalidPackagePath implements CliFailureInvalidPackagePath {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -633,6 +810,7 @@ class _$CliFailureInvalidPackagePath implements CliFailureInvalidPackagePath {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -694,6 +872,7 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -707,6 +886,7 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -720,6 +900,7 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -738,6 +919,8 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -755,6 +938,7 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -769,6 +953,7 @@ class _$CliFailureEmptyDependencies implements CliFailureEmptyDependencies {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -851,6 +1036,7 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() pubspecFileNotFound,
+    required TResult Function() directoryNotFound,
     required TResult Function() invalidPackageName,
     required TResult Function() packageAlreadyExists,
     required TResult Function() invalidPackagePath,
@@ -864,6 +1050,7 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? pubspecFileNotFound,
+    TResult? Function()? directoryNotFound,
     TResult? Function()? invalidPackageName,
     TResult? Function()? packageAlreadyExists,
     TResult? Function()? invalidPackagePath,
@@ -877,6 +1064,7 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? pubspecFileNotFound,
+    TResult Function()? directoryNotFound,
     TResult Function()? invalidPackageName,
     TResult Function()? packageAlreadyExists,
     TResult Function()? invalidPackagePath,
@@ -895,6 +1083,8 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   TResult map<TResult extends Object?>({
     required TResult Function(CliFailurePubspecFileNotFound value)
         pubspecFileNotFound,
+    required TResult Function(CliFailureDirectoryNotFound value)
+        directoryNotFound,
     required TResult Function(CliFailureInvalidPackageName value)
         invalidPackageName,
     required TResult Function(CliFailurePackageAlreadyExists value)
@@ -912,6 +1102,7 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult? Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult? Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult? Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,
@@ -926,6 +1117,7 @@ class _$CliFailureUnknown implements CliFailureUnknown {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(CliFailurePubspecFileNotFound value)? pubspecFileNotFound,
+    TResult Function(CliFailureDirectoryNotFound value)? directoryNotFound,
     TResult Function(CliFailureInvalidPackageName value)? invalidPackageName,
     TResult Function(CliFailurePackageAlreadyExists value)?
         packageAlreadyExists,

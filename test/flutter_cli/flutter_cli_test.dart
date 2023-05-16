@@ -8,13 +8,21 @@ import 'package:test/test.dart';
 import 'flutter_cli_test.mocks.dart';
 import 'helper.dart';
 
-@GenerateMocks([IProcessManager, Process, ProcessResult])
+@GenerateMocks([
+  IProcessManager,
+  Process,
+  ProcessResult,
+  Directory,
+])
 void main() {
   late IProcessManager processManager;
   late IFlutterCLI sut;
   late MockProcessResult processResult;
+  late MockDirectory mockDirectory;
 
   setUp(() {
+    mockDirectory = MockDirectory();
+
     processResult = MockProcessResult();
     whenProcessResult(processResult);
 
@@ -619,4 +627,127 @@ void main() {
       );
     },
   );
+
+  group('Build Runner', () {
+    group('Success cases', () {
+      test(
+        'should generate package successfully and call processManager.run with correct values when has one dependency.',
+        () async {
+          // Arrange
+          final tempDir = Directory.systemTemp.createTempSync();
+
+          whenBuildRunner(
+            processManager: processManager,
+            workingDirectory: tempDir,
+          ).thenAnswer((_) async => processResult);
+
+          // Act
+          final result = await sut.buildRunner(tempDir);
+
+          // Assert
+          expect(result, isA<Right>());
+          expect(
+            result.getOrElse(() => fail('Result returned a Left')),
+            isA<ProcessResponse>(),
+          );
+
+          verifyBuildRunner(
+            processManager: processManager,
+            workingDirectory: tempDir,
+          ).called(1);
+          verifyNoMoreInteractions(processManager);
+        },
+      );
+    });
+    group('Failure cases', () {
+      test(
+        'should return Left $CliFailureDirectoryNotFound when directory does not exist.',
+        () async {
+          // Arrange
+          final tempDir = Directory(join(
+            Directory.systemTemp.createTempSync().path,
+            'directory',
+            'does',
+            'not',
+            'exist',
+          ));
+
+          // Act
+          final result = await sut.buildRunner(tempDir);
+
+          // Assert
+          expect(result, isA<Left>());
+          expect(
+            result.fold(
+              (failure) => failure,
+              (_) => fail('Result returned a Right'),
+            ),
+            isA<CliFailureDirectoryNotFound>(),
+          );
+
+          verifyZeroInteractions(processManager);
+        },
+      );
+      test(
+        'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
+        () async {
+          // Arrange
+          when(mockDirectory.existsSync()).thenThrow(Exception());
+
+          // Act
+          final result = await sut.buildRunner(mockDirectory);
+
+          // Assert
+          expect(result, isA<Left>());
+          expect(
+            result.fold(
+              (failure) => failure,
+              (_) => fail('Result returned a Right'),
+            ),
+            isA<CliFailureUnknown>(),
+          );
+
+          verify(mockDirectory.existsSync()).called(1);
+          verifyNoMoreInteractions(mockDirectory);
+          verifyZeroInteractions(processManager);
+        },
+      );
+      test(
+        'should return Left $CliFailureUnknown when proccess.run throw exception',
+        () async {
+          // Arrange
+          final path = '';
+          when(mockDirectory.existsSync()).thenReturn(true);
+          when(mockDirectory.path).thenReturn(path);
+          whenBuildRunner(
+            processManager: processManager,
+            workingDirectory: mockDirectory,
+          ).thenThrow(Exception());
+
+          // Act
+          final result = await sut.buildRunner(mockDirectory);
+
+          // Assert
+          expect(result, isA<Left>());
+          expect(
+            result.fold(
+              (failure) => failure,
+              (_) => fail('Result returned a Right'),
+            ),
+            isA<CliFailureUnknown>(),
+          );
+
+          verify(mockDirectory.existsSync()).called(1);
+          verify(mockDirectory.path).called(1);
+          verifyNoMoreInteractions(mockDirectory);
+
+          verifyBuildRunner(
+            processManager: processManager,
+            workingDirectory: Directory(path),
+          ).called(1);
+          verifyNoMoreInteractions(processManager);
+        },
+      );
+    });
+  });
 }

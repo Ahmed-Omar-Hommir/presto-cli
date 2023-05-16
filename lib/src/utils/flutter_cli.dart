@@ -20,9 +20,9 @@ abstract class IFlutterCLI {
   });
 
   Future<Either<CliFailure, ProcessResponse>> genL10N({String? packagePath});
-  Future<Either<CliFailure, ProcessResponse>> genBuildRunner({
-    String? packagePath,
-  });
+  Future<Either<CliFailure, ProcessResponse>> buildRunner(
+    Directory workingDirectory,
+  );
 }
 
 class FlutterCLI implements IFlutterCLI {
@@ -150,9 +150,22 @@ class FlutterCLI implements IFlutterCLI {
   }
 
   @override
-  Future<Either<CliFailure, ProcessResponse>> genBuildRunner({
-    String? packagePath,
-  }) {
-    throw UnimplementedError();
+  Future<Either<CliFailure, ProcessResponse>> buildRunner(
+    Directory workingDirectory,
+  ) async {
+    try {
+      if (!workingDirectory.existsSync()) {
+        return const Left(CliFailure.directoryNotFound());
+      }
+      final result = await _processManager.run(
+        'flutter',
+        ['pub', 'run', 'build_runner', 'build'],
+        workingDirectory: workingDirectory.path,
+      );
+
+      return Right(ProcessResponse.fromProcessResult(result));
+    } catch (e) {
+      return left(CliFailure.unknown(e));
+    }
   }
 }

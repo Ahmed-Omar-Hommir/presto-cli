@@ -346,22 +346,20 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
         )),
       ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
   @override
-  _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> genBuildRunner(
-          {String? packagePath}) =>
+  _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> buildRunner(
+          _i6.Directory? workingDirectory) =>
       (super.noSuchMethod(
         Invocation.method(
-          #genBuildRunner,
-          [],
-          {#packagePath: packagePath},
+          #buildRunner,
+          [workingDirectory],
         ),
         returnValue:
             _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
                 _FakeEither_0<_i11.CliFailure, _i12.ProcessResponse>(
           this,
           Invocation.method(
-            #genBuildRunner,
-            [],
-            {#packagePath: packagePath},
+            #buildRunner,
+            [workingDirectory],
           ),
         )),
       ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
