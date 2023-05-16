@@ -9,7 +9,7 @@ class MakeCommand extends Command {
   MakeCommand() {
     addSubcommand(BuildRunnerCommand());
     addSubcommand(MagicRunnerCommand(
-      exiter: Exiter(),
+      flutterCli: FlutterCLI(),
       fileManager: FileManager(),
       packageManager: PackageManager(),
       logger: Logger(),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -49,10 +51,10 @@ void main() {
           (_) async => Right({'name': 'prestoeat'}),
         );
         when(logger.error(any)).thenReturn(null);
-        final Set<String> packages = {
-          "path_1",
-          "path_2",
-          "path_3",
+        final Set<Directory> packages = {
+          Directory('path_1'),
+          Directory('path_2'),
+          Directory('path_3'),
         };
         when(fileManager.findPackages(any)).thenAnswer(
           (_) async => Right(packages),
