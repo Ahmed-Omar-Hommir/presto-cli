@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:args/command_runner.dart';
 
-class BuildRunnerCommand extends Command {
+class BuildRunnerCommand extends Command<int> {
   BuildRunnerCommand() {
     argParser.addFlag(
       'delete-conflicting-outputs',
@@ -22,7 +22,4 @@ class BuildRunnerCommand extends Command {
 
   @override
   String get description => 'generating files';
-
-  @override
-  FutureOr? run() async {}
 }

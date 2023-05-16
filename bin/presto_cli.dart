@@ -12,7 +12,7 @@ void main(List<String> args) async {
   final logger = dependencyComposer.logger();
 
   final runner =
-      CommandRunner('presto_cli', 'Manage all packages in the project.')
+      CommandRunner<int>('presto_cli', 'Manage all packages in the project.')
         ..addCommand(CreateCommand())
         ..addCommand(MakeCommand())
         ..argParser.addFlag(
