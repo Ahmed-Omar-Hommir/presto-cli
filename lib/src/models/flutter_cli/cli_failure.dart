@@ -6,6 +6,7 @@ part 'cli_failure.freezed.dart';
 class CliFailure with _$CliFailure {
   const factory CliFailure.pubspecFileNotFound() =
       CliFailurePubspecFileNotFound;
+  const factory CliFailure.directoryNotFound() = CliFailureDirectoryNotFound;
   const factory CliFailure.invalidPackageName() = CliFailureInvalidPackageName;
   const factory CliFailure.packageAlreadyExists() =
       CliFailurePackageAlreadyExists;

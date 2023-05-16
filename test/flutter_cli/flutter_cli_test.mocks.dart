@@ -51,6 +51,47 @@ class _FakeIOSink_2 extends _i1.SmartFake implements _i2.IOSink {
         );
 }
 
+class _FakeUri_3 extends _i1.SmartFake implements Uri {
+  _FakeUri_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeDirectory_4 extends _i1.SmartFake implements _i2.Directory {
+  _FakeDirectory_4(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeFileStat_5 extends _i1.SmartFake implements _i2.FileStat {
+  _FakeFileStat_5(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeFileSystemEntity_6 extends _i1.SmartFake
+    implements _i2.FileSystemEntity {
+  _FakeFileSystemEntity_6(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [IProcessManager].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -215,4 +256,265 @@ class MockProcessResult extends _i1.Mock implements _i2.ProcessResult {
         Invocation.getter(#pid),
         returnValue: 0,
       ) as int);
+}
+
+/// A class which mocks [Directory].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDirectory extends _i1.Mock implements _i2.Directory {
+  MockDirectory() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get path => (super.noSuchMethod(
+        Invocation.getter(#path),
+        returnValue: '',
+      ) as String);
+  @override
+  Uri get uri => (super.noSuchMethod(
+        Invocation.getter(#uri),
+        returnValue: _FakeUri_3(
+          this,
+          Invocation.getter(#uri),
+        ),
+      ) as Uri);
+  @override
+  _i2.Directory get absolute => (super.noSuchMethod(
+        Invocation.getter(#absolute),
+        returnValue: _FakeDirectory_4(
+          this,
+          Invocation.getter(#absolute),
+        ),
+      ) as _i2.Directory);
+  @override
+  bool get isAbsolute => (super.noSuchMethod(
+        Invocation.getter(#isAbsolute),
+        returnValue: false,
+      ) as bool);
+  @override
+  _i2.Directory get parent => (super.noSuchMethod(
+        Invocation.getter(#parent),
+        returnValue: _FakeDirectory_4(
+          this,
+          Invocation.getter(#parent),
+        ),
+      ) as _i2.Directory);
+  @override
+  _i4.Future<_i2.Directory> create({bool? recursive = false}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #create,
+          [],
+          {#recursive: recursive},
+        ),
+        returnValue: _i4.Future<_i2.Directory>.value(_FakeDirectory_4(
+          this,
+          Invocation.method(
+            #create,
+            [],
+            {#recursive: recursive},
+          ),
+        )),
+      ) as _i4.Future<_i2.Directory>);
+  @override
+  void createSync({bool? recursive = false}) => super.noSuchMethod(
+        Invocation.method(
+          #createSync,
+          [],
+          {#recursive: recursive},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  _i4.Future<_i2.Directory> createTemp([String? prefix]) => (super.noSuchMethod(
+        Invocation.method(
+          #createTemp,
+          [prefix],
+        ),
+        returnValue: _i4.Future<_i2.Directory>.value(_FakeDirectory_4(
+          this,
+          Invocation.method(
+            #createTemp,
+            [prefix],
+          ),
+        )),
+      ) as _i4.Future<_i2.Directory>);
+  @override
+  _i2.Directory createTempSync([String? prefix]) => (super.noSuchMethod(
+        Invocation.method(
+          #createTempSync,
+          [prefix],
+        ),
+        returnValue: _FakeDirectory_4(
+          this,
+          Invocation.method(
+            #createTempSync,
+            [prefix],
+          ),
+        ),
+      ) as _i2.Directory);
+  @override
+  _i4.Future<String> resolveSymbolicLinks() => (super.noSuchMethod(
+        Invocation.method(
+          #resolveSymbolicLinks,
+          [],
+        ),
+        returnValue: _i4.Future<String>.value(''),
+      ) as _i4.Future<String>);
+  @override
+  String resolveSymbolicLinksSync() => (super.noSuchMethod(
+        Invocation.method(
+          #resolveSymbolicLinksSync,
+          [],
+        ),
+        returnValue: '',
+      ) as String);
+  @override
+  _i4.Future<_i2.Directory> rename(String? newPath) => (super.noSuchMethod(
+        Invocation.method(
+          #rename,
+          [newPath],
+        ),
+        returnValue: _i4.Future<_i2.Directory>.value(_FakeDirectory_4(
+          this,
+          Invocation.method(
+            #rename,
+            [newPath],
+          ),
+        )),
+      ) as _i4.Future<_i2.Directory>);
+  @override
+  _i2.Directory renameSync(String? newPath) => (super.noSuchMethod(
+        Invocation.method(
+          #renameSync,
+          [newPath],
+        ),
+        returnValue: _FakeDirectory_4(
+          this,
+          Invocation.method(
+            #renameSync,
+            [newPath],
+          ),
+        ),
+      ) as _i2.Directory);
+  @override
+  _i4.Stream<_i2.FileSystemEntity> list({
+    bool? recursive = false,
+    bool? followLinks = true,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #list,
+          [],
+          {
+            #recursive: recursive,
+            #followLinks: followLinks,
+          },
+        ),
+        returnValue: _i4.Stream<_i2.FileSystemEntity>.empty(),
+      ) as _i4.Stream<_i2.FileSystemEntity>);
+  @override
+  List<_i2.FileSystemEntity> listSync({
+    bool? recursive = false,
+    bool? followLinks = true,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #listSync,
+          [],
+          {
+            #recursive: recursive,
+            #followLinks: followLinks,
+          },
+        ),
+        returnValue: <_i2.FileSystemEntity>[],
+      ) as List<_i2.FileSystemEntity>);
+  @override
+  _i4.Future<bool> exists() => (super.noSuchMethod(
+        Invocation.method(
+          #exists,
+          [],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
+  @override
+  bool existsSync() => (super.noSuchMethod(
+        Invocation.method(
+          #existsSync,
+          [],
+        ),
+        returnValue: false,
+      ) as bool);
+  @override
+  _i4.Future<_i2.FileStat> stat() => (super.noSuchMethod(
+        Invocation.method(
+          #stat,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.FileStat>.value(_FakeFileStat_5(
+          this,
+          Invocation.method(
+            #stat,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.FileStat>);
+  @override
+  _i2.FileStat statSync() => (super.noSuchMethod(
+        Invocation.method(
+          #statSync,
+          [],
+        ),
+        returnValue: _FakeFileStat_5(
+          this,
+          Invocation.method(
+            #statSync,
+            [],
+          ),
+        ),
+      ) as _i2.FileStat);
+  @override
+  _i4.Future<_i2.FileSystemEntity> delete({bool? recursive = false}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #delete,
+          [],
+          {#recursive: recursive},
+        ),
+        returnValue:
+            _i4.Future<_i2.FileSystemEntity>.value(_FakeFileSystemEntity_6(
+          this,
+          Invocation.method(
+            #delete,
+            [],
+            {#recursive: recursive},
+          ),
+        )),
+      ) as _i4.Future<_i2.FileSystemEntity>);
+  @override
+  void deleteSync({bool? recursive = false}) => super.noSuchMethod(
+        Invocation.method(
+          #deleteSync,
+          [],
+          {#recursive: recursive},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  _i4.Stream<_i2.FileSystemEvent> watch({
+    int? events = 15,
+    bool? recursive = false,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #watch,
+          [],
+          {
+            #events: events,
+            #recursive: recursive,
+          },
+        ),
+        returnValue: _i4.Stream<_i2.FileSystemEvent>.empty(),
+      ) as _i4.Stream<_i2.FileSystemEvent>);
 }
