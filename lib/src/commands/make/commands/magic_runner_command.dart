@@ -3,18 +3,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:mason/mason.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/package_manager.dart';
 
-class MagicRunnerCommand extends Command {
+class MagicRunnerCommand extends Command<int> {
   MagicRunnerCommand({
     required IPackageManager packageManager,
     required IFileManager fileManager,
     required ILogger logger,
+    required IFlutterCLI flutterCli,
   })  : _packageManager = packageManager,
         _fileManager = fileManager,
+        _flutterCli = flutterCli,
         _logger = logger {
     argParser.addFlag(
       'delete-conflicting-outputs',
@@ -33,6 +36,7 @@ class MagicRunnerCommand extends Command {
   final IPackageManager _packageManager;
   final IFileManager _fileManager;
   final ILogger _logger;
+  final IFlutterCLI _flutterCli;
 
   @override
   String get name => 'magic_runner';
@@ -42,37 +46,57 @@ class MagicRunnerCommand extends Command {
       'Generate files for all packages that depend on the build runner in the current/subdirectory';
 
   @override
-  FutureOr? run() async {
+  Future<int> run() async {
+    int exitCode = 0;
     final pubspecFile = File(join(Directory.current.path, 'pubspec.yaml'));
-    final readYamlResult = await _fileManager.readYaml(pubspecFile);
+
+    final readYamlResult = await _fileManager.readYaml(pubspecFile.path);
 
     if (readYamlResult.isLeft()) {
       readYamlResult.leftMap((failure) {
-        failure.map(
-          fileNotFound: (value) => _logger.error('pubspec.yaml not found.'),
-          unknown: (value) => _logger.error(value.toString()),
+        exitCode = failure.maybeMap<int>(
+          fileNotFound: (value) {
+            _logger.error(LoggerMessage.youAreNotInRootProject);
+            return ExitCode.noInput.code;
+          },
+          unknown: (value) {
+            _logger.error(value.toString());
+            return ExitCode.unavailable.code;
+          },
+          orElse: () => ExitCode.unavailable.code,
         );
-        exit(1);
       });
+      return exitCode;
     }
 
-    final yaml = readYamlResult.getOrElse(() => {});
+    final yaml = readYamlResult.getOrElse(() => throw Exception());
 
     final String packageName = yaml['name'];
 
     if (packageName != 'prestoeat') {
-      _logger.error('You are not in the root project.');
-      exit(1);
+      _logger.error(LoggerMessage.youAreNotInRootProject);
+      return ExitCode.noInput.code;
     }
 
-    _logger.info('You are in the root project.');
-    exit(0);
+    final packagesResult = await _fileManager.findPackages(
+      Directory.current.path,
+    );
 
-    // check user in root project.
-    //    - try read pubspec.yaml.
-    //    - check project name is presto eat.
+    final packagesPath = packagesResult.getOrElse(() => throw Exception());
 
-    // if user not in root project, exit.
+    for (String path in packagesPath) {
+      final genResult = await _flutterCli.genBuildRunner(
+        packagePath: path,
+      );
+    }
+
+    return ExitCode.success.code;
+
+    //// check user in root project.
+    ////    - try read pubspec.yaml.
+    ////    - check project name is presto eat.
+
+    //// if user not in root project, exit.
 
     // find all packages in project [./packages_dir] has build_runner in pubspec.
 
@@ -140,4 +164,9 @@ class MagicRunnerCommand extends Command {
 
     await Future.wait(jobs);
   }
+}
+
+abstract class LoggerMessage {
+  static const String youAreNotInRootProject =
+      'You are not in the root project.';
 }

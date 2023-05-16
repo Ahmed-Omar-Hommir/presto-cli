@@ -19,18 +19,21 @@ mixin _$FileManagerFailure {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() fileNotFound,
+    required TResult Function() dirNotFound,
     required TResult Function(Object? e) unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? fileNotFound,
+    TResult? Function()? dirNotFound,
     TResult? Function(Object? e)? unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? fileNotFound,
+    TResult Function()? dirNotFound,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
   }) =>
@@ -39,18 +42,21 @@ mixin _$FileManagerFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(FileManagerFailureFileNotFound value)
         fileNotFound,
+    required TResult Function(FileManagerFailureDirNotFound value) dirNotFound,
     required TResult Function(FileManagerFailureUnknown value) unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult? Function(FileManagerFailureDirNotFound value)? dirNotFound,
     TResult? Function(FileManagerFailureUnknown value)? unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult Function(FileManagerFailureDirNotFound value)? dirNotFound,
     TResult Function(FileManagerFailureUnknown value)? unknown,
     required TResult orElse(),
   }) =>
@@ -119,6 +125,7 @@ class _$FileManagerFailureFileNotFound
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() fileNotFound,
+    required TResult Function() dirNotFound,
     required TResult Function(Object? e) unknown,
   }) {
     return fileNotFound();
@@ -128,6 +135,7 @@ class _$FileManagerFailureFileNotFound
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? fileNotFound,
+    TResult? Function()? dirNotFound,
     TResult? Function(Object? e)? unknown,
   }) {
     return fileNotFound?.call();
@@ -137,6 +145,7 @@ class _$FileManagerFailureFileNotFound
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? fileNotFound,
+    TResult Function()? dirNotFound,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
   }) {
@@ -151,6 +160,7 @@ class _$FileManagerFailureFileNotFound
   TResult map<TResult extends Object?>({
     required TResult Function(FileManagerFailureFileNotFound value)
         fileNotFound,
+    required TResult Function(FileManagerFailureDirNotFound value) dirNotFound,
     required TResult Function(FileManagerFailureUnknown value) unknown,
   }) {
     return fileNotFound(this);
@@ -160,6 +170,7 @@ class _$FileManagerFailureFileNotFound
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult? Function(FileManagerFailureDirNotFound value)? dirNotFound,
     TResult? Function(FileManagerFailureUnknown value)? unknown,
   }) {
     return fileNotFound?.call(this);
@@ -169,6 +180,7 @@ class _$FileManagerFailureFileNotFound
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult Function(FileManagerFailureDirNotFound value)? dirNotFound,
     TResult Function(FileManagerFailureUnknown value)? unknown,
     required TResult orElse(),
   }) {
@@ -182,6 +194,120 @@ class _$FileManagerFailureFileNotFound
 abstract class FileManagerFailureFileNotFound implements FileManagerFailure {
   const factory FileManagerFailureFileNotFound() =
       _$FileManagerFailureFileNotFound;
+}
+
+/// @nodoc
+abstract class _$$FileManagerFailureDirNotFoundCopyWith<$Res> {
+  factory _$$FileManagerFailureDirNotFoundCopyWith(
+          _$FileManagerFailureDirNotFound value,
+          $Res Function(_$FileManagerFailureDirNotFound) then) =
+      __$$FileManagerFailureDirNotFoundCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$FileManagerFailureDirNotFoundCopyWithImpl<$Res>
+    extends _$FileManagerFailureCopyWithImpl<$Res,
+        _$FileManagerFailureDirNotFound>
+    implements _$$FileManagerFailureDirNotFoundCopyWith<$Res> {
+  __$$FileManagerFailureDirNotFoundCopyWithImpl(
+      _$FileManagerFailureDirNotFound _value,
+      $Res Function(_$FileManagerFailureDirNotFound) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$FileManagerFailureDirNotFound implements FileManagerFailureDirNotFound {
+  const _$FileManagerFailureDirNotFound();
+
+  @override
+  String toString() {
+    return 'FileManagerFailure.dirNotFound()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FileManagerFailureDirNotFound);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() fileNotFound,
+    required TResult Function() dirNotFound,
+    required TResult Function(Object? e) unknown,
+  }) {
+    return dirNotFound();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? fileNotFound,
+    TResult? Function()? dirNotFound,
+    TResult? Function(Object? e)? unknown,
+  }) {
+    return dirNotFound?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? fileNotFound,
+    TResult Function()? dirNotFound,
+    TResult Function(Object? e)? unknown,
+    required TResult orElse(),
+  }) {
+    if (dirNotFound != null) {
+      return dirNotFound();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FileManagerFailureFileNotFound value)
+        fileNotFound,
+    required TResult Function(FileManagerFailureDirNotFound value) dirNotFound,
+    required TResult Function(FileManagerFailureUnknown value) unknown,
+  }) {
+    return dirNotFound(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult? Function(FileManagerFailureDirNotFound value)? dirNotFound,
+    TResult? Function(FileManagerFailureUnknown value)? unknown,
+  }) {
+    return dirNotFound?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult Function(FileManagerFailureDirNotFound value)? dirNotFound,
+    TResult Function(FileManagerFailureUnknown value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (dirNotFound != null) {
+      return dirNotFound(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class FileManagerFailureDirNotFound implements FileManagerFailure {
+  const factory FileManagerFailureDirNotFound() =
+      _$FileManagerFailureDirNotFound;
 }
 
 /// @nodoc
@@ -249,6 +375,7 @@ class _$FileManagerFailureUnknown implements FileManagerFailureUnknown {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() fileNotFound,
+    required TResult Function() dirNotFound,
     required TResult Function(Object? e) unknown,
   }) {
     return unknown(e);
@@ -258,6 +385,7 @@ class _$FileManagerFailureUnknown implements FileManagerFailureUnknown {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? fileNotFound,
+    TResult? Function()? dirNotFound,
     TResult? Function(Object? e)? unknown,
   }) {
     return unknown?.call(e);
@@ -267,6 +395,7 @@ class _$FileManagerFailureUnknown implements FileManagerFailureUnknown {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? fileNotFound,
+    TResult Function()? dirNotFound,
     TResult Function(Object? e)? unknown,
     required TResult orElse(),
   }) {
@@ -281,6 +410,7 @@ class _$FileManagerFailureUnknown implements FileManagerFailureUnknown {
   TResult map<TResult extends Object?>({
     required TResult Function(FileManagerFailureFileNotFound value)
         fileNotFound,
+    required TResult Function(FileManagerFailureDirNotFound value) dirNotFound,
     required TResult Function(FileManagerFailureUnknown value) unknown,
   }) {
     return unknown(this);
@@ -290,6 +420,7 @@ class _$FileManagerFailureUnknown implements FileManagerFailureUnknown {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult? Function(FileManagerFailureDirNotFound value)? dirNotFound,
     TResult? Function(FileManagerFailureUnknown value)? unknown,
   }) {
     return unknown?.call(this);
@@ -299,6 +430,7 @@ class _$FileManagerFailureUnknown implements FileManagerFailureUnknown {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FileManagerFailureFileNotFound value)? fileNotFound,
+    TResult Function(FileManagerFailureDirNotFound value)? dirNotFound,
     TResult Function(FileManagerFailureUnknown value)? unknown,
     required TResult orElse(),
   }) {

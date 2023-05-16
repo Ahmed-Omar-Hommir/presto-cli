@@ -20,6 +20,9 @@ abstract class IFlutterCLI {
   });
 
   Future<Either<CliFailure, ProcessResponse>> genL10N({String? packagePath});
+  Future<Either<CliFailure, ProcessResponse>> genBuildRunner({
+    String? packagePath,
+  });
 }
 
 class FlutterCLI implements IFlutterCLI {
@@ -144,5 +147,12 @@ class FlutterCLI implements IFlutterCLI {
     } catch (e) {
       return left(CliFailure.unknown(e));
     }
+  }
+
+  @override
+  Future<Either<CliFailure, ProcessResponse>> genBuildRunner({
+    String? packagePath,
+  }) {
+    throw UnimplementedError();
   }
 }
