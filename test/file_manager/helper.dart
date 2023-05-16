@@ -24,6 +24,23 @@ List<String> dartFiles(Directory dir) {
   ]..sort();
 }
 
+Future<void> createTempPackage(
+  Directory dir, {
+  required String packageName,
+  bool withLib = true,
+  bool withPubspec = true,
+}) async {
+  final path = dir.path;
+  final packageDir = Directory(join(path, packageName));
+  packageDir.createSync();
+  if (withPubspec) {
+    await createPubspecFile(packageDir);
+  }
+  if (withLib) {
+    Directory(join(packageDir.path, 'lib')).createSync();
+  }
+}
+
 Future<void> createPubspecFile(Directory dir) async {
   final pubspecFile = File(join(dir.path, 'pubspec.yaml'));
   await pubspecFile.writeAsString(
