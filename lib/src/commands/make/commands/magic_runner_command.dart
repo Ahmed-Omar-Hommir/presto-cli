@@ -92,6 +92,12 @@ class MagicRunnerCommand extends Command<int> {
 
     for (Directory dir in packagesDir) {
       processes.add(_flutterCli.buildRunner(dir).then((value) {
+        print(value.isRight());
+        print(value);
+        value.fold(
+          (l) => print(l),
+          (r) => print(r),
+        );
         processCompleted++;
         buildRunnerProgress.update(
             'Running build_runner: ${processCompleted / processes.length}%');
