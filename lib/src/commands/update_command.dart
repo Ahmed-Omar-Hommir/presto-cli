@@ -10,7 +10,7 @@ import 'package:presto_cli/src/package_manager.dart';
 import 'package:presto_cli/src/version.dart';
 import 'package:path/path.dart';
 
-class UpdateCommand extends Command {
+class UpdateCommand extends Command<int> {
   UpdateCommand({
     required IPackageManager packageManager,
     required ILogger logger,
@@ -27,7 +27,7 @@ class UpdateCommand extends Command {
   String get description => 'Update cli to the latest version';
 
   @override
-  FutureOr? run() async {
+  Future<int> run() async {
     try {
       final checkUpdateProgress = _logger.progress('Checking for updates');
       final repository = "https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli";

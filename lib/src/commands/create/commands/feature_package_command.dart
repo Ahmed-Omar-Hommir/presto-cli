@@ -13,7 +13,7 @@ import 'package:presto_cli/src/user_input.dart';
 
 import '../templates/localization_temp.dart';
 
-class CreateFeaturePackageCommand extends Command {
+class CreateFeaturePackageCommand extends Command<int> {
   CreateFeaturePackageCommand({
     required TemplateGenerator locTemp,
     required TemplateGenerator featTemp,
@@ -48,7 +48,7 @@ class CreateFeaturePackageCommand extends Command {
   String get description => 'Create New Feature Package';
 
   @override
-  FutureOr? run() async {
+  Future<int> run() async {
     final packageNameOption = _userInput.askForPackageName();
 
     final String packageName = packageNameOption.fold(
@@ -164,5 +164,6 @@ class CreateFeaturePackageCommand extends Command {
         );
       },
     );
+    return 0;
   }
 }

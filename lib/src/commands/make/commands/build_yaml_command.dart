@@ -4,7 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:presto_cli/src/build_yaml/build_yaml_generator.dart';
 import 'package:presto_cli/src/logger.dart';
 
-class BuildYamlCommand extends Command {
+class BuildYamlCommand extends Command<int> {
   BuildYamlCommand({
     required IBuildYamlGenerator buildYamlGenerator,
     required ILogger logger,
@@ -20,7 +20,7 @@ class BuildYamlCommand extends Command {
   String get description => 'Generate build.yaml file.';
 
   @override
-  FutureOr? run() async {
+  Future<int> run() async {
     _logger.error(
       'Progress...',
     );
@@ -46,5 +46,6 @@ class BuildYamlCommand extends Command {
     } catch (e) {
       print(e);
     }
+    return 0;
   }
 }

@@ -10,7 +10,7 @@ import 'package:presto_cli/src/user_input.dart';
 import 'commands/commands.dart';
 import 'commands/feature_package_command.dart';
 
-class CreateCommand extends Command {
+class CreateCommand extends Command<int> {
   CreateCommand() {
     addSubcommand(CreateFeaturePackageCommand(
       flutterCli: FlutterCLI(),
