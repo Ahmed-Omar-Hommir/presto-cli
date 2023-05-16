@@ -5,9 +5,8 @@ import 'package:presto_cli/src/package_manager.dart';
 
 import 'commands/commands.dart';
 
-class MakeCommand extends Command {
+class MakeCommand extends Command<int> {
   MakeCommand() {
-    addSubcommand(BuildRunnerCommand());
     addSubcommand(MagicRunnerCommand(
       flutterCli: FlutterCLI(),
       fileManager: FileManager(),
