@@ -79,15 +79,13 @@ class MagicRunnerCommand extends Command<int> {
     }
 
     final packagesResult = await _fileManager.findPackages(
-      Directory.current.path,
+      Directory(join(Directory.current.path, 'packages')),
     );
 
-    final packagesPath = packagesResult.getOrElse(() => throw Exception());
+    final packagesDir = packagesResult.getOrElse(() => throw Exception());
 
-    for (String path in packagesPath) {
-      final genResult = await _flutterCli.genBuildRunner(
-        packagePath: path,
-      );
+    for (Directory dir in packagesDir) {
+      print(dir.path);
     }
 
     return ExitCode.success.code;
