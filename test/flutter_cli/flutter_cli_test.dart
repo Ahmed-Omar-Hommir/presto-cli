@@ -688,16 +688,10 @@ void main() {
         'should return Left $CliFailureDirectoryNotFound when directory does not exist.',
         () async {
           // Arrange
-          final tempDir = Directory(join(
-            Directory.systemTemp.createTempSync().path,
-            'directory',
-            'does',
-            'not',
-            'exist',
-          ));
+          final notExistDir = Directory(join(tempDir.path, 'not_exist_dir'));
 
           // Act
-          final result = await sut.buildRunner(tempDir);
+          final result = await sut.buildRunner(notExistDir);
 
           // Assert
           expect(result, isA<Left>());
@@ -713,7 +707,7 @@ void main() {
         },
       );
       test(
-        'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
+        'should return Left $CliFailureUnknown when Directory existsSync throw exception.',
         () async {
           // Arrange
           when(mockDirectory.existsSync()).thenThrow(Exception());
@@ -737,7 +731,7 @@ void main() {
         },
       );
       test(
-        'should return Left $CliFailureUnknown when proccess.run throw exception',
+        'should return Left $CliFailureUnknown when proccess.run throw exception.',
         () async {
           // Arrange
           final path = '';
