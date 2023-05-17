@@ -64,10 +64,15 @@ PostExpectation whenGenL10N({
 PostExpectation whenBuildRunner({
   required IProcessManager processManager,
   required Directory workingDirectory,
+  bool withDeleteConflictingOutputs = false,
 }) {
+  final args = ['pub', 'run', 'build_runner', 'build'];
+  if (withDeleteConflictingOutputs) {
+    args.add('--delete-conflicting-outputs');
+  }
   return when(processManager.run(
     'flutter',
-    ['pub', 'run', 'build_runner', 'build'],
+    args,
     workingDirectory: workingDirectory.path,
   ));
 }
@@ -75,10 +80,15 @@ PostExpectation whenBuildRunner({
 VerificationResult verifyBuildRunner({
   required IProcessManager processManager,
   required Directory workingDirectory,
+  bool withDeleteConflictingOutputs = false,
 }) {
+  final args = ['pub', 'run', 'build_runner', 'build'];
+  if (withDeleteConflictingOutputs) {
+    args.add('--delete-conflicting-outputs');
+  }
   return verify(processManager.run(
     'flutter',
-    ['pub', 'run', 'build_runner', 'build'],
+    args,
     workingDirectory: workingDirectory.path,
   ));
 }

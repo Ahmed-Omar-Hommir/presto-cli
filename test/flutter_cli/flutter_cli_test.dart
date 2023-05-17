@@ -19,8 +19,10 @@ void main() {
   late IFlutterCLI sut;
   late MockProcessResult processResult;
   late MockDirectory mockDirectory;
+  late Directory tempDir;
 
   setUp(() {
+    tempDir = Directory.systemTemp.createTempSync();
     mockDirectory = MockDirectory();
 
     processResult = MockProcessResult();
@@ -31,6 +33,10 @@ void main() {
     sut = FlutterCLI(processManager: processManager);
   });
 
+  tearDown(() {
+    tempDir.deleteSync(recursive: true);
+  });
+
   group('Pub Add', () {
     group(
       'Success cases',
@@ -39,7 +45,6 @@ void main() {
           'should add package successfully and call processManager.run with correct values when has one dependency.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = tempDir.path;
 
             await createPubspecFile(packagePath);
@@ -82,7 +87,6 @@ void main() {
           'should add package successfully and call processManager.run with correct values when has more than one dependency.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = tempDir.path;
 
             await createPubspecFile(packagePath);
@@ -146,7 +150,6 @@ void main() {
           'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = tempDir.path;
 
             await createPubspecFile(packagePath);
@@ -191,7 +194,6 @@ void main() {
           'should return a Left<$CliFailurePubspecFileNotFound> when pubspec.yaml file not found.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = tempDir.path;
 
             // Act
@@ -223,7 +225,6 @@ void main() {
           'should return a Left<$CliFailureEmptyDependencies> when dependencies is empty.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = tempDir.path;
 
             // Act
@@ -249,7 +250,6 @@ void main() {
           'should return a Left<$CliFailureInvalidPackagePath> when package path does not exist.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = join(
               tempDir.path,
               'path',
@@ -294,7 +294,6 @@ void main() {
           'should create new package successfully and call processManager.run with correct values.',
           () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final packagePath = tempDir.path;
 
             const packageName = 'test_package';
@@ -337,7 +336,7 @@ void main() {
             'should return Left<$CliFailureInvalidPackageName> when package name is invalid and call processManager.run with correct values.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
+
               final packagePath = tempDir.path;
 
               const packageName = 'INVALID_PACKAGE_NAME';
@@ -371,7 +370,7 @@ void main() {
             'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
+
               final packagePath = tempDir.path;
 
               const packageName = 'test_package';
@@ -413,8 +412,6 @@ void main() {
               // Arrange
               const packageName = 'test_package';
 
-              final tempDir = Directory.systemTemp.createTempSync();
-
               final newDir = Directory(join(tempDir.path, packageName));
               newDir.createSync();
 
@@ -451,8 +448,6 @@ void main() {
             () async {
               // Arrange
               const packageName = 'test_package';
-
-              final tempDir = Directory.systemTemp.createTempSync();
 
               final packagePath = join(
                 tempDir.path,
@@ -502,7 +497,7 @@ void main() {
             'should generate package successfully and call processManager.run with correct values.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
+
               final packagePath = tempDir.path;
 
               await createPubspecFile(packagePath);
@@ -541,9 +536,9 @@ void main() {
             'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
               final packagePath = tempDir.path;
-              createPubspecFile(packagePath);
+
+              await createPubspecFile(packagePath);
 
               whenGenL10N(
                 processManager: processManager,
@@ -575,7 +570,6 @@ void main() {
             'should return a Left<$CliFailurePubspecFileNotFound> when pubspec.yaml file not found.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
               final packagePath = tempDir.path;
 
               // Act
@@ -598,7 +592,7 @@ void main() {
             'should return a Left<$CliFailureInvalidPackagePath> when package path does not exist.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
+
               final packagePath = join(
                 tempDir.path,
                 'path',
@@ -631,11 +625,9 @@ void main() {
   group('Build Runner', () {
     group('Success cases', () {
       test(
-        'should generate package successfully and call processManager.run with correct values when has one dependency.',
+        'should generate package successfully and call processManager.run with correct values.',
         () async {
           // Arrange
-          final tempDir = Directory.systemTemp.createTempSync();
-
           whenBuildRunner(
             processManager: processManager,
             workingDirectory: tempDir,
@@ -654,6 +646,38 @@ void main() {
           verifyBuildRunner(
             processManager: processManager,
             workingDirectory: tempDir,
+          ).called(1);
+          verifyNoMoreInteractions(processManager);
+        },
+      );
+
+      test(
+        'should generate package successfully and call processManager.run with delete conflict outputs true.',
+        () async {
+          // Arrange
+          whenBuildRunner(
+            processManager: processManager,
+            workingDirectory: tempDir,
+            withDeleteConflictingOutputs: true,
+          ).thenAnswer((_) async => processResult);
+
+          // Act
+          final result = await sut.buildRunner(
+            tempDir,
+            deleteConflictingOutputs: true,
+          );
+
+          // Assert
+          expect(result, isA<Right>());
+          expect(
+            result.getOrElse(() => fail('Result returned a Left')),
+            isA<ProcessResponse>(),
+          );
+
+          verifyBuildRunner(
+            processManager: processManager,
+            workingDirectory: tempDir,
+            withDeleteConflictingOutputs: true,
           ).called(1);
           verifyNoMoreInteractions(processManager);
         },
