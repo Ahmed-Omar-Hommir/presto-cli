@@ -6,28 +6,31 @@ part 'process_response.freezed.dart';
 
 class ProcessResponse {
   const ProcessResponse({
-    required dynamic stdout,
-    required dynamic stderr,
+    required this.stdout,
+    required this.stderr,
     required int exitCode,
     required this.pid,
-  })  : _exitCode = exitCode,
-        _stderr = stderr,
-        _stdout = stdout;
+  }) : _exitCode = exitCode;
 
   final int pid;
-  final dynamic _stdout;
-  final dynamic _stderr;
+  final dynamic stdout;
+  final dynamic stderr;
   final int _exitCode;
-
-  String get stdout => _stdout.toString();
-  String get stderr => _stderr.toString();
 
   ExitCodeStatus get exitCodeStatus {
     if (_exitCode == 0) return const ExitCodeStatus.success(exitCode: 0);
     return ExitCodeStatus.failure(exitCode: _exitCode);
   }
 
-  String get output => 'Stdout:\n$stdout\nStderr:\n$stderr';
+  String get output {
+    final output = String.fromCharCodes(stdout);
+    final error = String.fromCharCodes(stderr);
+
+    final stdoutMsg = output.isNotEmpty ? 'Stdout:\n$output\n' : '';
+    final stderrMsg = error.isNotEmpty ? 'Stdout:\n$error\n' : '';
+
+    return '$stdoutMsg$stderrMsg';
+  }
 
   static ProcessResponse fromProcessResult(ProcessResult result) =>
       ProcessResponse(
