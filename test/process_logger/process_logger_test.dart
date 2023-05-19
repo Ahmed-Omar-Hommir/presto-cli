@@ -20,146 +20,134 @@ void main() {
     when(mockLogger.error(any)).thenReturn(null);
   });
 
-  test(
-      'should print process name for first logger and stdout and stderr for second logger.',
-      () {
+  test('should print process name and stdout when call stdout method.', () {
     // Arrange
-    final info = processInfo(processId: 1);
+    final processId = 1;
+    final processName = getProcessName(processId);
+    final stdout = getStdout(processId);
 
     // Act
-    sut.log(info);
-
-    // Assert
-    verifyInOrder([
-      mockLogger.info(argThat(contains(info.processName))),
-      mockLogger.info(info.stdout),
-      mockLogger.error(info.stderr),
-    ]);
-
-    verifyNoMoreInteractions(mockLogger);
-  });
-  test(
-      'should print only stdout and stderr for second logger when process id not changed.',
-      () {
-    // Arrange
-    final info = processInfo(processId: 1);
-
-    // Act
-    sut.log(info);
-    sut.log(info);
-
-    // Assert
-    verifyInOrder([
-      mockLogger.info(argThat(contains(info.processName))),
-      mockLogger.info(info.stdout),
-      mockLogger.error(info.stderr),
-      mockLogger.info(info.stdout),
-      mockLogger.error(info.stderr),
-    ]);
-
-    verifyNoMoreInteractions(mockLogger);
-  });
-  test(
-      'should print process name and stdout and stderr for second logger when process id changed.',
-      () {
-    // Arrange
-    final infoA = processInfo(processId: 1);
-    final infoB = processInfo(processId: 2);
-
-    // Act
-    sut.log(infoA);
-    sut.log(infoB);
-
-    // Assert
-    verifyInOrder([
-      mockLogger.info(argThat(contains(infoA.processName))),
-      mockLogger.info(infoA.stdout),
-      mockLogger.error(infoA.stderr),
-      mockLogger.info(argThat(contains(infoB.processName))),
-      mockLogger.info(infoB.stdout),
-      mockLogger.error(infoB.stderr),
-    ]);
-
-    verifyNoMoreInteractions(mockLogger);
-  });
-  test(
-    'should print nothing when stdout and stderr is null.',
-    () {
-      // Arrange
-      final info = processInfo(
-        processId: 1,
-        withStderr: false,
-        withStdout: false,
-      );
-
-      // Act
-      sut.log(info);
-
-      // Assert
-      verifyZeroInteractions(mockLogger);
-    },
-  );
-
-  test(
-      'should ignore the print process name when trying to log a process between the same process id, with a different id, and stdout and stderr are null.',
-      () {
-    // Arrange
-    final infoA = processInfo(processId: 1);
-    final infoB = processInfo(
-      processId: 2,
-      withStderr: false,
-      withStdout: false,
+    sut.stdout(
+      processId: processId,
+      processName: processName,
+      stdout: stdout,
     );
 
-    // Act
-    sut.log(infoA);
-    sut.log(infoB);
-    sut.log(infoA);
-
     // Assert
     verifyInOrder([
-      mockLogger.info(argThat(contains(infoA.processName))),
-      mockLogger.info(infoA.stdout),
-      mockLogger.error(infoA.stderr),
-      mockLogger.info(infoA.stdout),
-      mockLogger.error(infoA.stderr),
+      mockLogger.info(argThat(contains(processName))),
+      mockLogger.info(stdout),
     ]);
 
     verifyNoMoreInteractions(mockLogger);
   });
 
-  test('should print stdout only when stderr is null.', () {
+  test('should print process name and stdout when call stderr method.', () {
     // Arrange
-    final info = processInfo(
-      processId: 1,
-      withStderr: false,
-    );
+    final processId = 1;
+    final processName = getProcessName(processId);
+    final stderr = getStderr(processId);
 
     // Act
-    sut.log(info);
+    sut.stderr(
+      processId: processId,
+      processName: processName,
+      stderr: stderr,
+    );
 
     // Assert
     verifyInOrder([
-      mockLogger.info(argThat(contains(info.processName))),
-      mockLogger.info(info.stdout),
+      mockLogger.info(argThat(contains(processName))),
+      mockLogger.error(stderr),
     ]);
 
     verifyNoMoreInteractions(mockLogger);
   });
-  test('should print stderr only when stdout is null.', () {
+
+  test(
+      'should print one process name when call stdout and stderr methods multiple and procees id not changed.',
+      () {
     // Arrange
-    final info = processInfo(
-      processId: 1,
-      withStdout: false,
-    );
+    final processId = 1;
+    final processName = getProcessName(processId);
+    final stderr = getStderr(processId);
+    final stdout = getStdout(processId);
 
     // Act
-    sut.log(info);
+    sut.stdout(
+      processId: processId,
+      processName: processName,
+      stdout: stdout,
+    );
+    sut.stderr(
+      processId: processId,
+      processName: processName,
+      stderr: stderr,
+    );
+    sut.stdout(
+      processId: processId,
+      processName: processName,
+      stdout: stdout,
+    );
+    sut.stderr(
+      processId: processId,
+      processName: processName,
+      stderr: stderr,
+    );
 
     // Assert
     verifyInOrder([
-      mockLogger.info(argThat(contains(info.processName))),
-      mockLogger.error(info.stderr),
+      mockLogger.info(argThat(contains(processName))),
+      mockLogger.info(stdout),
+      mockLogger.error(stderr),
+      mockLogger.info(stdout),
+      mockLogger.error(stderr),
+    ]);
+
+    verifyNoMoreInteractions(mockLogger);
+  });
+  test('should print process name each procees id changed.', () {
+    // Arrange
+    final processIdA = 1;
+    final processNameA = getProcessName(processIdA);
+    final stderrA = getStderr(processIdA);
+    final stdoutA = getStdout(processIdA);
+
+    final processIdB = 2;
+    final processNameB = getProcessName(processIdB);
+    final stdoutB = getStdout(processIdB);
+
+    // Act
+    sut.stdout(
+      processId: processIdA,
+      processName: processNameA,
+      stdout: stdoutA,
+    );
+    sut.stderr(
+      processId: processIdA,
+      processName: processNameA,
+      stderr: stderrA,
+    );
+    sut.stdout(
+      processId: processIdB,
+      processName: processNameB,
+      stdout: stdoutB,
+    );
+    sut.stderr(
+      processId: processIdA,
+      processName: processNameA,
+      stderr: stderrA,
+    );
+
+    // Assert
+    verifyInOrder([
+      mockLogger.info(argThat(contains(processNameA))),
+      mockLogger.info(stdoutA),
+      mockLogger.error(stderrA),
+      mockLogger.info(argThat(contains(processNameB))),
+      mockLogger.info(stdoutB),
+      mockLogger.info(argThat(contains(processNameA))),
+      mockLogger.error(stderrA),
     ]);
 
     verifyNoMoreInteractions(mockLogger);

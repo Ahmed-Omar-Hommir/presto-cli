@@ -1,9 +1,17 @@
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:presto_cli/src/logger.dart';
 
 abstract class IProcessLogger {
-  void log(ProcessInfo info);
+  void stdout({
+    required int processId,
+    required String processName,
+    required String stdout,
+  });
+  void stderr({
+    required int processId,
+    required String processName,
+    required String stderr,
+  });
 }
 
 class ProcessLogger implements IProcessLogger {
@@ -15,39 +23,33 @@ class ProcessLogger implements IProcessLogger {
 
   int? _lastProcessId;
 
-  @override
-  void log(ProcessInfo info) {
-    final stdout = info.stdout;
-    final stderr = info.stderr;
-
-    if (info.stderr == null && info.stdout == null) return;
-
-    if (_lastProcessId != info.processId) {
-      _logger.info('Process [${info.processName}]');
+  void _handleProcessChange(
+    int processId,
+    String processName,
+  ) {
+    if (_lastProcessId != processId) {
+      _logger.info('Process [$processName]');
+      _lastProcessId = processId;
     }
-
-    if (stdout != null) {
-      _logger.info(stdout);
-    }
-
-    if (stderr != null) {
-      _logger.error(stderr);
-    }
-
-    _lastProcessId = info.processId;
   }
-}
 
-class ProcessInfo {
-  const ProcessInfo({
-    required this.processId,
-    required this.processName,
-    required this.stdout,
-    required this.stderr,
-  });
+  @override
+  void stderr({
+    required int processId,
+    required String processName,
+    required String stderr,
+  }) {
+    _handleProcessChange(processId, processName);
+    _logger.error(stderr);
+  }
 
-  final int processId;
-  final String processName;
-  final String? stdout;
-  final String? stderr;
+  @override
+  void stdout({
+    required int processId,
+    required String processName,
+    required String stdout,
+  }) {
+    _handleProcessChange(processId, processName);
+    _logger.info(stdout);
+  }
 }

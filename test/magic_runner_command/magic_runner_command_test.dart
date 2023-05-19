@@ -21,6 +21,7 @@ import 'magic_runner_command_test.mocks.dart';
   ILogger,
   IFlutterCLI,
   Process,
+  IProcessLogger,
 ])
 void main() {
   late CommandRunner<int> sut;
@@ -32,12 +33,14 @@ void main() {
   late MockILogger mockLogger;
   late MockIFlutterCLI mockFlutterCli;
   late MockProcess mockProcess;
+  late MockIProcessLogger mockProcessLogger;
 
   setUp(() {
     mockFileManager = MockIFileManager();
     mockLogger = MockILogger();
     mockFlutterCli = MockIFlutterCLI();
     mockProcess = MockProcess();
+    mockProcessLogger = MockIProcessLogger();
 
     when(mockProcess.stderr).thenAnswer((_) => Stream.value(
           stderrMessage.codeUnits,
@@ -55,6 +58,7 @@ void main() {
         fileManager: mockFileManager,
         logger: mockLogger,
         currentDir: currentDir,
+        processLogger: mockProcessLogger,
       ));
 
     mocksProvider = MocksProvider(

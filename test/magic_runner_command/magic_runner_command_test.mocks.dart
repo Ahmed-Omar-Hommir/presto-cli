@@ -18,6 +18,7 @@ import 'package:presto_cli/src/models/process/process_response.dart' as _i12;
 import 'package:presto_cli/src/package_manager.dart' as _i5;
 import 'package:presto_cli/src/utils/file_manager.dart' as _i7;
 import 'package:presto_cli/src/utils/flutter_cli.dart' as _i10;
+import 'package:presto_cli/src/utils/process_logger.dart' as _i14;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -423,4 +424,50 @@ class MockProcess extends _i1.Mock implements _i4.Process {
         ),
         returnValue: false,
       ) as bool);
+}
+
+/// A class which mocks [IProcessLogger].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIProcessLogger extends _i1.Mock implements _i14.IProcessLogger {
+  MockIProcessLogger() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void stdout({
+    required int? processId,
+    required String? processName,
+    required String? stdout,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #stdout,
+          [],
+          {
+            #processId: processId,
+            #processName: processName,
+            #stdout: stdout,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void stderr({
+    required int? processId,
+    required String? processName,
+    required String? stderr,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #stderr,
+          [],
+          {
+            #processId: processId,
+            #processName: processName,
+            #stderr: stderr,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
 }

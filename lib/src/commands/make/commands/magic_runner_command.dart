@@ -15,9 +15,11 @@ class MagicRunnerCommand extends Command<int> {
     required IFileManager fileManager,
     required ILogger logger,
     required IFlutterCLI flutterCli,
+    required IProcessLogger processLogger,
     @visibleForTesting Directory? currentDir,
   })  : _fileManager = fileManager,
         _flutterCli = flutterCli,
+        _processLogger = processLogger,
         _currentDir = currentDir ?? Directory.current,
         _logger = logger {
     argParser.addFlag(
@@ -34,6 +36,7 @@ class MagicRunnerCommand extends Command<int> {
     );
   }
 
+  final IProcessLogger _processLogger;
   final IFileManager _fileManager;
   final ILogger _logger;
   final IFlutterCLI _flutterCli;
@@ -125,12 +128,20 @@ class MagicRunnerCommand extends Command<int> {
         (process) async {
           processes.add(process.exitCode);
 
-          process.stdout.transform(utf8.decoder).listen((event) {
-            _logger.info(event);
+          process.stdout.transform(utf8.decoder).listen((stdout) {
+            _processLogger.stdout(
+              processId: process.pid,
+              processName: process.pid.toString(),
+              stdout: stdout,
+            );
           });
 
-          process.stderr.transform(utf8.decoder).listen((event) {
-            _logger.info(event);
+          process.stderr.transform(utf8.decoder).listen((stderr) {
+            _processLogger.stderr(
+              processId: process.pid,
+              processName: process.pid.toString(),
+              stderr: stderr,
+            );
           });
         },
       );
