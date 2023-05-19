@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';

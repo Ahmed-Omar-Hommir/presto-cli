@@ -108,6 +108,37 @@ class MagicRunnerCommand extends Command<int> {
     );
   }
 
+  Future<void> _runBuildRunner(Set<Directory> directories) async {
+    final List<Future<int>> processes = [];
+    for (Directory dir in directories) {
+      final result = await _flutterCli.buildRunner(dir);
+      result.fold(
+        (failure) {
+          _logger.error(
+            failure.maybeMap(
+              directoryNotFound: (_) => LoggerMessage.directoryNotFound,
+              unknown: (value) => value.e.toString(),
+              orElse: () => LoggerMessage.somethingWentWrong,
+            ),
+          );
+        },
+        (process) async {
+          processes.add(process.exitCode);
+
+          process.stdout.transform(utf8.decoder).listen((event) {
+            _logger.info(event);
+          });
+
+          process.stderr.transform(utf8.decoder).listen((event) {
+            _logger.info(event);
+          });
+        },
+      );
+
+      await Future.wait(processes);
+    }
+  }
+
   @override
   Future<int> run() async {
     final result = await _checkInRootProject();
@@ -119,29 +150,7 @@ class MagicRunnerCommand extends Command<int> {
         return await packagesResult.fold(
           (failure) => failure.code,
           (packagesDir) async {
-            for (Directory dir in packagesDir) {
-              final result = await _flutterCli.buildRunner(dir);
-              await result.fold(
-                (failure) {
-                  _logger.error(
-                    failure.maybeMap(
-                      directoryNotFound: (_) => LoggerMessage.directoryNotFound,
-                      unknown: (value) => value.e.toString(),
-                      orElse: () => LoggerMessage.somethingWentWrong,
-                    ),
-                  );
-                },
-                (response) async {
-                  response.stdout.transform(utf8.decoder).listen((event) {
-                    _logger.info(event);
-                  });
-                  response.stderr.transform(utf8.decoder).listen((event) {
-                    _logger.info(event);
-                  });
-                  await response.exitCode;
-                },
-              );
-            }
+            await _runBuildRunner(packagesDir);
             return ExitCode.success.code;
           },
         );
