@@ -3,8 +3,8 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
-import 'dart:io' as _i6;
+import 'dart:async' as _i6;
+import 'dart:io' as _i4;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:mason/mason.dart' as _i3;
@@ -15,7 +15,7 @@ import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart'
 import 'package:presto_cli/src/models/flutter_cli/cli_failure.dart' as _i11;
 import 'package:presto_cli/src/models/package_dependency.dart' as _i13;
 import 'package:presto_cli/src/models/process/process_response.dart' as _i12;
-import 'package:presto_cli/src/package_manager.dart' as _i4;
+import 'package:presto_cli/src/package_manager.dart' as _i5;
 import 'package:presto_cli/src/utils/file_manager.dart' as _i7;
 import 'package:presto_cli/src/utils/flutter_cli.dart' as _i10;
 
@@ -50,16 +50,26 @@ class _FakeProgress_1 extends _i1.SmartFake implements _i3.Progress {
         );
 }
 
+class _FakeIOSink_2 extends _i1.SmartFake implements _i4.IOSink {
+  _FakeIOSink_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [PackageManager].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPackageManager extends _i1.Mock implements _i4.PackageManager {
+class MockPackageManager extends _i1.Mock implements _i5.PackageManager {
   MockPackageManager() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<void> addDependencies({
+  _i6.Future<void> addDependencies({
     required String? packagePath,
     required Map<String, dynamic>? dependencies,
   }) =>
@@ -72,11 +82,11 @@ class MockPackageManager extends _i1.Mock implements _i4.PackageManager {
             #dependencies: dependencies,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
-  _i5.Future<void> addDevDependencies({
+  _i6.Future<void> addDevDependencies({
     required String? packagePath,
     required Map<String, dynamic>? dependencies,
   }) =>
@@ -89,21 +99,21 @@ class MockPackageManager extends _i1.Mock implements _i4.PackageManager {
             #dependencies: dependencies,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
-  _i5.Future<List<String>> findPackages({required _i6.Directory? dir}) =>
+  _i6.Future<List<String>> findPackages({required _i4.Directory? dir}) =>
       (super.noSuchMethod(
         Invocation.method(
           #findPackages,
           [],
           {#dir: dir},
         ),
-        returnValue: _i5.Future<List<String>>.value(<String>[]),
-      ) as _i5.Future<List<String>>);
+        returnValue: _i6.Future<List<String>>.value(<String>[]),
+      ) as _i6.Future<List<String>>);
   @override
-  _i5.Future<List<_i4.GenerateInfo>> packagesGenerateInfo(
+  _i6.Future<List<_i5.GenerateInfo>> packagesGenerateInfo(
           {required List<String>? dirs}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -112,27 +122,27 @@ class MockPackageManager extends _i1.Mock implements _i4.PackageManager {
           {#dirs: dirs},
         ),
         returnValue:
-            _i5.Future<List<_i4.GenerateInfo>>.value(<_i4.GenerateInfo>[]),
-      ) as _i5.Future<List<_i4.GenerateInfo>>);
+            _i6.Future<List<_i5.GenerateInfo>>.value(<_i5.GenerateInfo>[]),
+      ) as _i6.Future<List<_i5.GenerateInfo>>);
   @override
-  _i5.Future<List<_i6.File>> dartFilesCollection(
-          {required _i6.Directory? dir}) =>
+  _i6.Future<List<_i4.File>> dartFilesCollection(
+          {required _i4.Directory? dir}) =>
       (super.noSuchMethod(
         Invocation.method(
           #dartFilesCollection,
           [],
           {#dir: dir},
         ),
-        returnValue: _i5.Future<List<_i6.File>>.value(<_i6.File>[]),
-      ) as _i5.Future<List<_i6.File>>);
+        returnValue: _i6.Future<List<_i4.File>>.value(<_i4.File>[]),
+      ) as _i6.Future<List<_i4.File>>);
   @override
-  _i5.Future<_i2.Either<_i2.None<dynamic>, String>> sdkPath() =>
+  _i6.Future<_i2.Either<_i2.None<dynamic>, String>> sdkPath() =>
       (super.noSuchMethod(
         Invocation.method(
           #sdkPath,
           [],
         ),
-        returnValue: _i5.Future<_i2.Either<_i2.None<dynamic>, String>>.value(
+        returnValue: _i6.Future<_i2.Either<_i2.None<dynamic>, String>>.value(
             _FakeEither_0<_i2.None<dynamic>, String>(
           this,
           Invocation.method(
@@ -140,7 +150,7 @@ class MockPackageManager extends _i1.Mock implements _i4.PackageManager {
             [],
           ),
         )),
-      ) as _i5.Future<_i2.Either<_i2.None<dynamic>, String>>);
+      ) as _i6.Future<_i2.Either<_i2.None<dynamic>, String>>);
 }
 
 /// A class which mocks [IFileManager].
@@ -152,7 +162,7 @@ class MockIFileManager extends _i1.Mock implements _i7.IFileManager {
   }
 
   @override
-  _i5.Future<List<String>> findFilesByExtension(
+  _i6.Future<List<String>> findFilesByExtension(
     String? extension, {
     String? path,
   }) =>
@@ -162,16 +172,16 @@ class MockIFileManager extends _i1.Mock implements _i7.IFileManager {
           [extension],
           {#path: path},
         ),
-        returnValue: _i5.Future<List<String>>.value(<String>[]),
-      ) as _i5.Future<List<String>>);
+        returnValue: _i6.Future<List<String>>.value(<String>[]),
+      ) as _i6.Future<List<String>>);
   @override
-  _i5.Future<_i2.Either<_i8.FileManagerFailure, Map<dynamic, dynamic>>>
+  _i6.Future<_i2.Either<_i8.FileManagerFailure, Map<dynamic, dynamic>>>
       readYaml(String? path) => (super.noSuchMethod(
             Invocation.method(
               #readYaml,
               [path],
             ),
-            returnValue: _i5.Future<
+            returnValue: _i6.Future<
                     _i2.Either<_i8.FileManagerFailure,
                         Map<dynamic, dynamic>>>.value(
                 _FakeEither_0<_i8.FileManagerFailure, Map<dynamic, dynamic>>(
@@ -181,27 +191,27 @@ class MockIFileManager extends _i1.Mock implements _i7.IFileManager {
                 [path],
               ),
             )),
-          ) as _i5.Future<
+          ) as _i6.Future<
               _i2.Either<_i8.FileManagerFailure, Map<dynamic, dynamic>>>);
   @override
-  _i5.Future<
-      _i2.Either<_i8.FileManagerFailure, Set<_i6.Directory>>> findPackages(
-          _i6.Directory? dir) =>
+  _i6.Future<
+      _i2.Either<_i8.FileManagerFailure, Set<_i4.Directory>>> findPackages(
+          _i4.Directory? dir) =>
       (super.noSuchMethod(
         Invocation.method(
           #findPackages,
           [dir],
         ),
-        returnValue: _i5.Future<
-                _i2.Either<_i8.FileManagerFailure, Set<_i6.Directory>>>.value(
-            _FakeEither_0<_i8.FileManagerFailure, Set<_i6.Directory>>(
+        returnValue: _i6.Future<
+                _i2.Either<_i8.FileManagerFailure, Set<_i4.Directory>>>.value(
+            _FakeEither_0<_i8.FileManagerFailure, Set<_i4.Directory>>(
           this,
           Invocation.method(
             #findPackages,
             [dir],
           ),
         )),
-      ) as _i5.Future<_i2.Either<_i8.FileManagerFailure, Set<_i6.Directory>>>);
+      ) as _i6.Future<_i2.Either<_i8.FileManagerFailure, Set<_i4.Directory>>>);
 }
 
 /// A class which mocks [ILogger].
@@ -269,7 +279,7 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
   }
 
   @override
-  _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> pubAdd({
+  _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> pubAdd({
     required String? packagePath,
     required Set<_i13.PackageDependency>? dependencies,
   }) =>
@@ -283,7 +293,7 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
           },
         ),
         returnValue:
-            _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
+            _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
                 _FakeEither_0<_i11.CliFailure, _i12.ProcessResponse>(
           this,
           Invocation.method(
@@ -295,9 +305,9 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
             },
           ),
         )),
-      ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
+      ) as _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
   @override
-  _i5.Future<
+  _i6.Future<
       _i2.Either<_i11.CliFailure, _i12.ProcessResponse>> createNewPackage({
     required String? packageName,
     String? packagePath,
@@ -312,7 +322,7 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
           },
         ),
         returnValue:
-            _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
+            _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
                 _FakeEither_0<_i11.CliFailure, _i12.ProcessResponse>(
           this,
           Invocation.method(
@@ -324,9 +334,9 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
             },
           ),
         )),
-      ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
+      ) as _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
   @override
-  _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> genL10N(
+  _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> genL10N(
           {String? packagePath}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -335,7 +345,7 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
           {#packagePath: packagePath},
         ),
         returnValue:
-            _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
+            _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
                 _FakeEither_0<_i11.CliFailure, _i12.ProcessResponse>(
           this,
           Invocation.method(
@@ -344,10 +354,10 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
             {#packagePath: packagePath},
           ),
         )),
-      ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
+      ) as _i6.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
   @override
-  _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> buildRunner(
-    _i6.Directory? workingDirectory, {
+  _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>> buildRunner(
+    _i4.Directory? workingDirectory, {
     bool? deleteConflictingOutputs = false,
   }) =>
       (super.noSuchMethod(
@@ -356,9 +366,8 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
           [workingDirectory],
           {#deleteConflictingOutputs: deleteConflictingOutputs},
         ),
-        returnValue:
-            _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
-                _FakeEither_0<_i11.CliFailure, _i12.ProcessResponse>(
+        returnValue: _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>>.value(
+            _FakeEither_0<_i11.CliFailure, _i4.Process>(
           this,
           Invocation.method(
             #buildRunner,
@@ -366,5 +375,52 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
             {#deleteConflictingOutputs: deleteConflictingOutputs},
           ),
         )),
-      ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
+      ) as _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>>);
+}
+
+/// A class which mocks [Process].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProcess extends _i1.Mock implements _i4.Process {
+  MockProcess() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<int> get exitCode => (super.noSuchMethod(
+        Invocation.getter(#exitCode),
+        returnValue: _i6.Future<int>.value(0),
+      ) as _i6.Future<int>);
+  @override
+  _i6.Stream<List<int>> get stdout => (super.noSuchMethod(
+        Invocation.getter(#stdout),
+        returnValue: _i6.Stream<List<int>>.empty(),
+      ) as _i6.Stream<List<int>>);
+  @override
+  _i6.Stream<List<int>> get stderr => (super.noSuchMethod(
+        Invocation.getter(#stderr),
+        returnValue: _i6.Stream<List<int>>.empty(),
+      ) as _i6.Stream<List<int>>);
+  @override
+  _i4.IOSink get stdin => (super.noSuchMethod(
+        Invocation.getter(#stdin),
+        returnValue: _FakeIOSink_2(
+          this,
+          Invocation.getter(#stdin),
+        ),
+      ) as _i4.IOSink);
+  @override
+  int get pid => (super.noSuchMethod(
+        Invocation.getter(#pid),
+        returnValue: 0,
+      ) as int);
+  @override
+  bool kill([_i4.ProcessSignal? signal = _i4.ProcessSignal.sigterm]) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #kill,
+          [signal],
+        ),
+        returnValue: false,
+      ) as bool);
 }

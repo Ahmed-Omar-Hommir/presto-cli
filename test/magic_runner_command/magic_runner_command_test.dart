@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -20,6 +21,7 @@ import 'magic_runner_command_test.mocks.dart';
   IFileManager,
   ILogger,
   IFlutterCLI,
+  Process,
 ])
 void main() {
   late CommandRunner<int> sut;
@@ -30,11 +32,21 @@ void main() {
   late MockIFileManager mockFileManager;
   late MockILogger mockLogger;
   late MockIFlutterCLI mockFlutterCli;
+  late MockProcess mockProcess;
 
   setUp(() {
     mockFileManager = MockIFileManager();
     mockLogger = MockILogger();
     mockFlutterCli = MockIFlutterCLI();
+    mockProcess = MockProcess();
+
+    when(mockProcess.stderr).thenAnswer((_) => Stream.value(
+          stderrMessage.codeUnits,
+        ));
+    when(mockProcess.stdout).thenAnswer((_) => Stream.value(
+          stdoutMessage.codeUnits,
+        ));
+    when(mockProcess.exitCode).thenAnswer((_) async => 0);
 
     currentDir = Directory.systemTemp.createTempSync();
 
@@ -66,7 +78,7 @@ void main() {
           mockFlutterCli: (mock) {
             for (var dir in {...packageDirectories, currentDir}) {
               when(mock.buildRunner(dir)).thenAnswer(
-                (_) async => right(processResponse),
+                (_) async => right(mockProcess),
               );
             }
           },
@@ -80,7 +92,7 @@ void main() {
           },
           mockLogger: (mock) {
             when(mock.error(any)).thenReturn(null);
-            when(mock.info(processResponse.output)).thenReturn(null);
+            when(mock.info(any)).thenReturn(null);
           },
         );
 
@@ -103,7 +115,8 @@ void main() {
             verifyNoMoreInteractions(mock);
           },
           mockLogger: (mock) {
-            verify(mock.info(processResponse.output)).called(4);
+            verify(mock.info(stdoutMessage)).called(4);
+            verify(mock.info(stderrMessage)).called(4);
             verifyNoMoreInteractions(mock);
           },
         );
@@ -128,7 +141,7 @@ void main() {
             );
 
             when(mock.buildRunner(currentDir)).thenAnswer(
-              (_) async => right(processResponse),
+              (_) async => right(mockProcess),
             );
           },
           mockFileManager: (mock) {
@@ -141,7 +154,7 @@ void main() {
           },
           mockLogger: (mock) {
             when(mock.error(any)).thenReturn(null);
-            when(mock.info(processResponse.output)).thenReturn(null);
+            when(mock.info(any)).thenReturn(null);
           },
         );
 
@@ -167,7 +180,8 @@ void main() {
             verify(mock.error(LoggerMessage.directoryNotFound)).called(1);
             verify(mock.error(LoggerMessage.somethingWentWrong)).called(1);
             verify(mock.error('Error')).called(1);
-            verify(mock.info(processResponse.output)).called(1);
+            verify(mock.info(stderrMessage)).called(1);
+            verify(mock.info(stdoutMessage)).called(1);
             verifyNoMoreInteractions(mock);
           },
         );

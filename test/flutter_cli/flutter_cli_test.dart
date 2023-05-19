@@ -20,10 +20,12 @@ void main() {
   late MockProcessResult processResult;
   late MockDirectory mockDirectory;
   late Directory tempDir;
+  late MockProcess mockProcess;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync();
     mockDirectory = MockDirectory();
+    mockProcess = MockProcess();
 
     processResult = MockProcessResult();
     whenProcessResult(processResult);
@@ -631,7 +633,7 @@ void main() {
           whenBuildRunner(
             processManager: processManager,
             workingDirectory: tempDir,
-          ).thenAnswer((_) async => processResult);
+          ).thenAnswer((_) async => mockProcess);
 
           // Act
           final result = await sut.buildRunner(tempDir);
@@ -640,7 +642,7 @@ void main() {
           expect(result, isA<Right>());
           expect(
             result.getOrElse(() => fail('Result returned a Left')),
-            isA<ProcessResponse>(),
+            isA<Process>(),
           );
 
           verifyBuildRunner(
@@ -659,7 +661,7 @@ void main() {
             processManager: processManager,
             workingDirectory: tempDir,
             withDeleteConflictingOutputs: true,
-          ).thenAnswer((_) async => processResult);
+          ).thenAnswer((_) async => mockProcess);
 
           // Act
           final result = await sut.buildRunner(
@@ -671,7 +673,7 @@ void main() {
           expect(result, isA<Right>());
           expect(
             result.getOrElse(() => fail('Result returned a Left')),
-            isA<ProcessResponse>(),
+            isA<Process>(),
           );
 
           verifyBuildRunner(
