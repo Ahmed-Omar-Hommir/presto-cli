@@ -128,10 +128,19 @@ class MagicRunnerCommand extends Command<int> {
         (process) async {
           processes.add(process.exitCode);
 
+          final packageNameResult = await _fileManager.readYaml(
+            join(dir.path, 'pubspec.yaml'),
+          );
+
+          final String processName = packageNameResult.fold(
+            (_) => process.pid.toString(),
+            (content) => content['name'],
+          );
+
           process.stdout.transform(utf8.decoder).listen((stdout) {
             _processLogger.stdout(
               processId: process.pid,
-              processName: process.pid.toString(),
+              processName: processName,
               stdout: stdout,
             );
           });
@@ -139,7 +148,7 @@ class MagicRunnerCommand extends Command<int> {
           process.stderr.transform(utf8.decoder).listen((stderr) {
             _processLogger.stderr(
               processId: process.pid,
-              processName: process.pid.toString(),
+              processName: processName,
               stderr: stderr,
             );
           });
