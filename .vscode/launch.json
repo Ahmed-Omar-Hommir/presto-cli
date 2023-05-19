@@ -28,6 +28,14 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
-        }
+        },
+        {
+            "name": "Parallel Dart Tests (files)",
+            "request": "launch",
+            "type": "dart",
+            "program": "test",
+            "args": ["--concurrency=999999"],
+            "cwd": "${workspaceFolder}"
+          }
     ]
 }

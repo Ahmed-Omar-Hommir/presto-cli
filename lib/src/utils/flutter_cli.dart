@@ -159,6 +159,7 @@ class FlutterCLI implements IFlutterCLI {
       if (!workingDirectory.existsSync()) {
         return const Left(CliFailure.directoryNotFound());
       }
+
       final args = ['pub', 'run', 'build_runner', 'build'];
 
       if (deleteConflictingOutputs) {

@@ -347,11 +347,14 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
       ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);
   @override
   _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>> buildRunner(
-          _i6.Directory? workingDirectory) =>
+    _i6.Directory? workingDirectory, {
+    bool? deleteConflictingOutputs = false,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #buildRunner,
           [workingDirectory],
+          {#deleteConflictingOutputs: deleteConflictingOutputs},
         ),
         returnValue:
             _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>.value(
@@ -360,6 +363,7 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
           Invocation.method(
             #buildRunner,
             [workingDirectory],
+            {#deleteConflictingOutputs: deleteConflictingOutputs},
           ),
         )),
       ) as _i5.Future<_i2.Either<_i11.CliFailure, _i12.ProcessResponse>>);

@@ -24,11 +24,13 @@ void main() {
   late MockIYamlWrapper mockIYamlWrapper;
   late MockFile mockFile;
   late MockDirectory mockDirectory;
+  late Directory tempDir;
 
   setUp(() {
     mockFile = MockFile();
 
     mockDirectory = MockDirectory();
+    tempDir = Directory.systemTemp.createTempSync();
 
     mockIFileFactory = MockIFileFactory();
     mockIYamlWrapper = MockIYamlWrapper();
@@ -40,6 +42,10 @@ void main() {
     );
   });
 
+  tearDown(() {
+    tempDir.deleteSync(recursive: true);
+  });
+
   group(
     'Find Files By Extension',
     () {
@@ -48,7 +54,6 @@ void main() {
         'should return a list of paths to files with the given extension.',
         () async {
           // Arrange
-          final tempDir = Directory.systemTemp.createTempSync();
           makeDartFiles(tempDir);
 
           // Act
@@ -74,7 +79,6 @@ void main() {
             'should return a Right with a map containing the yaml content.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
               createPubspecFile(tempDir);
 
               final pubspecFile = File(join(tempDir.path, 'pubspec.yaml'));
@@ -102,7 +106,6 @@ void main() {
             'should return a Left with a $FileManagerFailureFileNotFound when the file does not exist.',
             () async {
               // Arrange
-              final tempDir = Directory.systemTemp.createTempSync();
               final pubspecFile = File(join(tempDir.path, 'pubspec.yaml'));
 
               // Act
@@ -248,7 +251,6 @@ void main() {
         () {
           test('should return Right with package paths.', () async {
             // Arrange
-            final tempDir = Directory.systemTemp.createTempSync();
             final subDir = Directory(join(tempDir.path, 'sub_dir'))
               ..createSync();
             createTempPackage(tempDir, packageName: 'package_1');
