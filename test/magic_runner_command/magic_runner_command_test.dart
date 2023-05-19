@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -10,6 +12,7 @@ import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart';
 import 'package:presto_cli/src/package_manager.dart';
 import 'package:test/test.dart';
 
+import 'helper.dart';
 import 'magic_runner_command_test.mocks.dart';
 
 @GenerateMocks([
@@ -20,103 +23,181 @@ import 'magic_runner_command_test.mocks.dart';
 ])
 void main() {
   late CommandRunner<int> sut;
-  late MockPackageManager packageManager;
-  late MockIFileManager fileManager;
-  late MockILogger logger;
-  late IFlutterCLI flutterCli;
+  late Directory currentDir;
+  late MocksProvider mocksProvider;
+
+  // mocks
+  late MockIFileManager mockFileManager;
+  late MockILogger mockLogger;
+  late MockIFlutterCLI mockFlutterCli;
 
   setUp(() {
-    packageManager = MockPackageManager();
-    fileManager = MockIFileManager();
-    logger = MockILogger();
-    flutterCli = MockIFlutterCLI();
+    mockFileManager = MockIFileManager();
+    mockLogger = MockILogger();
+    mockFlutterCli = MockIFlutterCLI();
+
+    currentDir = Directory.systemTemp.createTempSync();
 
     sut = CommandRunner<int>('test', 'test')
       ..addCommand(MagicRunnerCommand(
-        flutterCli: flutterCli,
-        packageManager: packageManager,
-        fileManager: fileManager,
-        logger: logger,
+        flutterCli: mockFlutterCli,
+        fileManager: mockFileManager,
+        logger: mockLogger,
+        currentDir: currentDir,
       ));
+
+    mocksProvider = MocksProvider(
+      mockFileManager: mockFileManager,
+      mockLogger: mockLogger,
+      mockFlutterCLI: mockFlutterCli,
+    );
   });
 
-  // Todo: Fix this test
-  // group('Success cases', () {
-  //   test(
-  //     'should return success code when command is executed successfully.',
-  //     () async {
-  //       // Arrange
-  //       when(fileManager.readYaml(any)).thenAnswer(
-  //         (_) async => Right({'name': 'prestoeat'}),
-  //       );
-  //       when(logger.error(any)).thenReturn(null);
-  //       final Set<Directory> packages = {
-  //         Directory('path_1'),
-  //         Directory('path_2'),
-  //         Directory('path_3'),
-  //       };
-  //       when(fileManager.findPackages(any)).thenAnswer(
-  //         (_) async => Right(packages),
-  //       );
-  //       when(flutterCli.buildRunner(packagePath: "path_1")).thenAnswer(
-  //         (_) async => right(ProcessResponse(
-  //           stdout: 'stdout',
-  //           stderr: 'stderr',
-  //           exitCode: 0,
-  //           pid: 1,
-  //         )),
-  //       );
-  //       when(flutterCli.genBuildRunner(packagePath: "path_2")).thenAnswer(
-  //         (_) async => right(ProcessResponse(
-  //           stdout: 'stdout',
-  //           stderr: 'stderr',
-  //           exitCode: 0,
-  //           pid: 1,
-  //         )),
-  //       );
-  //       when(flutterCli.genBuildRunner(packagePath: "path_3")).thenAnswer(
-  //         (_) async => right(ProcessResponse(
-  //           stdout: 'stdout',
-  //           stderr: 'stderr',
-  //           exitCode: 0,
-  //           pid: 1,
-  //         )),
-  //       );
+  tearDown(() {
+    currentDir.deleteSync(recursive: true);
+  });
 
-  //       // Act
-  //       final exitCode = await sut.run(['magic_runner']);
+  group('Success cases', () {
+    test(
+      'should return success code when command is executed successfully.',
+      () async {
+        // Arrange
+        mocksProvider.allMocks(
+          mockFlutterCli: (mock) {
+            for (var dir in {...packageDirectories, currentDir}) {
+              when(mock.buildRunner(dir)).thenAnswer(
+                (_) async => right(processResponse),
+              );
+            }
+          },
+          mockFileManager: (mock) {
+            when(mock.readYaml(any)).thenAnswer(
+              (_) async => Right(yamlContent()),
+            );
+            when(mock.findPackages(any)).thenAnswer(
+              (_) async => Right(packageDirectories),
+            );
+          },
+          mockLogger: (mock) {
+            when(mock.error(any)).thenReturn(null);
+            when(mock.info(processResponse.output)).thenReturn(null);
+          },
+        );
 
-  //       // Assert
-  //       expect(exitCode, ExitCode.success.code);
-  //       verify(fileManager.readYaml(any)).called(1);
-  //       verify(fileManager.findPackages(any)).called(1);
-  //       verify(flutterCli.genBuildRunner(packagePath: "path_1")).called(1);
-  //       verify(flutterCli.genBuildRunner(packagePath: "path_2")).called(1);
-  //       verify(flutterCli.genBuildRunner(packagePath: "path_3")).called(1);
-  //       verifyNoMoreInteractions(flutterCli);
-  //       verifyNoMoreInteractions(fileManager);
-  //       verifyZeroInteractions(logger);
-  //     },
-  //   );
-  // });
+        // Act
+        final exitCode = await sut.run([magicRunnercommand]);
+
+        // Assert
+        expect(exitCode, ExitCode.success.code);
+
+        mocksProvider.allMocks(
+          mockFlutterCli: (mock) {
+            for (var dir in {...packageDirectories, currentDir}) {
+              verify(mock.buildRunner(dir)).called(1);
+            }
+            verifyNoMoreInteractions(mock);
+          },
+          mockFileManager: (mock) {
+            verify(mock.readYaml(any)).called(1);
+            verify(mock.findPackages(any)).called(1);
+            verifyNoMoreInteractions(mock);
+          },
+          mockLogger: (mock) {
+            verify(mock.info(processResponse.output)).called(4);
+            verifyNoMoreInteractions(mock);
+          },
+        );
+      },
+    );
+    test(
+      'should return success code and print log error when build_runner returns different failure types.',
+      () async {
+        // Arrange
+        mocksProvider.allMocks(
+          mockFlutterCli: (mock) {
+            when(mock.buildRunner(packageDirectories.elementAt(0))).thenAnswer(
+              (_) async => left(CliFailure.directoryNotFound()),
+            );
+
+            when(mock.buildRunner(packageDirectories.elementAt(1))).thenAnswer(
+              (_) async => left(CliFailure.unknown('Error')),
+            );
+
+            when(mock.buildRunner(packageDirectories.elementAt(2))).thenAnswer(
+              (_) async => left(CliFailure.packageAlreadyExists()),
+            );
+
+            when(mock.buildRunner(currentDir)).thenAnswer(
+              (_) async => right(processResponse),
+            );
+          },
+          mockFileManager: (mock) {
+            when(mock.readYaml(any)).thenAnswer(
+              (_) async => Right(yamlContent()),
+            );
+            when(mock.findPackages(any)).thenAnswer(
+              (_) async => Right(packageDirectories),
+            );
+          },
+          mockLogger: (mock) {
+            when(mock.error(any)).thenReturn(null);
+            when(mock.info(processResponse.output)).thenReturn(null);
+          },
+        );
+
+        // Act
+        final exitCode = await sut.run([magicRunnercommand]);
+
+        // Assert
+        expect(exitCode, ExitCode.success.code);
+
+        mocksProvider.allMocks(
+          mockFlutterCli: (mock) {
+            for (var dir in {...packageDirectories, currentDir}) {
+              verify(mock.buildRunner(dir)).called(1);
+            }
+            verifyNoMoreInteractions(mock);
+          },
+          mockFileManager: (mock) {
+            verify(mock.readYaml(any)).called(1);
+            verify(mock.findPackages(any)).called(1);
+            verifyNoMoreInteractions(mock);
+          },
+          mockLogger: (mock) {
+            verify(mock.error(LoggerMessage.directoryNotFound)).called(1);
+            verify(mock.error(LoggerMessage.somethingWentWrong)).called(1);
+            verify(mock.error('Error')).called(1);
+            verify(mock.info(processResponse.output)).called(1);
+            verifyNoMoreInteractions(mock);
+          },
+        );
+      },
+    );
+  });
 
   group('Failure cases', () {
     test(
       'should print error and return noInput code when readYaml return $FileManagerFailureFileNotFound.',
       () async {
         // Arrange
-        when(fileManager.readYaml(any)).thenAnswer(
+        when(mockFileManager.readYaml(any)).thenAnswer(
           (_) async => Left(FileManagerFailure.fileNotFound()),
         );
-        when(logger.error(any)).thenReturn(null);
+        when(mockLogger.error(any)).thenReturn(null);
 
         // Act
-        final exitCode = await sut.run(['magic_runner']);
+        final exitCode = await sut.run([magicRunnercommand]);
 
         // Assert
         expect(exitCode, ExitCode.noInput.code);
-        verify(logger.error(any)).called(1);
-        verifyNoMoreInteractions(logger);
+
+        verify(mockLogger.error(any)).called(1);
+        verify(mockFileManager.readYaml(any)).called(1);
+
+        verifyNoMoreInteractions(mockLogger);
+        verifyNoMoreInteractions(mockFileManager);
+
+        verifyZeroInteractions(mockFlutterCli);
       },
     );
 
@@ -124,37 +205,24 @@ void main() {
       'should print error and return unavailable code when readYaml return $FileManagerFailureUnknown.',
       () async {
         // Arrange
-        when(fileManager.readYaml(any)).thenAnswer(
+        when(mockFileManager.readYaml(any)).thenAnswer(
           (_) async => Left(FileManagerFailure.unknown("Error")),
         );
-        when(logger.error(any)).thenReturn(null);
+        when(mockLogger.error(any)).thenReturn(null);
 
         // Act
-        final exitCode = await sut.run(['magic_runner']);
+        final exitCode = await sut.run([magicRunnercommand]);
 
         // Assert
         expect(exitCode, ExitCode.unavailable.code);
-        verify(logger.error(any)).called(1);
-        verifyNoMoreInteractions(logger);
-      },
-    );
 
-    test(
-      'should print error and return noInput code if pubspec.yaml file is not found.',
-      () async {
-        // Arrange
-        when(fileManager.readYaml(any)).thenAnswer(
-          (_) async => Left(FileManagerFailure.fileNotFound()),
-        );
-        when(logger.error(any)).thenReturn(null);
+        verify(mockLogger.error(any)).called(1);
+        verify(mockFileManager.readYaml(any)).called(1);
 
-        // Act
-        final exitCode = await sut.run(['magic_runner']);
+        verifyNoMoreInteractions(mockLogger);
+        verifyNoMoreInteractions(mockFileManager);
 
-        // Assert
-        expect(exitCode, ExitCode.noInput.code);
-        verify(logger.error(any)).called(1);
-        verifyNoMoreInteractions(logger);
+        verifyZeroInteractions(mockFlutterCli);
       },
     );
 
@@ -162,18 +230,83 @@ void main() {
       'should print error and return noInput code if package name is not match.',
       () async {
         // Arrange
-        when(fileManager.readYaml(any)).thenAnswer(
-          (_) async => Right({'name': 'not_match_package_name'}),
+        when(mockFileManager.readYaml(any)).thenAnswer(
+          (_) async => Right(yamlContent(name: 'not_match_package_name')),
         );
-        when(logger.error(any)).thenReturn(null);
+        when(mockLogger.error(any)).thenReturn(null);
 
         // Act
-        final exitCode = await sut.run(['magic_runner']);
+        final exitCode = await sut.run([magicRunnercommand]);
 
         // Assert
         expect(exitCode, ExitCode.noInput.code);
-        verify(logger.error(any)).called(1);
-        verifyNoMoreInteractions(logger);
+
+        verify(mockLogger.error(any)).called(1);
+        verify(mockFileManager.readYaml(any)).called(1);
+
+        verifyNoMoreInteractions(mockLogger);
+        verifyNoMoreInteractions(mockFileManager);
+
+        verifyZeroInteractions(mockFlutterCli);
+      },
+    );
+    test(
+      'should print error and return noInput code if findPackages retrun $FileManagerFailureDirNotFound.',
+      () async {
+        // Arrange
+        when(mockFileManager.readYaml(any)).thenAnswer(
+          (_) async => Right(yamlContent()),
+        );
+        when(mockFileManager.findPackages(any)).thenAnswer(
+          (_) async => Left(FileManagerFailure.dirNotFound()),
+        );
+        when(mockLogger.error(LoggerMessage.youAreNotInRootProject))
+            .thenReturn(null);
+
+        // Act
+        final exitCode = await sut.run([magicRunnercommand]);
+
+        // Assert
+        expect(exitCode, ExitCode.noInput.code);
+
+        verify(mockLogger.error(LoggerMessage.youAreNotInRootProject))
+            .called(1);
+        verify(mockFileManager.readYaml(any)).called(1);
+        verify(mockFileManager.findPackages(any)).called(1);
+
+        verifyNoMoreInteractions(mockLogger);
+        verifyNoMoreInteractions(mockFileManager);
+
+        verifyZeroInteractions(mockFlutterCli);
+      },
+    );
+    test(
+      'should print error and return unavailable code if findPackages retrun orElse.',
+      () async {
+        // Arrange
+        when(mockFileManager.readYaml(any)).thenAnswer(
+          (_) async => Right(yamlContent()),
+        );
+        when(mockFileManager.findPackages(any)).thenAnswer(
+          (_) async => Left(FileManagerFailure.fileNotFound()),
+        );
+        when(mockLogger.error(LoggerMessage.somethingWentWrong))
+            .thenReturn(null);
+
+        // Act
+        final exitCode = await sut.run([magicRunnercommand]);
+
+        // Assert
+        expect(exitCode, ExitCode.unavailable.code);
+
+        verify(mockLogger.error(LoggerMessage.somethingWentWrong)).called(1);
+        verify(mockFileManager.readYaml(any)).called(1);
+        verify(mockFileManager.findPackages(any)).called(1);
+
+        verifyNoMoreInteractions(mockLogger);
+        verifyNoMoreInteractions(mockFileManager);
+
+        verifyZeroInteractions(mockFlutterCli);
       },
     );
   });

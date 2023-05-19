@@ -23,8 +23,18 @@ class ProcessResponse {
   }
 
   String get output {
-    final output = String.fromCharCodes(stdout);
-    final error = String.fromCharCodes(stderr);
+    String output = '';
+    String error = '';
+    if (stderr is Iterable<int>) {
+      error = String.fromCharCodes(stderr);
+    } else {
+      output = stdout.toString();
+    }
+    if (stdout is Iterable<int>) {
+      output = String.fromCharCodes(stdout);
+    } else {
+      error = stderr.toString();
+    }
 
     final stdoutMsg = output.isNotEmpty ? 'Stdout:\n$output\n' : '';
     final stderrMsg = error.isNotEmpty ? 'Stdout:\n$error\n' : '';

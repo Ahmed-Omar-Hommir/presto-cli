@@ -1,5 +1,12 @@
 // Todo: Refactor with Write test for build_yaml_generator.dart
 
+import 'package:test/test.dart';
+
+void main() {
+  test('Todo: Refactor with Write test for build_yaml_generator.dart',
+      () => null);
+}
+
 // import 'dart:io';
 // import 'package:dartz/dartz.dart';
 // import 'package:presto_cli/src/build_yaml/build_yaml_generator.dart';

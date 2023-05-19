@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:dartz/dartz.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mason/mason.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
@@ -11,13 +13,13 @@ import 'package:presto_cli/src/package_manager.dart';
 
 class MagicRunnerCommand extends Command<int> {
   MagicRunnerCommand({
-    required IPackageManager packageManager,
     required IFileManager fileManager,
     required ILogger logger,
     required IFlutterCLI flutterCli,
-  })  : _packageManager = packageManager,
-        _fileManager = fileManager,
+    @visibleForTesting Directory? currentDir,
+  })  : _fileManager = fileManager,
         _flutterCli = flutterCli,
+        _currentDir = currentDir ?? Directory.current,
         _logger = logger {
     argParser.addFlag(
       'delete-conflicting-outputs',
@@ -33,10 +35,10 @@ class MagicRunnerCommand extends Command<int> {
     );
   }
 
-  final IPackageManager _packageManager;
   final IFileManager _fileManager;
   final ILogger _logger;
   final IFlutterCLI _flutterCli;
+  final Directory _currentDir;
 
   @override
   String get name => 'magic_runner';
@@ -45,75 +47,132 @@ class MagicRunnerCommand extends Command<int> {
   String get description =>
       'Generate files for all packages that depend on the build runner in the current/subdirectory';
 
-  @override
-  Future<int> run() async {
-    int exitCode = 0;
+  // Todo: make this method on seperated class, becouse it's shared between magic_runner_command and make_command
+
+  Future<Either<ExitCode, None>> _checkInRootProject() async {
     final pubspecFile = File(join(Directory.current.path, 'pubspec.yaml'));
 
     final readYamlResult = await _fileManager.readYaml(pubspecFile.path);
 
-    if (readYamlResult.isLeft()) {
-      readYamlResult.leftMap((failure) {
-        exitCode = failure.maybeMap<int>(
+    return readYamlResult.fold(
+      (failure) => Left(
+        failure.maybeMap(
           fileNotFound: (value) {
             _logger.error(LoggerMessage.youAreNotInRootProject);
-            return ExitCode.noInput.code;
+            return ExitCode.noInput;
           },
           unknown: (value) {
             _logger.error(value.toString());
-            return ExitCode.unavailable.code;
+            return ExitCode.unavailable;
           },
-          orElse: () => ExitCode.unavailable.code,
-        );
-      });
-      return exitCode;
-    }
+          orElse: () => ExitCode.unavailable,
+        ),
+      ),
+      (fileContent) {
+        final String packageName = fileContent['name'];
+        if (packageName != 'prestoeat') {
+          _logger.error(LoggerMessage.youAreNotInRootProject);
+          return Left(ExitCode.noInput);
+        }
+        return Right(None());
+      },
+    );
+  }
 
-    final yaml = readYamlResult.getOrElse(() => throw Exception());
+  // Todo: make this method on seperated class, becouse it's shared between magic_runner_command and make_command
 
-    final String packageName = yaml['name'];
-
-    if (packageName != 'prestoeat') {
-      _logger.error(LoggerMessage.youAreNotInRootProject);
-      return ExitCode.noInput.code;
-    }
-
+  Future<Either<ExitCode, Set<Directory>>> _getPackagesToGenerate() async {
     final packagesResult = await _fileManager.findPackages(
       Directory(join(Directory.current.path, 'packages')),
     );
 
-    final packagesDir = packagesResult.getOrElse(() => throw Exception());
+    return packagesResult.fold(
+      (failure) {
+        return Left(failure.maybeMap(
+          dirNotFound: (_) {
+            _logger.error(LoggerMessage.youAreNotInRootProject);
+            return ExitCode.noInput;
+          },
+          unknown: (value) {
+            _logger.error(value.e.toString());
+            return ExitCode.unavailable;
+          },
+          orElse: () {
+            _logger.error(LoggerMessage.somethingWentWrong);
+            return ExitCode.unavailable;
+          },
+        ));
+      },
+      (dirs) {
+        return Right({...dirs, _currentDir});
+      },
+    );
+  }
 
-    final List<Future> processes = [];
-    int processCompleted = 0;
+  @override
+  Future<int> run() async {
+    final result = await _checkInRootProject();
 
-    final buildRunnerProgress = _logger.progress(
-        'Running build_runner: ${processCompleted / processes.length}%');
-
-    for (Directory dir in packagesDir) {
-      processes.add(_flutterCli
-          .buildRunner(
-        dir,
-        deleteConflictingOutputs: true,
-      )
-          .then((value) {
-        value.fold(
-          (l) => print(l),
-          (r) {
-            print(dir.path);
-            print(r.output);
+    return await result.fold(
+      (exitCode) => exitCode.code,
+      (_) async {
+        final packagesResult = await _getPackagesToGenerate();
+        return await packagesResult.fold(
+          (failure) => failure.code,
+          (packagesDir) async {
+            for (Directory dir in packagesDir) {
+              final result = await _flutterCli.buildRunner(dir);
+              result.fold(
+                (failure) {
+                  _logger.error(
+                    failure.maybeMap(
+                      directoryNotFound: (_) => LoggerMessage.directoryNotFound,
+                      unknown: (value) => value.e.toString(),
+                      orElse: () => LoggerMessage.somethingWentWrong,
+                    ),
+                  );
+                },
+                (response) {
+                  _logger.info(response.output);
+                },
+              );
+            }
+            return ExitCode.success.code;
           },
         );
-        processCompleted++;
-        buildRunnerProgress.update(
-            'Running build_runner: ${processCompleted / processes.length}%');
-      }));
-    }
+      },
+    );
 
-    await Future.wait(processes);
-    buildRunnerProgress.complete('Running build_runner completed.');
+    // final List<Future> processes = [];
+    // int processCompleted = 0;
 
-    return ExitCode.success.code;
+    // final buildRunnerProgress = _logger.progress(
+    //     'Running build_runner: ${processCompleted / processes.length}%');
+
+    // for (Directory dir in packagesDir) {
+    //   processes.add(_flutterCli
+    //       .buildRunner(
+    //     dir,
+    //     deleteConflictingOutputs: true,
+    //   )
+    //       .then((value) {
+    //     value.fold(
+    //       (l) => print(l),
+    //       (r) {
+    //         print(dir.path);
+    //         print(r.output);
+    //       },
+    //     );
+    //     processCompleted++;
+    //     buildRunnerProgress.update(
+    //         'Running build_runner: ${processCompleted / processes.length}%');
+    //   }));
+    // }
+
+    // await Future.wait(processes);
+    // buildRunnerProgress.complete('Running build_runner completed.');
+
+    // return ExitCode.success.code;
 
     //// check user in root project.
     ////    - try read pubspec.yaml.
@@ -130,66 +189,70 @@ class MagicRunnerCommand extends Command<int> {
     // handle logs.
 
     // Setup
-    final List<String> execludes = [];
+    // final List<String> execludes = [];
 
-    if (argResults != null && argResults!.wasParsed('execludes')) {
-      execludes.addAll(argResults?['execludes']);
-    }
+    // if (argResults != null && argResults!.wasParsed('execludes')) {
+    //   execludes.addAll(argResults?['execludes']);
+    // }
 
-    final isDeletingConflicting =
-        argResults?.wasParsed('delete-conflicting-outputs') ?? false;
+    // final isDeletingConflicting =
+    //     argResults?.wasParsed('delete-conflicting-outputs') ?? false;
 
-    final dirs = await _packageManager.findPackages(dir: Directory.current);
+    // final dirs = await _packageManager.findPackages(dir: Directory.current);
 
-    // - filter files to need generate.
-    final packagesInfo = await _packageManager.packagesGenerateInfo(dirs: dirs);
+    // // - filter files to need generate.
+    // final packagesInfo = await _packageManager.packagesGenerateInfo(dirs: dirs);
 
-    packagesInfo.removeWhere((info) => execludes.contains(info.packageName));
+    // packagesInfo.removeWhere((info) => execludes.contains(info.packageName));
 
-    if (packagesInfo.isEmpty) {
-      _logger.warn('No packages found to generate.');
-      exit(0);
-    } else {
-      _logger.info('Find (${packagesInfo.length}) packages to generate.');
-    }
+    // if (packagesInfo.isEmpty) {
+    //   _logger.warn('No packages found to generate.');
+    //   exit(0);
+    // } else {
+    //   _logger.info('Find (${packagesInfo.length}) packages to generate.');
+    // }
 
-    // - make build.yaml files
-    // await _packageManager.makeBuildYaml(
-    //   packagesDirs: packagesInfo.map((e) => e.dir).toList(),
-    // );
+    // // - make build.yaml files
+    // // await _packageManager.makeBuildYaml(
+    // //   packagesDirs: packagesInfo.map((e) => e.dir).toList(),
+    // // );
 
-    // - generate each package has build runner.
-    final List<Future> jobs = [];
-    for (GenerateInfo info in packagesInfo) {
-      if (info.buildRunner) {
-        final dir = info.dir;
-        final arguments = ['pub', 'run', 'build_runner', 'build'];
-        if (isDeletingConflicting) {
-          arguments.add('--delete-conflicting-outputs');
-        }
-        final process = await Process.start(
-          'flutter',
-          arguments,
-          workingDirectory: dir,
-        );
+    // // - generate each package has build runner.
+    // final List<Future> jobs = [];
+    // for (GenerateInfo info in packagesInfo) {
+    //   if (info.buildRunner) {
+    //     final dir = info.dir;
+    //     final arguments = ['pub', 'run', 'build_runner', 'build'];
+    //     if (isDeletingConflicting) {
+    //       arguments.add('--delete-conflicting-outputs');
+    //     }
+    //     final process = await Process.start(
+    //       'flutter',
+    //       arguments,
+    //       workingDirectory: dir,
+    //     );
 
-        process.stdout.transform(utf8.decoder).listen((data) {
-          print(data);
-        });
+    //     process.stdout.transform(utf8.decoder).listen((data) {
+    //       print(data);
+    //     });
 
-        process.stderr.transform(utf8.decoder).listen((data) {
-          print(data);
-        });
+    //     process.stderr.transform(utf8.decoder).listen((data) {
+    //       print(data);
+    //     });
 
-        jobs.add(process.exitCode);
-      }
-    }
+    //     jobs.add(process.exitCode);
+    //   }
+    // }
 
-    await Future.wait(jobs);
+    // await Future.wait(jobs);
   }
 }
 
 abstract class LoggerMessage {
   static const String youAreNotInRootProject =
       'You are not in the root project.';
+  static const String somethingWentWrong = 'Something went wrong.';
+  static const String directoryNotFound = 'Directory not found.';
 }
+
+class ParallelProcess {}
