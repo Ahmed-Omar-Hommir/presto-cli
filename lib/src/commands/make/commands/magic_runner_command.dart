@@ -154,9 +154,8 @@ class MagicRunnerCommand extends Command<int> {
           });
         },
       );
-
-      await Future.wait(processes);
     }
+    await Future.wait(processes);
   }
 
   @override
