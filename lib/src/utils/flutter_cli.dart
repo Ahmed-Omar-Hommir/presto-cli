@@ -20,7 +20,7 @@ abstract class IFlutterCLI {
   });
 
   Future<Either<CliFailure, ProcessResponse>> genL10N({String? packagePath});
-  Future<Either<CliFailure, ProcessResponse>> buildRunner(
+  Future<Either<CliFailure, Process>> buildRunner(
     Directory workingDirectory, {
     bool deleteConflictingOutputs = false,
   });
@@ -151,7 +151,7 @@ class FlutterCLI implements IFlutterCLI {
   }
 
   @override
-  Future<Either<CliFailure, ProcessResponse>> buildRunner(
+  Future<Either<CliFailure, Process>> buildRunner(
     Directory workingDirectory, {
     bool deleteConflictingOutputs = false,
   }) async {
@@ -166,13 +166,13 @@ class FlutterCLI implements IFlutterCLI {
         args.add('--delete-conflicting-outputs');
       }
 
-      final result = await _processManager.run(
+      final result = await _processManager.start(
         'flutter',
         args,
         workingDirectory: workingDirectory.path,
       );
 
-      return Right(ProcessResponse.fromProcessResult(result));
+      return Right(result);
     } catch (e) {
       return left(CliFailure.unknown(e));
     }

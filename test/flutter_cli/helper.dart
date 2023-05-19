@@ -70,7 +70,7 @@ PostExpectation whenBuildRunner({
   if (withDeleteConflictingOutputs) {
     args.add('--delete-conflicting-outputs');
   }
-  return when(processManager.run(
+  return when(processManager.start(
     'flutter',
     args,
     workingDirectory: workingDirectory.path,
@@ -86,7 +86,7 @@ VerificationResult verifyBuildRunner({
   if (withDeleteConflictingOutputs) {
     args.add('--delete-conflicting-outputs');
   }
-  return verify(processManager.run(
+  return verify(processManager.start(
     'flutter',
     args,
     workingDirectory: workingDirectory.path,

@@ -9,7 +9,6 @@ import 'package:mason/mason.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
-import 'package:presto_cli/src/package_manager.dart';
 
 class MagicRunnerCommand extends Command<int> {
   MagicRunnerCommand({
@@ -122,7 +121,7 @@ class MagicRunnerCommand extends Command<int> {
           (packagesDir) async {
             for (Directory dir in packagesDir) {
               final result = await _flutterCli.buildRunner(dir);
-              result.fold(
+              await result.fold(
                 (failure) {
                   _logger.error(
                     failure.maybeMap(
@@ -132,8 +131,14 @@ class MagicRunnerCommand extends Command<int> {
                     ),
                   );
                 },
-                (response) {
-                  _logger.info(response.output);
+                (response) async {
+                  response.stdout.transform(utf8.decoder).listen((event) {
+                    _logger.info(event);
+                  });
+                  response.stderr.transform(utf8.decoder).listen((event) {
+                    _logger.info(event);
+                  });
+                  await response.exitCode;
                 },
               );
             }
@@ -142,109 +147,6 @@ class MagicRunnerCommand extends Command<int> {
         );
       },
     );
-
-    // final List<Future> processes = [];
-    // int processCompleted = 0;
-
-    // final buildRunnerProgress = _logger.progress(
-    //     'Running build_runner: ${processCompleted / processes.length}%');
-
-    // for (Directory dir in packagesDir) {
-    //   processes.add(_flutterCli
-    //       .buildRunner(
-    //     dir,
-    //     deleteConflictingOutputs: true,
-    //   )
-    //       .then((value) {
-    //     value.fold(
-    //       (l) => print(l),
-    //       (r) {
-    //         print(dir.path);
-    //         print(r.output);
-    //       },
-    //     );
-    //     processCompleted++;
-    //     buildRunnerProgress.update(
-    //         'Running build_runner: ${processCompleted / processes.length}%');
-    //   }));
-    // }
-
-    // await Future.wait(processes);
-    // buildRunnerProgress.complete('Running build_runner completed.');
-
-    // return ExitCode.success.code;
-
-    //// check user in root project.
-    ////    - try read pubspec.yaml.
-    ////    - check project name is presto eat.
-
-    //// if user not in root project, exit.
-
-    // find all packages in project [./packages_dir] has build_runner in pubspec.
-
-    // run build_runner for each package.
-
-    // Last Steps:
-    // make parallel process for each package.
-    // handle logs.
-
-    // Setup
-    // final List<String> execludes = [];
-
-    // if (argResults != null && argResults!.wasParsed('execludes')) {
-    //   execludes.addAll(argResults?['execludes']);
-    // }
-
-    // final isDeletingConflicting =
-    //     argResults?.wasParsed('delete-conflicting-outputs') ?? false;
-
-    // final dirs = await _packageManager.findPackages(dir: Directory.current);
-
-    // // - filter files to need generate.
-    // final packagesInfo = await _packageManager.packagesGenerateInfo(dirs: dirs);
-
-    // packagesInfo.removeWhere((info) => execludes.contains(info.packageName));
-
-    // if (packagesInfo.isEmpty) {
-    //   _logger.warn('No packages found to generate.');
-    //   exit(0);
-    // } else {
-    //   _logger.info('Find (${packagesInfo.length}) packages to generate.');
-    // }
-
-    // // - make build.yaml files
-    // // await _packageManager.makeBuildYaml(
-    // //   packagesDirs: packagesInfo.map((e) => e.dir).toList(),
-    // // );
-
-    // // - generate each package has build runner.
-    // final List<Future> jobs = [];
-    // for (GenerateInfo info in packagesInfo) {
-    //   if (info.buildRunner) {
-    //     final dir = info.dir;
-    //     final arguments = ['pub', 'run', 'build_runner', 'build'];
-    //     if (isDeletingConflicting) {
-    //       arguments.add('--delete-conflicting-outputs');
-    //     }
-    //     final process = await Process.start(
-    //       'flutter',
-    //       arguments,
-    //       workingDirectory: dir,
-    //     );
-
-    //     process.stdout.transform(utf8.decoder).listen((data) {
-    //       print(data);
-    //     });
-
-    //     process.stderr.transform(utf8.decoder).listen((data) {
-    //       print(data);
-    //     });
-
-    //     jobs.add(process.exitCode);
-    //   }
-    // }
-
-    // await Future.wait(jobs);
   }
 }
 
@@ -254,5 +156,3 @@ abstract class LoggerMessage {
   static const String somethingWentWrong = 'Something went wrong.';
   static const String directoryNotFound = 'Directory not found.';
 }
-
-class ParallelProcess {}
