@@ -16,8 +16,10 @@ class MagicRunnerCommand extends Command<int> {
     required ILogger logger,
     required IFlutterCLI flutterCli,
     required IProcessLogger processLogger,
+    required IProjectChecker projectChecker,
     @visibleForTesting Directory? currentDir,
   })  : _fileManager = fileManager,
+        _projectChecker = projectChecker,
         _flutterCli = flutterCli,
         _processLogger = processLogger,
         _currentDir = currentDir ?? Directory.current,
@@ -36,6 +38,7 @@ class MagicRunnerCommand extends Command<int> {
   final ILogger _logger;
   final IFlutterCLI _flutterCli;
   final Directory _currentDir;
+  final IProjectChecker _projectChecker;
 
   @override
   String get name => 'magic_runner';
@@ -43,38 +46,6 @@ class MagicRunnerCommand extends Command<int> {
   @override
   String get description =>
       'Generate files for all packages that depend on the build runner in the current/subdirectory';
-
-  // Todo: make this method on seperated class, becouse it's shared between magic_runner_command and make_command
-
-  Future<Either<ExitCode, None>> _checkInRootProject() async {
-    final pubspecFile = File(join(Directory.current.path, 'pubspec.yaml'));
-
-    final readYamlResult = await _fileManager.readYaml(pubspecFile.path);
-
-    return readYamlResult.fold(
-      (failure) => Left(
-        failure.maybeMap(
-          fileNotFound: (value) {
-            _logger.error(LoggerMessage.youAreNotInRootProject);
-            return ExitCode.noInput;
-          },
-          unknown: (value) {
-            _logger.error(value.toString());
-            return ExitCode.unavailable;
-          },
-          orElse: () => ExitCode.unavailable,
-        ),
-      ),
-      (fileContent) {
-        final String packageName = fileContent['name'];
-        if (packageName != 'prestoeat') {
-          _logger.error(LoggerMessage.youAreNotInRootProject);
-          return Left(ExitCode.noInput);
-        }
-        return Right(None());
-      },
-    );
-  }
 
   // Todo: make this method on seperated class, becouse it's shared between magic_runner_command and make_command
 
@@ -163,11 +134,21 @@ class MagicRunnerCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final result = await _checkInRootProject();
+    final result = await _projectChecker.checkInRootProject();
 
     return await result.fold(
-      (exitCode) => exitCode.code,
-      (_) async {
+      (failure) => failure.map(
+        unknown: (value) {
+          _logger.error(value.e.toString());
+          return ExitCode.unavailable.code;
+        },
+      ),
+      (inRootProject) async {
+        if (!inRootProject) {
+          _logger.error(LoggerMessage.youAreNotInRootProject);
+          return ExitCode.noInput.code;
+        }
+
         final packagesResult = await _getPackagesToGenerate();
         return await packagesResult.fold(
           (failure) => failure.code,
