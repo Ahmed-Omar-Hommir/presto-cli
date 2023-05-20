@@ -277,6 +277,69 @@ void main() {
                 }.toList()
                   ..sort());
           });
+          test(
+            'should return Right with package paths containing a ahmed_package.',
+            () async {
+              // Arrange
+              final subDir = Directory(join(tempDir.path, 'sub_dir'))
+                ..createSync();
+              createTempPackage(tempDir, packageName: 'ahmed_package_1');
+              createTempPackage(tempDir, packageName: 'package_2');
+              createTempPackage(subDir, packageName: 'ahmed_package_3');
+              createTempPackage(tempDir, packageName: 'ahmed_package_4');
+              createTempPackage(tempDir, packageName: 'package_5');
+
+              // Act
+              final result = await sut.findPackages(
+                tempDir,
+                where: (dir) async => dir.path.contains('ahmed_package'),
+              );
+
+              // Assert
+              expect(result, isA<Right>());
+              expect(
+                  result.fold(
+                    (failure) => fail('Result returned a Left.'),
+                    (response) =>
+                        response.map((res) => res.path).toList()..sort(),
+                  ),
+                  {
+                    join(tempDir.path, 'ahmed_package_1'),
+                    join(tempDir.path, 'ahmed_package_4'),
+                    join(subDir.path, 'ahmed_package_3'),
+                  }.toList()
+                    ..sort());
+            },
+          );
+          test(
+            'should return Right with empty package paths where condition always false.',
+            () async {
+              // Arrange
+              final subDir = Directory(join(tempDir.path, 'sub_dir'))
+                ..createSync();
+              createTempPackage(tempDir, packageName: 'package_1');
+              createTempPackage(tempDir, packageName: 'package_2');
+              createTempPackage(subDir, packageName: 'package_3');
+              createTempPackage(tempDir, packageName: 'package_4');
+
+              // Act
+              final result = await sut.findPackages(
+                tempDir,
+                where: (dir) async => false,
+              );
+
+              // Assert
+              expect(result, isA<Right>());
+              expect(
+                result.fold(
+                  (failure) => fail('Result returned a Left.'),
+                  (response) =>
+                      response.map((res) => res.path).toList()..sort(),
+                ),
+                [],
+              );
+            },
+          );
         },
       );
       group(

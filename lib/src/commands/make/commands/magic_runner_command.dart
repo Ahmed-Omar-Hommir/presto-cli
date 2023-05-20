@@ -86,6 +86,11 @@ class MagicRunnerCommand extends Command<int> {
   Future<Either<ExitCode, Set<Directory>>> _getPackagesToGenerate() async {
     final packagesResult = await _fileManager.findPackages(
       Directory(join(Directory.current.path, 'packages')),
+      where: (dir) async {
+        final pubspecFile = File(join(dir.path, 'pubspec.yaml'));
+        final contetnt = await pubspecFile.readAsString();
+        return contetnt.contains('build_runner');
+      },
     );
 
     return packagesResult.fold(
