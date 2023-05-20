@@ -49,6 +49,7 @@ void main() {
           stdoutMessage.codeUnits,
         ));
     when(mockProcess.exitCode).thenAnswer((_) async => 0);
+    when(mockProcess.pid).thenReturn(1);
 
     currentDir = Directory.systemTemp.createTempSync();
 
@@ -89,7 +90,7 @@ void main() {
             when(mock.readYaml(any)).thenAnswer(
               (_) async => Right(yamlContent()),
             );
-            when(mock.findPackages(any)).thenAnswer(
+            when(mock.findPackages(any, where: anyNamed('where'))).thenAnswer(
               (_) async => Right(packageDirectories),
             );
           },
@@ -114,12 +115,12 @@ void main() {
           },
           mockFileManager: (mock) {
             verify(mock.readYaml(any)).called(1);
-            verify(mock.findPackages(any)).called(1);
+            verify(mock.findPackages(any, where: anyNamed('where'))).called(1);
             verifyNoMoreInteractions(mock);
           },
           mockLogger: (mock) {
             verify(mock.info(stdoutMessage)).called(4);
-            verify(mock.info(stderrMessage)).called(4);
+            verify(mock.error(stderrMessage)).called(4);
             verifyNoMoreInteractions(mock);
           },
         );
