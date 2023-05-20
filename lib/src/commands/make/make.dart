@@ -11,6 +11,9 @@ class MakeCommand extends Command<int> {
       fileManager: FileManager(),
       processLogger: ProcessLogger(),
       logger: Logger(),
+      projectChecker: ProjectChecker(
+        fileManager: FileManager(),
+      ),
     ));
 
     // addSubcommand(BuildYamlCommand(
