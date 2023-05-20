@@ -29,11 +29,6 @@ class MagicRunnerCommand extends Command<int> {
       abbr: 'd',
       negatable: false,
     );
-
-    argParser.addMultiOption(
-      'execludes',
-      help: 'Ignore the package for the generate file using the package name.',
-    );
   }
 
   final IProcessLogger _processLogger;
@@ -119,7 +114,10 @@ class MagicRunnerCommand extends Command<int> {
   Future<void> _runBuildRunner(Set<Directory> directories) async {
     final List<Future<int>> processes = [];
     for (Directory dir in directories) {
-      final result = await _flutterCli.buildRunner(dir);
+      final result = await _flutterCli.buildRunner(
+        dir,
+        deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
+      );
       result.fold(
         (failure) {
           _logger.error(

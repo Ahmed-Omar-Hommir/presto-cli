@@ -197,11 +197,14 @@ class MockIFileManager extends _i1.Mock implements _i7.IFileManager {
   @override
   _i6.Future<
       _i2.Either<_i8.FileManagerFailure, Set<_i4.Directory>>> findPackages(
-          _i4.Directory? dir) =>
+    _i4.Directory? dir, {
+    _i6.Future<bool> Function(_i4.Directory)? where,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #findPackages,
           [dir],
+          {#where: where},
         ),
         returnValue: _i6.Future<
                 _i2.Either<_i8.FileManagerFailure, Set<_i4.Directory>>>.value(
@@ -210,6 +213,7 @@ class MockIFileManager extends _i1.Mock implements _i7.IFileManager {
           Invocation.method(
             #findPackages,
             [dir],
+            {#where: where},
           ),
         )),
       ) as _i6.Future<_i2.Either<_i8.FileManagerFailure, Set<_i4.Directory>>>);
