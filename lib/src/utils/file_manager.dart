@@ -13,8 +13,9 @@ abstract class IFileManager {
 
   Future<Either<FileManagerFailure, Map>> readYaml(String path);
   Future<Either<FileManagerFailure, Set<Directory>>> findPackages(
-    Directory dir,
-  );
+    Directory dir, {
+    Future<bool> Function(Directory dir)? where,
+  });
 }
 
 class FileManager implements IFileManager {
@@ -48,7 +49,7 @@ class FileManager implements IFileManager {
 
   Future<List<Directory>> _getDirsMatchingRule({
     required Directory dir,
-    required bool Function(Directory dir) rule,
+    required Future<bool> Function(Directory dir) where,
     required bool recursive,
     required bool followLinks,
   }) async {
@@ -57,7 +58,7 @@ class FileManager implements IFileManager {
       recursive: recursive,
       followLinks: followLinks,
     )) {
-      if (entity is Directory && rule(entity)) {
+      if (entity is Directory && await where(entity)) {
         directories.add(entity);
       }
     }
@@ -97,20 +98,22 @@ class FileManager implements IFileManager {
 
   @override
   Future<Either<FileManagerFailure, Set<Directory>>> findPackages(
-    Directory dir,
-  ) async {
+    Directory directory, {
+    Future<bool> Function(Directory dir)? where,
+  }) async {
     try {
-      if (!dir.existsSync()) {
+      if (!directory.existsSync()) {
         return left(FileManagerFailure.dirNotFound());
       }
 
       return _getDirsMatchingRule(
-        dir: dir,
+        dir: directory,
         recursive: true,
         followLinks: false,
-        rule: (dir) =>
+        where: (dir) async =>
             Directory(dir.path).existsSync() &&
-            File(join(dir.path, 'pubspec.yaml')).existsSync(),
+            File(join(dir.path, 'pubspec.yaml')).existsSync() &&
+            (where != null ? await where(dir) : true),
       ).then((value) => Right(value.toSet()));
     } catch (e) {
       return left(FileManagerFailure.unknown(e));
