@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
-
-import 'package:analyzer/dart/analysis/features.dart';
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -19,9 +16,11 @@ class MagicRunnerCommand extends Command<int> {
     required IFlutterCLI flutterCli,
     required IProcessLogger processLogger,
     required IProjectChecker projectChecker,
+    required ITasksRunner tasksRunner,
     @visibleForTesting Directory? currentDir,
   })  : _fileManager = fileManager,
         _projectChecker = projectChecker,
+        _tasksRunner = tasksRunner,
         _flutterCli = flutterCli,
         _processLogger = processLogger,
         _currentDir = currentDir ?? Directory.current,
@@ -41,6 +40,7 @@ class MagicRunnerCommand extends Command<int> {
   final IFlutterCLI _flutterCli;
   final Directory _currentDir;
   final IProjectChecker _projectChecker;
+  final ITasksRunner _tasksRunner;
 
   @override
   String get name => 'magic_runner';
@@ -84,136 +84,71 @@ class MagicRunnerCommand extends Command<int> {
     );
   }
 
-  Future<void> _runBuildRunnerI(Set<Directory> directories) async {
-    try {
-      final List<Future<int>> processes = [];
+  Future<Either<CliFailure, Process>> _buildRunnerTask(Directory dir) async {
+    final result = await _flutterCli.buildRunner(
+      dir,
+      deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
+    );
+    result.fold(
+      (failure) {
+        _logger.error(
+          failure.maybeMap(
+            directoryNotFound: (_) => LoggerMessage.directoryNotFound,
+            unknown: (value) => value.e.toString(),
+            orElse: () => LoggerMessage.somethingWentWrong,
+          ),
+        );
+      },
+      (process) async {
+        final packageNameResult = await _fileManager.readYaml(
+          join(dir.path, 'pubspec.yaml'),
+        );
 
-      for (var dir in directories) {
-        final completer = Completer<Future<int>>();
+        final String processName = packageNameResult.fold(
+          (_) => process.pid.toString(),
+          (content) => content['name'],
+        );
 
-        print("Running build_runner in ${dir.path}");
-        await Isolate.spawn(_runBuildRunnerIsolate, {
-          'directory': dir,
-          'completer': completer,
+        process.stdout.transform(utf8.decoder).listen((stdout) {
+          _processLogger.stdout(
+            processId: process.pid,
+            processName: processName,
+            stdout: stdout,
+          );
         });
 
-        print("Waiting for build_runner in ${dir.path}");
-
-        // final exitCode = await completer.future;
-        print("build_runner in ${dir.path} finished with exit code $exitCode");
-        // processes.add(exitCode);
-      }
-
-      await Future.delayed(Duration(seconds: 8));
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> _runBuildRunnerIsolate(dynamic message) async {
-    try {
-      final Directory directory = message['directory'];
-      final Completer<Future<int>> completer = message['completer'];
-
-      final result = await _flutterCli.buildRunner(
-        directory,
-        deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
-      );
-
-      await result.fold(
-        (failure) async {
-          _logger.error(
-            failure.maybeMap(
-              directoryNotFound: (_) => LoggerMessage.directoryNotFound,
-              unknown: (value) => value.e.toString(),
-              orElse: () => LoggerMessage.somethingWentWrong,
-            ),
+        process.stderr.transform(utf8.decoder).listen((stderr) {
+          _processLogger.stderr(
+            processId: process.pid,
+            processName: processName,
+            stderr: stderr,
           );
-          final Future<int> exit = Future.value(1);
-          completer.complete(exit); // Return error exit code
-        },
-        (process) async {
-          final packageNameResult = await _fileManager.readYaml(
-            join(directory.path, 'pubspec.yaml'),
-          );
+        });
+      },
+    );
 
-          final String processName = packageNameResult.fold(
-            (_) => process.pid.toString(),
-            (content) => content['name'],
-          );
-
-          process.stdout.transform(utf8.decoder).listen((stdout) {
-            _processLogger.stdout(
-              processId: process.pid,
-              processName: processName,
-              stdout: stdout,
-            );
-          });
-
-          process.stderr.transform(utf8.decoder).listen((stderr) {
-            _processLogger.stderr(
-              processId: process.pid,
-              processName: processName,
-              stderr: stderr,
-            );
-          });
-
-          completer.complete(process.exitCode);
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
+    return result;
   }
 
   Future<void> _runBuildRunner(Set<Directory> directories) async {
-    final List<Future<int>> processes = [];
-    for (Directory dir in directories) {
-      final result = await _flutterCli.buildRunner(
-        dir,
-        deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
-      );
-      result.fold(
-        (failure) {
-          _logger.error(
-            failure.maybeMap(
-              directoryNotFound: (_) => LoggerMessage.directoryNotFound,
-              unknown: (value) => value.e.toString(),
-              orElse: () => LoggerMessage.somethingWentWrong,
-            ),
+    final tasks = List.generate(
+      directories.length,
+      (index) => () => _buildRunnerTask(directories.elementAt(index)),
+    );
+
+    await _tasksRunner.run(
+      tasks: tasks,
+      concurrency: Platform.numberOfProcessors,
+      resultWaiter: (value) {
+        if (value is Either<CliFailure, Process>) {
+          return value.fold(
+            (failure) => Future.value(),
+            (process) => process.exitCode,
           );
-        },
-        (process) async {
-          processes.add(process.exitCode);
-
-          final packageNameResult = await _fileManager.readYaml(
-            join(dir.path, 'pubspec.yaml'),
-          );
-
-          final String processName = packageNameResult.fold(
-            (_) => process.pid.toString(),
-            (content) => content['name'],
-          );
-
-          process.stdout.transform(utf8.decoder).listen((stdout) {
-            _processLogger.stdout(
-              processId: process.pid,
-              processName: processName,
-              stdout: stdout,
-            );
-          });
-
-          process.stderr.transform(utf8.decoder).listen((stderr) {
-            _processLogger.stderr(
-              processId: process.pid,
-              processName: processName,
-              stderr: stderr,
-            );
-          });
-        },
-      );
-    }
-    await Future.wait(processes);
+        }
+        return Future.value();
+      },
+    );
   }
 
   @override
@@ -238,8 +173,7 @@ class MagicRunnerCommand extends Command<int> {
         return await packagesResult.fold(
           (failure) => failure.code,
           (packagesDir) async {
-            await _runBuildRunnerI(packagesDir);
-            // await _runBuildRunner(packagesDir);
+            await _runBuildRunner(packagesDir);
             return ExitCode.success.code;
           },
         );

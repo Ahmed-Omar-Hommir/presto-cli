@@ -4,3 +4,4 @@ export './file_manager.dart';
 export './exiter.dart';
 export './process_logger.dart';
 export './project_checker.dart';
+export './task_runner.dart';
