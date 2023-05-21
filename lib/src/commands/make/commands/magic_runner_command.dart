@@ -99,12 +99,12 @@ class MagicRunnerCommand extends Command<int> {
 
         print("Waiting for build_runner in ${dir.path}");
 
-        final exitCode = await completer.future;
+        // final exitCode = await completer.future;
         print("build_runner in ${dir.path} finished with exit code $exitCode");
-        processes.add(exitCode);
+        // processes.add(exitCode);
       }
 
-      await Future.wait(processes);
+      await Future.delayed(Duration(seconds: 8));
     } catch (e) {
       print(e);
     }
