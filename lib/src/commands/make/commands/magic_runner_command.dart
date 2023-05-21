@@ -87,7 +87,7 @@ class MagicRunnerCommand extends Command<int> {
     final List<Future<int>> processes = [];
 
     await Future.forEach(directories, (Directory dir) async {
-      final completer = Completer<int>();
+      final completer = Completer<Future<int>>();
 
       await Isolate.spawn(_runBuildRunnerIsolate, {
         'directory': dir,
@@ -95,13 +95,13 @@ class MagicRunnerCommand extends Command<int> {
       });
 
       final exitCode = await completer.future;
-      processes.add(Future.value(exitCode));
+      processes.add(exitCode);
     });
 
     await Future.wait(processes);
   }
 
-  void _runBuildRunnerIsolate(dynamic message) async {
+  Future<void> _runBuildRunnerIsolate(dynamic message) async {
     final Directory directory = message['directory'];
     final Completer<int> completer = message['completer'];
 
