@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
@@ -82,6 +83,75 @@ class MagicRunnerCommand extends Command<int> {
     );
   }
 
+  Future<void> _runBuildRunnerI(Set<Directory> directories) async {
+    final List<Future<int>> processes = [];
+
+    await Future.forEach(directories, (Directory dir) async {
+      final completer = Completer<int>();
+
+      await Isolate.spawn(_runBuildRunnerIsolate, {
+        'directory': dir,
+        'completer': completer,
+      });
+
+      final exitCode = await completer.future;
+      processes.add(Future.value(exitCode));
+    });
+
+    await Future.wait(processes);
+  }
+
+  void _runBuildRunnerIsolate(dynamic message) async {
+    final Directory directory = message['directory'];
+    final Completer<int> completer = message['completer'];
+
+    final result = await _flutterCli.buildRunner(
+      directory,
+      deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
+    );
+
+    await result.fold(
+      (failure) async {
+        _logger.error(
+          failure.maybeMap(
+            directoryNotFound: (_) => LoggerMessage.directoryNotFound,
+            unknown: (value) => value.e.toString(),
+            orElse: () => LoggerMessage.somethingWentWrong,
+          ),
+        );
+        completer.complete(1); // Return error exit code
+      },
+      (process) async {
+        final packageNameResult = await _fileManager.readYaml(
+          join(directory.path, 'pubspec.yaml'),
+        );
+
+        final String processName = packageNameResult.fold(
+          (_) => process.pid.toString(),
+          (content) => content['name'],
+        );
+
+        process.stdout.transform(utf8.decoder).listen((stdout) {
+          _processLogger.stdout(
+            processId: process.pid,
+            processName: processName,
+            stdout: stdout,
+          );
+        });
+
+        process.stderr.transform(utf8.decoder).listen((stderr) {
+          _processLogger.stderr(
+            processId: process.pid,
+            processName: processName,
+            stderr: stderr,
+          );
+        });
+
+        completer.complete(process.exitCode);
+      },
+    );
+  }
+
   Future<void> _runBuildRunner(Set<Directory> directories) async {
     final List<Future<int>> processes = [];
     for (Directory dir in directories) {
@@ -150,10 +220,12 @@ class MagicRunnerCommand extends Command<int> {
         }
 
         final packagesResult = await _getPackagesToGenerate();
+
         return await packagesResult.fold(
           (failure) => failure.code,
           (packagesDir) async {
-            await _runBuildRunner(packagesDir);
+            await _runBuildRunnerI(packagesDir);
+            // await _runBuildRunner(packagesDir);
             return ExitCode.success.code;
           },
         );
