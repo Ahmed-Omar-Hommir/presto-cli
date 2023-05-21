@@ -14,6 +14,7 @@ class MakeCommand extends Command<int> {
       projectChecker: ProjectChecker(
         fileManager: FileManager(),
       ),
+      tasksRunner: TaskRunner(),
     ));
 
     // addSubcommand(BuildYamlCommand(
