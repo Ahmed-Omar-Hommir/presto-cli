@@ -5,6 +5,7 @@ import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:test/test.dart';
+import 'comment_test.dart';
 import 'flutter_cli_test.mocks.dart';
 import 'helper.dart';
 
@@ -21,6 +22,13 @@ void main() {
   late MockDirectory mockDirectory;
   late Directory tempDir;
   late MockProcess mockProcess;
+
+  void veryifyAllZeroInteraction() {
+    verifyZeroInteractions(processManager);
+    verifyZeroInteractions(processResult);
+    verifyZeroInteractions(mockDirectory);
+    verifyZeroInteractions(mockProcess);
+  }
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync();
@@ -686,34 +694,11 @@ void main() {
       );
     });
     group('Failure cases', () {
-      test(
-        'should return Left $CliFailureDirectoryNotFound when directory does not exist.',
-        () async {
-          // Arrange
-          final tempDir = Directory(join(
-            Directory.systemTemp.createTempSync().path,
-            'directory',
-            'does',
-            'not',
-            'exist',
-          ));
-
-          // Act
-          final result = await sut.buildRunner(tempDir);
-
-          // Assert
-          expect(result, isA<Left>());
-          expect(
-            result.fold(
-              (failure) => failure,
-              (_) => fail('Result returned a Right'),
-            ),
-            isA<CliFailureDirectoryNotFound>(),
-          );
-
-          verifyZeroInteractions(processManager);
-        },
+      directoryDoesNotExistTest(
+        act: (tempDir) => sut.buildRunner(tempDir),
+        assertions: () => veryifyAllZeroInteraction(),
       );
+
       test(
         'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
         () async {
@@ -776,4 +761,111 @@ void main() {
       );
     });
   });
+
+  group(
+    'Clean',
+    () {
+      group('Success cases', () {
+        test(
+          'should clean package successfully and call processManager.start with correct values.',
+          () async {
+            // Arrange
+            whenClean(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).thenAnswer((_) async => mockProcess);
+
+            // Act
+            final result = await sut.clean(tempDir);
+
+            // Assert
+            expect(result, isA<Right>());
+            expect(
+              result.getOrElse(() => fail('Result returned a Left')),
+              isA<Process>(),
+            );
+
+            verifyClean(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(mockDirectory);
+            verifyZeroInteractions(processResult);
+          },
+        );
+      });
+      group('Failure cases', () {
+        directoryDoesNotExistTest(
+          act: (tempDir) => sut.clean(tempDir),
+          assertions: () => veryifyAllZeroInteraction(),
+        );
+
+        test(
+          'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
+          () async {
+            // Arrange
+            when(mockDirectory.existsSync()).thenThrow(Exception());
+
+            // Act
+            final result = await sut.clean(mockDirectory);
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
+
+            verify(mockDirectory.existsSync()).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+            verifyZeroInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+        test(
+          'should return Left $CliFailureUnknown when proccess.run throw exception',
+          () async {
+            // Arrange
+            final path = '';
+            when(mockDirectory.existsSync()).thenReturn(true);
+            when(mockDirectory.path).thenReturn(path);
+            whenClean(
+              processManager: processManager,
+              workingDirectory: mockDirectory,
+            ).thenThrow(Exception());
+
+            // Act
+            final result = await sut.clean(mockDirectory);
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
+
+            verify(mockDirectory.existsSync()).called(1);
+            verify(mockDirectory.path).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+
+            verifyClean(
+              processManager: processManager,
+              workingDirectory: Directory(path),
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+      });
+    },
+  );
 }
