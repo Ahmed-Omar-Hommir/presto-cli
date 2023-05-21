@@ -24,6 +24,8 @@ abstract class IFlutterCLI {
     Directory workingDirectory, {
     bool deleteConflictingOutputs = false,
   });
+
+  Future<Either<CliFailure, Process>> clean(Directory workingDirectory);
 }
 
 class FlutterCLI implements IFlutterCLI {
@@ -169,6 +171,24 @@ class FlutterCLI implements IFlutterCLI {
       final result = await _processManager.start(
         'flutter',
         args,
+        workingDirectory: workingDirectory.path,
+      );
+
+      return Right(result);
+    } catch (e) {
+      return left(CliFailure.unknown(e));
+    }
+  }
+
+  @override
+  Future<Either<CliFailure, Process>> clean(Directory workingDirectory) async {
+    try {
+      if (!workingDirectory.existsSync()) {
+        return const Left(CliFailure.directoryNotFound());
+      }
+      final result = await _processManager.start(
+        'flutter',
+        ['clean'],
         workingDirectory: workingDirectory.path,
       );
 

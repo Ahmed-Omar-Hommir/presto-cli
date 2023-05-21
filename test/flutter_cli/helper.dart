@@ -93,6 +93,29 @@ VerificationResult verifyBuildRunner({
   ));
 }
 
+PostExpectation whenClean({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return when(processManager.start(
+    'flutter',
+    ['clean'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
+VerificationResult verifyClean({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+  bool withDeleteConflictingOutputs = false,
+}) {
+  return verify(processManager.start(
+    'flutter',
+    ['clean'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
 VerificationResult verifyGenL10N({
   required IProcessManager processManager,
   required String packagePath,
