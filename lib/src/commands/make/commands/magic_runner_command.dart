@@ -49,8 +49,6 @@ class MagicRunnerCommand extends Command<int> {
   String get description =>
       'Generate files for all packages that depend on the build runner in the current/subdirectory';
 
-  // Todo: make this method on seperated class, becouse it's shared between magic_runner_command and make_command
-
   Future<Either<ExitCode, Set<Directory>>> _getPackagesToGenerate() async {
     final packagesResult = await _fileManager.findPackages(
       Directory(join(Directory.current.path, 'packages')),
