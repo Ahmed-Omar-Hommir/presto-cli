@@ -85,22 +85,23 @@ class MagicRunnerCommand extends Command<int> {
 
   Future<void> _runBuildRunnerI(Set<Directory> directories) async {
     try {
-      print('directories.length: ${directories.length}');
       final List<Future<int>> processes = [];
 
       for (var dir in directories) {
         final completer = Completer<Future<int>>();
 
+        print("Running build_runner in ${dir.path}");
         await Isolate.spawn(_runBuildRunnerIsolate, {
           'directory': dir,
           'completer': completer,
         });
 
+        print("Waiting for build_runner in ${dir.path}");
+
         final exitCode = await completer.future;
+        print("build_runner in ${dir.path} finished with exit code $exitCode");
         processes.add(exitCode);
       }
-
-      print('processes.length: ${processes.length}');
 
       await Future.wait(processes);
     } catch (e) {
@@ -109,54 +110,58 @@ class MagicRunnerCommand extends Command<int> {
   }
 
   Future<void> _runBuildRunnerIsolate(dynamic message) async {
-    final Directory directory = message['directory'];
-    final Completer<int> completer = message['completer'];
+    try {
+      final Directory directory = message['directory'];
+      final Completer<int> completer = message['completer'];
 
-    final result = await _flutterCli.buildRunner(
-      directory,
-      deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
-    );
+      final result = await _flutterCli.buildRunner(
+        directory,
+        deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
+      );
 
-    await result.fold(
-      (failure) async {
-        _logger.error(
-          failure.maybeMap(
-            directoryNotFound: (_) => LoggerMessage.directoryNotFound,
-            unknown: (value) => value.e.toString(),
-            orElse: () => LoggerMessage.somethingWentWrong,
-          ),
-        );
-        completer.complete(1); // Return error exit code
-      },
-      (process) async {
-        final packageNameResult = await _fileManager.readYaml(
-          join(directory.path, 'pubspec.yaml'),
-        );
-
-        final String processName = packageNameResult.fold(
-          (_) => process.pid.toString(),
-          (content) => content['name'],
-        );
-
-        process.stdout.transform(utf8.decoder).listen((stdout) {
-          _processLogger.stdout(
-            processId: process.pid,
-            processName: processName,
-            stdout: stdout,
+      await result.fold(
+        (failure) async {
+          _logger.error(
+            failure.maybeMap(
+              directoryNotFound: (_) => LoggerMessage.directoryNotFound,
+              unknown: (value) => value.e.toString(),
+              orElse: () => LoggerMessage.somethingWentWrong,
+            ),
           );
-        });
-
-        process.stderr.transform(utf8.decoder).listen((stderr) {
-          _processLogger.stderr(
-            processId: process.pid,
-            processName: processName,
-            stderr: stderr,
+          completer.complete(1); // Return error exit code
+        },
+        (process) async {
+          final packageNameResult = await _fileManager.readYaml(
+            join(directory.path, 'pubspec.yaml'),
           );
-        });
 
-        completer.complete(process.exitCode);
-      },
-    );
+          final String processName = packageNameResult.fold(
+            (_) => process.pid.toString(),
+            (content) => content['name'],
+          );
+
+          process.stdout.transform(utf8.decoder).listen((stdout) {
+            _processLogger.stdout(
+              processId: process.pid,
+              processName: processName,
+              stdout: stdout,
+            );
+          });
+
+          process.stderr.transform(utf8.decoder).listen((stderr) {
+            _processLogger.stderr(
+              processId: process.pid,
+              processName: processName,
+              stderr: stderr,
+            );
+          });
+
+          completer.complete(process.exitCode);
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _runBuildRunner(Set<Directory> directories) async {
