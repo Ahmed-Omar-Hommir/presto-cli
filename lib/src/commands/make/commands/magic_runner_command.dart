@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:analyzer/dart/analysis/features.dart';
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -112,7 +113,7 @@ class MagicRunnerCommand extends Command<int> {
   Future<void> _runBuildRunnerIsolate(dynamic message) async {
     try {
       final Directory directory = message['directory'];
-      final Completer<int> completer = message['completer'];
+      final Completer<Future<int>> completer = message['completer'];
 
       final result = await _flutterCli.buildRunner(
         directory,
@@ -128,7 +129,8 @@ class MagicRunnerCommand extends Command<int> {
               orElse: () => LoggerMessage.somethingWentWrong,
             ),
           );
-          completer.complete(1); // Return error exit code
+          final Future<int> exit = Future.value(1);
+          completer.complete(exit); // Return error exit code
         },
         (process) async {
           final packageNameResult = await _fileManager.readYaml(
