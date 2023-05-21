@@ -84,21 +84,28 @@ class MagicRunnerCommand extends Command<int> {
   }
 
   Future<void> _runBuildRunnerI(Set<Directory> directories) async {
-    final List<Future<int>> processes = [];
+    try {
+      print('directories.length: ${directories.length}');
+      final List<Future<int>> processes = [];
 
-    await Future.forEach(directories, (Directory dir) async {
-      final completer = Completer<Future<int>>();
+      for (var dir in directories) {
+        final completer = Completer<Future<int>>();
 
-      await Isolate.spawn(_runBuildRunnerIsolate, {
-        'directory': dir,
-        'completer': completer,
-      });
+        await Isolate.spawn(_runBuildRunnerIsolate, {
+          'directory': dir,
+          'completer': completer,
+        });
 
-      final exitCode = await completer.future;
-      processes.add(exitCode);
-    });
+        final exitCode = await completer.future;
+        processes.add(exitCode);
+      }
 
-    await Future.wait(processes);
+      print('processes.length: ${processes.length}');
+
+      await Future.wait(processes);
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _runBuildRunnerIsolate(dynamic message) async {
