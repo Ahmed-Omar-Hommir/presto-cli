@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:async/async.dart';
 
 abstract class ITasksRunner<T> {
@@ -19,7 +21,7 @@ class TaskRunner<T> implements ITasksRunner<T> {
         StreamQueue<Future<T> Function()>(Stream.fromIterable(tasks));
 
     final processors = List<Future<List<T>>>.generate(
-      concurrency,
+      min(concurrency, tasks.length),
       (_) => _processQueue(queue, resultWaiter),
     );
     final result = await Future.wait(processors);

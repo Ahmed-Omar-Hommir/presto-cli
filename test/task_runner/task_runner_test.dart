@@ -64,6 +64,37 @@ void main() {
       expect(result.length, 4);
     },
   );
+  test(
+    'should run tasks when concurrency large than number of tasks.',
+    () async {
+      // Arrange
+
+      Future<TaskResultTest> task(Duration durarion) async {
+        await Future<void>.delayed(durarion);
+        return TaskResultTest(Duration(seconds: 1));
+      }
+
+      final List<Future<TaskResultTest> Function()> tasks = [
+        () => task(Duration(seconds: 1)),
+        () => task(Duration(seconds: 1)),
+        () => task(Duration(milliseconds: 500)),
+        () => task(Duration(milliseconds: 500)),
+      ];
+
+      // Act
+      final startTime = DateTime.now();
+      final result = await sut.run(
+        tasks: tasks,
+        concurrency: tasks.length * tasks.length,
+      );
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+
+      // Assert
+      expect(duration.inSeconds, lessThan(1.1));
+      expect(result.length, 4);
+    },
+  );
 
   test(
     'should wait result function after task complete.',

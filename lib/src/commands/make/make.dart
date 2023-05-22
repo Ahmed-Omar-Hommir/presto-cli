@@ -8,32 +8,21 @@ import 'commands/commands.dart';
 class MakeCommand extends Command<int> {
   MakeCommand() {
     addSubcommand(MagicRunnerCommand(
-      flutterCli: FlutterCLI(),
-      fileManager: FileManager(),
-      processLogger: ProcessLogger(),
-      logger: Logger(),
-      projectChecker: ProjectChecker(
+      magicLauncher: MagicLauncher(
+        processLogger: ProcessLogger(),
         fileManager: FileManager(),
+        logger: Logger(),
+        tasksRunner: TaskRunner(),
       ),
-      tasksRunner: TaskRunner(),
     ));
     addSubcommand(MagicCleanCommand(
-      flutterCli: FlutterCLI(),
-      fileManager: FileManager(),
-      processLogger: ProcessLogger(),
-      logger: Logger(),
-      projectChecker: ProjectChecker(
+      magicLauncher: MagicLauncher(
+        processLogger: ProcessLogger(),
         fileManager: FileManager(),
+        logger: Logger(),
+        tasksRunner: TaskRunner(),
       ),
-      tasksRunner: TaskRunner(),
     ));
-
-    // addSubcommand(BuildYamlCommand(
-    //   buildYamlGenerator: BuildYamlGenerator(
-    //     packageManager: PackageManager(),
-    //   ),
-    //   logger: Logger(),
-    // ));
   }
   @override
   String get name => 'make';
