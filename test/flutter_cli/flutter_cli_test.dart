@@ -694,10 +694,10 @@ void main() {
       );
     });
     group('Failure cases', () {
-      // directoryDoesNotExistTest(
-      //   act: (tempDir) => sut.buildRunner(tempDir),
-      //   assertions: () => veryifyAllZeroInteraction(),
-      // );
+      directoryDoesNotExistTest(
+        act: (tempDir) => sut.buildRunner(tempDir),
+        assertions: () => veryifyAllZeroInteraction(),
+      );
 
       test(
         'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
@@ -796,10 +796,10 @@ void main() {
         );
       });
       group('Failure cases', () {
-        // directoryDoesNotExistTest(
-        //   act: (tempDir) => sut.clean(tempDir),
-        //   assertions: () => veryifyAllZeroInteraction(),
-        // );
+        directoryDoesNotExistTest(
+          act: (tempDir) => sut.clean(tempDir),
+          assertions: () => veryifyAllZeroInteraction(),
+        );
 
         test(
           'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
@@ -857,6 +857,113 @@ void main() {
             verifyNoMoreInteractions(mockDirectory);
 
             verifyClean(
+              processManager: processManager,
+              workingDirectory: Directory(path),
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Pub Add',
+    () {
+      group('Success cases', () {
+        test(
+          'should get package dependenies successfully and call processManager.start with correct values.',
+          () async {
+            // Arrange
+            whenPubGet(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).thenAnswer((_) async => mockProcess);
+
+            // Act
+            final result = await sut.pubGet(tempDir);
+
+            // Assert
+            expect(result, isA<Right>());
+            expect(
+              result.getOrElse(() => fail('Result returned a Left')),
+              isA<Process>(),
+            );
+
+            verifyPubGet(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(mockDirectory);
+            verifyZeroInteractions(processResult);
+          },
+        );
+      });
+      group('Failure cases', () {
+        directoryDoesNotExistTest(
+          act: (tempDir) => sut.pubGet(tempDir),
+          assertions: () => veryifyAllZeroInteraction(),
+        );
+
+        test(
+          'should return Left $CliFailureUnknown when Directory existsSync throw exception',
+          () async {
+            // Arrange
+            when(mockDirectory.existsSync()).thenThrow(Exception());
+
+            // Act
+            final result = await sut.pubGet(mockDirectory);
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
+
+            verify(mockDirectory.existsSync()).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+            verifyZeroInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+        test(
+          'should return Left $CliFailureUnknown when proccess.run throw exception',
+          () async {
+            // Arrange
+            final path = '';
+            when(mockDirectory.existsSync()).thenReturn(true);
+            when(mockDirectory.path).thenReturn(path);
+            whenPubGet(
+              processManager: processManager,
+              workingDirectory: mockDirectory,
+            ).thenThrow(Exception());
+
+            // Act
+            final result = await sut.pubGet(mockDirectory);
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
+
+            verify(mockDirectory.existsSync()).called(1);
+            verify(mockDirectory.path).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+
+            verifyPubGet(
               processManager: processManager,
               workingDirectory: Directory(path),
             ).called(1);
