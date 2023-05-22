@@ -14,6 +14,7 @@ import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
 import 'package:presto_cli/src/utils/utils.dart';
 import 'package:test/test.dart';
 
+import 'helper.dart';
 import 'magic_launcher_test.mocks.dart';
 
 @GenerateMocks([
@@ -505,12 +506,4 @@ void main() {
       },
     );
   });
-}
-
-class ProceessInfo {
-  static const String packageName = 'package_name';
-  static const String stdout = 'stdout';
-  static const String stderr = 'stderr';
-  static const int exitCode = 0;
-  static const int pid = 1234;
 }
