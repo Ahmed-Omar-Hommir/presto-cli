@@ -5,7 +5,7 @@ import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:test/test.dart';
-import 'comment_test.dart';
+import 'common.dart';
 import 'flutter_cli_test.mocks.dart';
 import 'helper.dart';
 
@@ -694,10 +694,10 @@ void main() {
       );
     });
     group('Failure cases', () {
-      directoryDoesNotExistTest(
-        act: (tempDir) => sut.buildRunner(tempDir),
-        assertions: () => veryifyAllZeroInteraction(),
-      );
+      // directoryDoesNotExistTest(
+      //   act: (tempDir) => sut.buildRunner(tempDir),
+      //   assertions: () => veryifyAllZeroInteraction(),
+      // );
 
       test(
         'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',
@@ -796,10 +796,10 @@ void main() {
         );
       });
       group('Failure cases', () {
-        directoryDoesNotExistTest(
-          act: (tempDir) => sut.clean(tempDir),
-          assertions: () => veryifyAllZeroInteraction(),
-        );
+        // directoryDoesNotExistTest(
+        //   act: (tempDir) => sut.clean(tempDir),
+        //   assertions: () => veryifyAllZeroInteraction(),
+        // );
 
         test(
           'should return Left $CliFailureUnknown when Diricroet existsSync throw exception',

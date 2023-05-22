@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:args/command_runner.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:presto_cli/presto_cli.dart';
-import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
 
 class MagicRunnerCommand extends Command<int> {

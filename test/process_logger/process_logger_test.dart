@@ -4,8 +4,8 @@ import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/utils/utils.dart';
 import 'package:test/test.dart';
 
-import '../magic_runner_command/magic_runner_command_test.mocks.dart';
 import 'helper.dart';
+import 'parallel_process_logger_test.mocks.dart';
 
 @GenerateMocks([ILogger])
 void main() {
