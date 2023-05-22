@@ -4,6 +4,7 @@ import 'package:presto_cli/src/commands/make/commands/magic_clean_command.dart';
 import 'package:presto_cli/src/logger.dart';
 
 import 'commands/commands.dart';
+import 'commands/magic_get_command.dart';
 
 class MakeCommand extends Command<int> {
   MakeCommand() {
@@ -16,6 +17,14 @@ class MakeCommand extends Command<int> {
       ),
     ));
     addSubcommand(MagicCleanCommand(
+      magicLauncher: MagicLauncher(
+        processLogger: ProcessLogger(),
+        fileManager: FileManager(),
+        logger: Logger(),
+        tasksRunner: TaskRunner(),
+      ),
+    ));
+    addSubcommand(MagicGetCommand(
       magicLauncher: MagicLauncher(
         processLogger: ProcessLogger(),
         fileManager: FileManager(),
