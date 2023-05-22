@@ -104,10 +104,31 @@ PostExpectation whenClean({
   ));
 }
 
+PostExpectation whenPubGet({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return when(processManager.start(
+    'flutter',
+    ['pub', 'get'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
+VerificationResult verifyPubGet({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return verify(processManager.start(
+    'flutter',
+    ['pub', 'get'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
 VerificationResult verifyClean({
   required IProcessManager processManager,
   required Directory workingDirectory,
-  bool withDeleteConflictingOutputs = false,
 }) {
   return verify(processManager.start(
     'flutter',

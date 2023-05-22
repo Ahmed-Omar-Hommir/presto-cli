@@ -28,3 +28,14 @@ class MagicCleanStrategy implements IMagicCommandStrategy {
     return _flutterCLI.clean(dir);
   }
 }
+
+class MagicGetStrategy implements IMagicCommandStrategy {
+  MagicGetStrategy({
+    @visibleForTesting IFlutterCLI? flutterCLI,
+  }) : _flutterCLI = flutterCLI ?? FlutterCLI();
+  final IFlutterCLI _flutterCLI;
+  @override
+  Future<Either<CliFailure, Process>> runCommand(Directory dir) {
+    return _flutterCLI.pubGet(dir);
+  }
+}
