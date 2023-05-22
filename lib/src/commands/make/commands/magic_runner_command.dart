@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
@@ -25,10 +26,17 @@ class MagicRunnerCommand extends Command<int> {
   String get description =>
       'Generate files for all packages that depend on the build runner in the current/subdirectory';
 
+  Future<bool> packageWhere(Directory dir) async {
+    final pubspec = File('${dir.path}/pubspec.yaml');
+    final content = await pubspec.readAsString();
+    return content.contains('build_runner');
+  }
+
   @override
   Future<int> run() async {
     return await _magicLauncher.launch(
       magicCommandStrategy: MagicBuildRunnerStrategy(),
+      packageWhere: (dir) async => packageWhere(dir),
     );
   }
 }
