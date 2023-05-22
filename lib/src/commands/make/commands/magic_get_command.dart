@@ -3,8 +3,8 @@ import 'package:args/command_runner.dart';
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
 import 'package:presto_cli/src/utils/utils.dart';
 
-class MagicCleanCommand extends Command<int> {
-  MagicCleanCommand({
+class MagicGetCommand extends Command<int> {
+  MagicGetCommand({
     required IMagicLauncher magicLauncher,
   }) : _magicLauncher = magicLauncher;
 
