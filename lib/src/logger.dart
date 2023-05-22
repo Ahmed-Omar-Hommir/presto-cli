@@ -10,7 +10,7 @@ abstract class ILogger {
 }
 
 class Logger implements ILogger {
-  final _masonLogger = mason_logger.Logger();
+  late final _masonLogger = mason_logger.Logger();
 
   @override
   void error(String message) {

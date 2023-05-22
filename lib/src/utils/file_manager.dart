@@ -19,11 +19,11 @@ abstract class IFileManager {
 }
 
 class FileManager implements IFileManager {
-  FileManager({
+  const FileManager({
     @visibleForTesting IFileFactory? fileFactory,
     @visibleForTesting IYamlWrapper? yamlWrapper,
-  })  : _fileFactory = fileFactory ?? FileFactory(),
-        _yamlWrapper = yamlWrapper ?? YamlWrapper();
+  })  : _fileFactory = fileFactory ?? const FileFactory(),
+        _yamlWrapper = yamlWrapper ?? const YamlWrapper();
 
   final IFileFactory _fileFactory;
   final IYamlWrapper _yamlWrapper;
@@ -126,6 +126,7 @@ abstract class IFileFactory {
 }
 
 class FileFactory implements IFileFactory {
+  const FileFactory();
   @override
   File create(String path) => File(path);
 }
@@ -135,6 +136,7 @@ abstract class IYamlWrapper {
 }
 
 class YamlWrapper implements IYamlWrapper {
+  const YamlWrapper();
   @override
   Map loadYamlFile(String yaml) => loadYaml(yaml);
 }

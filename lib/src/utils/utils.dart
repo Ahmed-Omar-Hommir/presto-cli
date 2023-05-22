@@ -5,3 +5,4 @@ export './exiter.dart';
 export './process_logger.dart';
 export './project_checker.dart';
 export './task_runner.dart';
+export './magic_launcher.dart';

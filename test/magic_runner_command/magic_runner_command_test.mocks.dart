@@ -381,6 +381,23 @@ class MockIFlutterCLI extends _i1.Mock implements _i10.IFlutterCLI {
           ),
         )),
       ) as _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>>);
+  @override
+  _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>> clean(
+          _i4.Directory? workingDirectory) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #clean,
+          [workingDirectory],
+        ),
+        returnValue: _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>>.value(
+            _FakeEither_0<_i11.CliFailure, _i4.Process>(
+          this,
+          Invocation.method(
+            #clean,
+            [workingDirectory],
+          ),
+        )),
+      ) as _i6.Future<_i2.Either<_i11.CliFailure, _i4.Process>>);
 }
 
 /// A class which mocks [Process].

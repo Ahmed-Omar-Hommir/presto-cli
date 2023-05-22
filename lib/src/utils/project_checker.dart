@@ -9,7 +9,7 @@ abstract class IProjectChecker {
 }
 
 class ProjectChecker implements IProjectChecker {
-  ProjectChecker({
+  const ProjectChecker({
     required IFileManager fileManager,
   }) : _fileManager = fileManager;
 
