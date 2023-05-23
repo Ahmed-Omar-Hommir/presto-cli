@@ -13,7 +13,7 @@ class MagicL10NCommand extends Command<int> {
   final IMagicLauncher _magicLauncher;
 
   @override
-  String get name => 'magic_l10n';
+  String get name => 'l10n';
 
   @override
   String get description => '';

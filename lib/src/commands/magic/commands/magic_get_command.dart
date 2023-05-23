@@ -11,7 +11,7 @@ class MagicGetCommand extends Command<int> {
   final IMagicLauncher _magicLauncher;
 
   @override
-  String get name => 'magic_get';
+  String get name => 'get';
 
   @override
   String get description => '';

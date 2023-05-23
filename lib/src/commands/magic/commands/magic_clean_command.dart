@@ -11,7 +11,7 @@ class MagicCleanCommand extends Command<int> {
   final IMagicLauncher _magicLauncher;
 
   @override
-  String get name => 'magic_clean';
+  String get name => 'clean';
 
   @override
   String get description => '';
