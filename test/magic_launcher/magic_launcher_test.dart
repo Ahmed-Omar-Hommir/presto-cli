@@ -6,7 +6,7 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as path;
-import 'package:presto_cli/src/commands/make/commands/magic_runner_command.dart';
+import 'package:presto_cli/src/commands/magic/commands/magic_runner_command.dart';
 import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart';
 import 'package:presto_cli/src/models/models.dart';
