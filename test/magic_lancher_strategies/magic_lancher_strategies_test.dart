@@ -16,7 +16,10 @@ void main() {
 
   setUp(() {
     mockFlutterCLI = MockIFlutterCLI();
-    sut = MagicBuildRunnerStrategy(flutterCLI: mockFlutterCLI);
+    sut = MagicBuildRunnerStrategy(
+      flutterCLI: mockFlutterCLI,
+      deleteConflictingOutputs: false,
+    );
     when(mockFlutterCLI.buildRunner(any)).thenAnswer((_) async {
       return left(CliFailure.directoryNotFound());
     });
@@ -28,7 +31,10 @@ void main() {
   group('Build Runner Strategy', () {
     test('should call buildRuner when run commane', () async {
       // arrange
-      sut = MagicBuildRunnerStrategy(flutterCLI: mockFlutterCLI);
+      sut = MagicBuildRunnerStrategy(
+        flutterCLI: mockFlutterCLI,
+        deleteConflictingOutputs: false,
+      );
       // act
       final result = await sut.runCommand(Directory.current);
       // assert

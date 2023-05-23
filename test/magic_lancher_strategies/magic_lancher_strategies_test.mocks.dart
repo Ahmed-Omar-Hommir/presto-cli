@@ -99,25 +99,22 @@ class MockIFlutterCLI extends _i1.Mock implements _i3.IFlutterCLI {
         )),
       ) as _i4.Future<_i2.Either<_i5.CliFailure, _i6.ProcessResponse>>);
   @override
-  _i4.Future<_i2.Either<_i5.CliFailure, _i6.ProcessResponse>> genL10N(
-          {String? packagePath}) =>
+  _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>> genL10N(
+          _i8.Directory? workingDirectory) =>
       (super.noSuchMethod(
         Invocation.method(
           #genL10N,
-          [],
-          {#packagePath: packagePath},
+          [workingDirectory],
         ),
-        returnValue:
-            _i4.Future<_i2.Either<_i5.CliFailure, _i6.ProcessResponse>>.value(
-                _FakeEither_0<_i5.CliFailure, _i6.ProcessResponse>(
+        returnValue: _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>>.value(
+            _FakeEither_0<_i5.CliFailure, _i8.Process>(
           this,
           Invocation.method(
             #genL10N,
-            [],
-            {#packagePath: packagePath},
+            [workingDirectory],
           ),
         )),
-      ) as _i4.Future<_i2.Either<_i5.CliFailure, _i6.ProcessResponse>>);
+      ) as _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>>);
   @override
   _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>> buildRunner(
     _i8.Directory? workingDirectory, {
@@ -152,6 +149,23 @@ class MockIFlutterCLI extends _i1.Mock implements _i3.IFlutterCLI {
           this,
           Invocation.method(
             #clean,
+            [workingDirectory],
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>>);
+  @override
+  _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>> pubGet(
+          _i8.Directory? workingDirectory) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #pubGet,
+          [workingDirectory],
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.CliFailure, _i8.Process>>.value(
+            _FakeEither_0<_i5.CliFailure, _i8.Process>(
+          this,
+          Invocation.method(
+            #pubGet,
             [workingDirectory],
           ),
         )),

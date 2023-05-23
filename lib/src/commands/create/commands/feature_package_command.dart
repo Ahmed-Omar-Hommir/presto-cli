@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
+import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/create/templates/feature_bloc_temp.dart';
 import 'package:presto_cli/src/commands/create/templates/set_up_feature_files_temp.dart';
@@ -93,7 +94,7 @@ class CreateFeaturePackageCommand extends Command<int> {
       );
 
       locProgress.update('generating localization');
-      await _flutterCli.genL10N(packagePath: './$packageName');
+      await _flutterCli.genL10N(Directory(packageName));
       locProgress
           .complete(lightCyan.wrap(styleBold.wrap('Localization Done!')));
     }
