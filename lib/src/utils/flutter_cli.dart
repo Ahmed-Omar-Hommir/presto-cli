@@ -211,7 +211,7 @@ class FlutterCLI implements IFlutterCLI {
       final result = await _processManager.start(
         'flutter',
         ['pub', 'get'],
-        workingDirectory: workingDirectory.path,
+        workingDirectory: relative(workingDirectory.path),
       );
 
       return Right(result);
