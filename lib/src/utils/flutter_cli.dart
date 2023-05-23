@@ -19,7 +19,7 @@ abstract class IFlutterCLI {
     String? packagePath,
   });
 
-  Future<Either<CliFailure, ProcessResponse>> genL10N({String? packagePath});
+  Future<Either<CliFailure, Process>> genL10N(Directory workingDirectory);
   Future<Either<CliFailure, Process>> buildRunner(
     Directory workingDirectory, {
     bool deleteConflictingOutputs = false,
@@ -131,23 +131,20 @@ class FlutterCLI implements IFlutterCLI {
   }
 
   @override
-  Future<Either<CliFailure, ProcessResponse>> genL10N({
-    String? packagePath,
-  }) async {
+  Future<Either<CliFailure, Process>> genL10N(
+      Directory workingDirectory) async {
     try {
-      if (!_checkPathExist(packagePath)) {
-        return const Left(CliFailure.invalidPackagePath());
+      if (!workingDirectory.existsSync()) {
+        return const Left(CliFailure.directoryNotFound());
       }
-      if (!_checkPubspecFile(packagePath)) {
-        return const Left(CliFailure.pubspecFileNotFound());
-      }
-      final result = await _processManager.run(
+
+      final result = await _processManager.start(
         'flutter',
         ['gen-l10n'],
-        workingDirectory: packagePath,
+        workingDirectory: workingDirectory.path,
       );
 
-      return right(ProcessResponse.fromProcessResult(result));
+      return right(result);
     } catch (e) {
       return left(CliFailure.unknown(e));
     }

@@ -10,11 +10,17 @@ abstract class IMagicCommandStrategy {
 class MagicBuildRunnerStrategy implements IMagicCommandStrategy {
   MagicBuildRunnerStrategy({
     @visibleForTesting IFlutterCLI? flutterCLI,
-  }) : _flutterCLI = flutterCLI ?? FlutterCLI();
+    required bool deleteConflictingOutputs,
+  })  : _flutterCLI = flutterCLI ?? FlutterCLI(),
+        _deleteConflictingOutputs = deleteConflictingOutputs;
   final IFlutterCLI _flutterCLI;
+  final bool _deleteConflictingOutputs;
   @override
   Future<Either<CliFailure, Process>> runCommand(Directory dir) {
-    return _flutterCLI.buildRunner(dir);
+    return _flutterCLI.buildRunner(
+      dir,
+      deleteConflictingOutputs: _deleteConflictingOutputs,
+    );
   }
 }
 
@@ -37,5 +43,16 @@ class MagicGetStrategy implements IMagicCommandStrategy {
   @override
   Future<Either<CliFailure, Process>> runCommand(Directory dir) {
     return _flutterCLI.pubGet(dir);
+  }
+}
+
+class MagicL10NStrategy implements IMagicCommandStrategy {
+  MagicL10NStrategy({
+    @visibleForTesting IFlutterCLI? flutterCLI,
+  }) : _flutterCLI = flutterCLI ?? FlutterCLI();
+  final IFlutterCLI _flutterCLI;
+  @override
+  Future<Either<CliFailure, Process>> runCommand(Directory dir) {
+    return _flutterCLI.genL10N(dir);
   }
 }

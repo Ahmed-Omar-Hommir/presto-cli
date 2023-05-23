@@ -498,137 +498,109 @@ void main() {
   );
 
   group(
-    'Generate L10N',
+    'Gen L10N',
     () {
-      group(
-        'Success cases',
-        () {
-          test(
-            'should generate package successfully and call processManager.run with correct values.',
-            () async {
-              // Arrange
+      group('Success cases', () {
+        test(
+          'should generate l10n successfully and call processManager.start with correct values.',
+          () async {
+            // Arrange
+            whenL10N(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).thenAnswer((_) async => mockProcess);
 
-              final packagePath = tempDir.path;
+            // Act
+            final result = await sut.genL10N(tempDir);
 
-              await createPubspecFile(packagePath);
+            // Assert
+            expect(result, isA<Right>());
+            expect(
+              result.getOrElse(() => fail('Result returned a Left')),
+              isA<Process>(),
+            );
 
-              whenGenL10N(
-                processManager: processManager,
-                packagePath: packagePath,
-              ).thenAnswer(
-                (_) async => processResult,
-              );
+            verifyL10N(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(mockDirectory);
+            verifyZeroInteractions(processResult);
+          },
+        );
+      });
+      group('Failure cases', () {
+        directoryDoesNotExistTest(
+          act: (tempDir) => sut.pubGet(tempDir),
+          assertions: () => veryifyAllZeroInteraction(),
+        );
 
-              // Act
-              final result = await sut.genL10N(packagePath: packagePath);
+        test(
+          'should return Left $CliFailureUnknown when Directory existsSync throw exception',
+          () async {
+            // Arrange
+            when(mockDirectory.existsSync()).thenThrow(Exception());
 
-              // Assert
-              expect(result, isA<Right>());
-              expect(
-                result.getOrElse(() => fail('Result returned a Left')),
-                isA<ProcessResponse>(),
-              );
+            // Act
+            final result = await sut.genL10N(mockDirectory);
 
-              verifyGenL10N(
-                processManager: processManager,
-                packagePath: packagePath,
-              ).called(1);
-              verifyNoMoreInteractions(processManager);
-            },
-          );
-        },
-      );
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
 
-      group(
-        'Failure cases',
-        () {
-          test(
-            'should return a Left<$CliFailureUnknown> when processManager.run throws an exception.',
-            () async {
-              // Arrange
-              final packagePath = tempDir.path;
+            verify(mockDirectory.existsSync()).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+            verifyZeroInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+        test(
+          'should return Left $CliFailureUnknown when proccess.run throw exception',
+          () async {
+            // Arrange
+            final path = '';
+            when(mockDirectory.existsSync()).thenReturn(true);
+            when(mockDirectory.path).thenReturn(path);
+            whenL10N(
+              processManager: processManager,
+              workingDirectory: mockDirectory,
+            ).thenThrow(Exception());
 
-              await createPubspecFile(packagePath);
+            // Act
+            final result = await sut.genL10N(mockDirectory);
 
-              whenGenL10N(
-                processManager: processManager,
-                packagePath: packagePath,
-              ).thenThrow(Exception());
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
 
-              // Act
-              final result = await sut.genL10N(packagePath: packagePath);
+            verify(mockDirectory.existsSync()).called(1);
+            verify(mockDirectory.path).called(1);
+            verifyNoMoreInteractions(mockDirectory);
 
-              // Assert
-              expect(result, isA<Left>());
-              expect(
-                result.fold(
-                  (failure) => failure,
-                  (_) => fail('Result returned a Right'),
-                ),
-                isA<CliFailureUnknown>(),
-              );
-
-              verifyGenL10N(
-                processManager: processManager,
-                packagePath: packagePath,
-              ).called(1);
-              verifyNoMoreInteractions(processManager);
-            },
-          );
-
-          test(
-            'should return a Left<$CliFailurePubspecFileNotFound> when pubspec.yaml file not found.',
-            () async {
-              // Arrange
-              final packagePath = tempDir.path;
-
-              // Act
-              final result = await sut.genL10N(packagePath: packagePath);
-
-              // Assert
-              expect(result, isA<Left>());
-              expect(
-                result.fold(
-                  (failure) => failure,
-                  (_) => fail('Result returned a Right'),
-                ),
-                isA<CliFailurePubspecFileNotFound>(),
-              );
-
-              verifyZeroInteractions(processManager);
-            },
-          );
-          test(
-            'should return a Left<$CliFailureInvalidPackagePath> when package path does not exist.',
-            () async {
-              // Arrange
-
-              final packagePath = join(
-                tempDir.path,
-                'path',
-                'does',
-                'not',
-                'exist',
-              );
-
-              // Act
-              final result = await sut.genL10N(packagePath: packagePath);
-
-              // Assert
-              expect(result, isA<Left>());
-              expect(
-                result.fold(
-                  (failure) => failure,
-                  (_) => fail('Result returned a Right'),
-                ),
-                isA<CliFailureInvalidPackagePath>(),
-              );
-
-              verifyZeroInteractions(processManager);
-            },
-          );
-        },
-      );
+            verifyL10N(
+              processManager: processManager,
+              workingDirectory: Directory(path),
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+      });
     },
   );
 
