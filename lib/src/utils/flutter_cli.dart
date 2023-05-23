@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart';
+import 'package:presto_cli/src/logger.dart';
 
 import '../models/flutter_cli/cli_failure.dart';
 import '../models/package_dependency.dart';
@@ -211,6 +212,9 @@ class FlutterCLI implements IFlutterCLI {
 
       return Right(result);
     } catch (e) {
+      Logger().error(workingDirectory.path);
+      Logger().error(workingDirectory.path);
+      Logger().error(workingDirectory.path);
       return left(CliFailure.unknown(e));
     }
   }
