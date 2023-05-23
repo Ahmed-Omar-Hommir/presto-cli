@@ -211,12 +211,11 @@ class FlutterCLI implements IFlutterCLI {
       final result = await _processManager.start(
         'flutter',
         ['pub', 'get'],
-        workingDirectory: relative(workingDirectory.path),
+        workingDirectory: absolute(workingDirectory.path),
       );
 
       return Right(result);
     } catch (e) {
-      Logger().error("From FlutterCLI");
       return left(CliFailure.unknown(e));
     }
   }
