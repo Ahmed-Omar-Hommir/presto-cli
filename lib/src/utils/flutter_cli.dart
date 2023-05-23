@@ -216,8 +216,7 @@ class FlutterCLI implements IFlutterCLI {
 
       return Right(result);
     } catch (e) {
-      Logger().info(workingDirectory.path);
-      Logger().info(relative(workingDirectory.path));
+      Logger().error("From FlutterCLI");
       return left(CliFailure.unknown(e));
     }
   }
