@@ -1,3 +1,3 @@
 export './create/create.dart';
-export './make/make.dart';
+export 'magic/magic.dart';
 export './update_command.dart';
