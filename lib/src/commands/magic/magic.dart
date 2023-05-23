@@ -6,6 +6,7 @@ import 'commands/commands.dart';
 import 'commands/magic_clean_command.dart';
 import 'commands/magic_get_command.dart';
 import 'commands/magic_l10n_command.dart';
+import 'commands/magic_upgrade_command.dart';
 
 class MakeCommand extends Command<int> {
   MakeCommand() {
@@ -34,6 +35,14 @@ class MakeCommand extends Command<int> {
       ),
     ));
     addSubcommand(MagicL10NCommand(
+      magicLauncher: MagicLauncher(
+        processLogger: ProcessLogger(),
+        fileManager: FileManager(),
+        logger: Logger(),
+        tasksRunner: TaskRunner(),
+      ),
+    ));
+    addSubcommand(MagicUpgradeCommand(
       magicLauncher: MagicLauncher(
         processLogger: ProcessLogger(),
         fileManager: FileManager(),

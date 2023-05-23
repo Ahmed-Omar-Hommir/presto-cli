@@ -126,6 +126,28 @@ VerificationResult verifyPubGet({
   ));
 }
 
+PostExpectation whenUpgrade({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return when(processManager.start(
+    'flutter',
+    ['upgrade'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
+VerificationResult verifyUpgrade({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return verify(processManager.start(
+    'flutter',
+    ['upgrade'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
 PostExpectation whenL10N({
   required IProcessManager processManager,
   required Directory workingDirectory,

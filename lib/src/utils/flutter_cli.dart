@@ -27,6 +27,7 @@ abstract class IFlutterCLI {
 
   Future<Either<CliFailure, Process>> clean(Directory workingDirectory);
   Future<Either<CliFailure, Process>> pubGet(Directory workingDirectory);
+  Future<Either<CliFailure, Process>> upgrade(Directory workingDirectory);
 }
 
 class FlutterCLI implements IFlutterCLI {
@@ -205,6 +206,25 @@ class FlutterCLI implements IFlutterCLI {
       final result = await _processManager.start(
         'flutter',
         ['pub', 'get'],
+        workingDirectory: workingDirectory.path,
+      );
+
+      return Right(result);
+    } catch (e) {
+      return left(CliFailure.unknown(e));
+    }
+  }
+
+  @override
+  Future<Either<CliFailure, Process>> upgrade(
+      Directory workingDirectory) async {
+    try {
+      if (!workingDirectory.existsSync()) {
+        return const Left(CliFailure.directoryNotFound());
+      }
+      final result = await _processManager.start(
+        'flutter',
+        ['upgrade'],
         workingDirectory: workingDirectory.path,
       );
 
