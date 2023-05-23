@@ -1,9 +1,9 @@
 import 'package:args/command_runner.dart';
 import 'package:presto_cli/presto_cli.dart';
-import 'package:presto_cli/src/commands/make/commands/magic_clean_command.dart';
 import 'package:presto_cli/src/logger.dart';
 
 import 'commands/commands.dart';
+import 'commands/magic_clean_command.dart';
 import 'commands/magic_get_command.dart';
 import 'commands/magic_l10n_command.dart';
 
@@ -43,7 +43,7 @@ class MakeCommand extends Command<int> {
     ));
   }
   @override
-  String get name => 'make';
+  String get name => 'magic';
 
   @override
   String get description => 'Execute common jobs in presto project.';

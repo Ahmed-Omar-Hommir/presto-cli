@@ -20,7 +20,7 @@ class MagicRunnerCommand extends Command<int> {
   final IMagicLauncher _magicLauncher;
 
   @override
-  String get name => 'magic_runner';
+  String get name => 'runner';
 
   @override
   String get description =>
