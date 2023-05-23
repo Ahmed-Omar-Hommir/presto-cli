@@ -126,6 +126,28 @@ VerificationResult verifyPubGet({
   ));
 }
 
+PostExpectation whenL10N({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return when(processManager.start(
+    'flutter',
+    ['gen-l10n'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
+VerificationResult verifyL10N({
+  required IProcessManager processManager,
+  required Directory workingDirectory,
+}) {
+  return verify(processManager.start(
+    'flutter',
+    ['gen-l10n'],
+    workingDirectory: workingDirectory.path,
+  ));
+}
+
 VerificationResult verifyClean({
   required IProcessManager processManager,
   required Directory workingDirectory,

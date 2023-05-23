@@ -26,7 +26,7 @@ class MagicRunnerCommand extends Command<int> {
   String get description =>
       'Generate files for all packages that depend on the build runner in the current/subdirectory';
 
-  Future<bool> packageWhere(Directory dir) async {
+  Future<bool> _packageWhere(Directory dir) async {
     final pubspec = File('${dir.path}/pubspec.yaml');
     final content = await pubspec.readAsString();
     return content.contains('build_runner');
@@ -35,8 +35,10 @@ class MagicRunnerCommand extends Command<int> {
   @override
   Future<int> run() async {
     return await _magicLauncher.launch(
-      magicCommandStrategy: MagicBuildRunnerStrategy(),
-      packageWhere: (dir) async => packageWhere(dir),
+      magicCommandStrategy: MagicBuildRunnerStrategy(
+        deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
+      ),
+      packageWhere: (dir) async => _packageWhere(dir),
     );
   }
 }
