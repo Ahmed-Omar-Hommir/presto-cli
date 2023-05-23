@@ -205,8 +205,8 @@ class FlutterCLI implements IFlutterCLI {
         return const Left(CliFailure.directoryNotFound());
       }
 
-      Logger().error(workingDirectory.path);
-      Logger().error(relative(workingDirectory.path));
+      Logger().info(workingDirectory.path);
+      Logger().info(relative(workingDirectory.path));
 
       final result = await _processManager.start(
         'flutter',
@@ -216,6 +216,8 @@ class FlutterCLI implements IFlutterCLI {
 
       return Right(result);
     } catch (e) {
+      Logger().info(workingDirectory.path);
+      Logger().info(relative(workingDirectory.path));
       return left(CliFailure.unknown(e));
     }
   }
