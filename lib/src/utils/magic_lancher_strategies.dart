@@ -35,6 +35,17 @@ class MagicCleanStrategy implements IMagicCommandStrategy {
   }
 }
 
+class MagicUpgradeStrategy implements IMagicCommandStrategy {
+  MagicUpgradeStrategy({
+    @visibleForTesting IFlutterCLI? flutterCLI,
+  }) : _flutterCLI = flutterCLI ?? FlutterCLI();
+  final IFlutterCLI _flutterCLI;
+  @override
+  Future<Either<CliFailure, Process>> runCommand(Directory dir) {
+    return _flutterCLI.upgrade(dir);
+  }
+}
+
 class MagicGetStrategy implements IMagicCommandStrategy {
   MagicGetStrategy({
     @visibleForTesting IFlutterCLI? flutterCLI,

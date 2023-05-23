@@ -947,4 +947,110 @@ void main() {
       });
     },
   );
+  group(
+    'Upgrade',
+    () {
+      group('Success cases', () {
+        test(
+          'should upgrade package dependenies successfully and call processManager.start with correct values.',
+          () async {
+            // Arrange
+            whenUpgrade(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).thenAnswer((_) async => mockProcess);
+
+            // Act
+            final result = await sut.upgrade(tempDir);
+
+            // Assert
+            expect(result, isA<Right>());
+            expect(
+              result.getOrElse(() => fail('Result returned a Left')),
+              isA<Process>(),
+            );
+
+            verifyUpgrade(
+              processManager: processManager,
+              workingDirectory: tempDir,
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(mockDirectory);
+            verifyZeroInteractions(processResult);
+          },
+        );
+      });
+      group('Failure cases', () {
+        directoryDoesNotExistTest(
+          act: (tempDir) => sut.upgrade(tempDir),
+          assertions: () => veryifyAllZeroInteraction(),
+        );
+
+        test(
+          'should return Left $CliFailureUnknown when Directory existsSync throw exception',
+          () async {
+            // Arrange
+            when(mockDirectory.existsSync()).thenThrow(Exception());
+
+            // Act
+            final result = await sut.upgrade(mockDirectory);
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
+
+            verify(mockDirectory.existsSync()).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+            verifyZeroInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+        test(
+          'should return Left $CliFailureUnknown when proccess.run throw exception',
+          () async {
+            // Arrange
+            final path = '';
+            when(mockDirectory.existsSync()).thenReturn(true);
+            when(mockDirectory.path).thenReturn(path);
+            whenUpgrade(
+              processManager: processManager,
+              workingDirectory: mockDirectory,
+            ).thenThrow(Exception());
+
+            // Act
+            final result = await sut.upgrade(mockDirectory);
+
+            // Assert
+            expect(result, isA<Left>());
+            expect(
+              result.fold(
+                (failure) => failure,
+                (_) => fail('Result returned a Right'),
+              ),
+              isA<CliFailureUnknown>(),
+            );
+
+            verify(mockDirectory.existsSync()).called(1);
+            verify(mockDirectory.path).called(1);
+            verifyNoMoreInteractions(mockDirectory);
+
+            verifyUpgrade(
+              processManager: processManager,
+              workingDirectory: Directory(path),
+            ).called(1);
+            verifyNoMoreInteractions(processManager);
+            verifyZeroInteractions(processResult);
+            verifyZeroInteractions(mockProcess);
+          },
+        );
+      });
+    },
+  );
 }
