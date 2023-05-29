@@ -2,7 +2,7 @@ name: Presto Cli Tests
 
 jobs:
     test:
-        runs-on: [ubuntu-latest, windows-latest]
+        runs-on: ubuntu-latest
         defaults:
             run:
                 working-directory: ./
