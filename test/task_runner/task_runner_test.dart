@@ -10,6 +10,8 @@ void main() {
     sut = TaskRunner<TaskResultTest>();
   });
 
+  tearDown(() => sut.dispose());
+
   test(
     'should runs tasks concurrently up to the concurrency limit.',
     () async {
