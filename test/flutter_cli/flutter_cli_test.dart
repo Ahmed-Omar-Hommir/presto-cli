@@ -907,7 +907,7 @@ void main() {
           },
         );
         test(
-          'should return Left $CliFailureUnknown when proccess.run throw exception',
+          'should return Left $CliFailureUnknown when proccess.start throw exception',
           () async {
             // Arrange
             final path = '';

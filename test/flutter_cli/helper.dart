@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
@@ -19,6 +20,20 @@ void whenProcessResult(
 Future<void> createPubspecFile(String packagePath) async {
   final pubspecFile = File(join(packagePath, 'pubspec.yaml'));
   await pubspecFile.writeAsString('name: test');
+}
+
+Future<Process> processWrapper(
+  String executable,
+  List<String> arguments, {
+  required IProcessManager processManager,
+  required String workingDirectory,
+}) async {
+  return processManager.start(
+    executable,
+    arguments,
+    workingDirectory: workingDirectory,
+    runInShell: true,
+  );
 }
 
 void whenRunPubAdd({
@@ -70,10 +85,11 @@ PostExpectation whenBuildRunner({
   if (withDeleteConflictingOutputs) {
     args.add('--delete-conflicting-outputs');
   }
-  return when(processManager.start(
+  return when(processWrapper(
     'flutter',
     args,
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -86,10 +102,11 @@ VerificationResult verifyBuildRunner({
   if (withDeleteConflictingOutputs) {
     args.add('--delete-conflicting-outputs');
   }
-  return verify(processManager.start(
+  return verify(processWrapper(
     'flutter',
     args,
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -97,10 +114,11 @@ PostExpectation whenClean({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return when(processManager.start(
+  return when(processWrapper(
     'flutter',
     ['clean'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -108,10 +126,11 @@ PostExpectation whenPubGet({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return when(processManager.start(
+  return when(processWrapper(
     'flutter',
     ['pub', 'get'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -119,10 +138,11 @@ VerificationResult verifyPubGet({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return verify(processManager.start(
+  return verify(processWrapper(
     'flutter',
     ['pub', 'get'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -130,10 +150,11 @@ PostExpectation whenUpgrade({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return when(processManager.start(
+  return when(processWrapper(
     'flutter',
     ['upgrade'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -141,10 +162,11 @@ VerificationResult verifyUpgrade({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return verify(processManager.start(
+  return verify(processWrapper(
     'flutter',
     ['upgrade'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -152,10 +174,11 @@ PostExpectation whenL10N({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return when(processManager.start(
+  return when(processWrapper(
     'flutter',
     ['gen-l10n'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -163,10 +186,11 @@ VerificationResult verifyL10N({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return verify(processManager.start(
+  return verify(processWrapper(
     'flutter',
     ['gen-l10n'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 
@@ -174,10 +198,11 @@ VerificationResult verifyClean({
   required IProcessManager processManager,
   required Directory workingDirectory,
 }) {
-  return verify(processManager.start(
+  return verify(processWrapper(
     'flutter',
     ['clean'],
     workingDirectory: workingDirectory.path,
+    processManager: processManager,
   ));
 }
 

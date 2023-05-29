@@ -144,6 +144,7 @@ class FlutterCLI implements IFlutterCLI {
         'flutter',
         ['gen-l10n'],
         workingDirectory: workingDirectory.path,
+        runInShell: true,
       );
 
       return right(result);
@@ -172,6 +173,7 @@ class FlutterCLI implements IFlutterCLI {
         'flutter',
         args,
         workingDirectory: workingDirectory.path,
+        runInShell: true,
       );
 
       return Right(result);
@@ -190,6 +192,7 @@ class FlutterCLI implements IFlutterCLI {
         'flutter',
         ['clean'],
         workingDirectory: workingDirectory.path,
+        runInShell: true,
       );
 
       return Right(result);
@@ -204,9 +207,6 @@ class FlutterCLI implements IFlutterCLI {
       if (!workingDirectory.existsSync()) {
         return const Left(CliFailure.directoryNotFound());
       }
-
-      Logger().info(workingDirectory.path);
-      Logger().info(relative(workingDirectory.path));
 
       final result = await _processManager.start(
         'flutter',
@@ -232,6 +232,7 @@ class FlutterCLI implements IFlutterCLI {
         'flutter',
         ['upgrade'],
         workingDirectory: workingDirectory.path,
+        runInShell: true,
       );
 
       return Right(result);
