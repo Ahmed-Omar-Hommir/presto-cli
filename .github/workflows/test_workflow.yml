@@ -1,0 +1,32 @@
+name: Presto Cli Tests
+
+jobs:
+    test:
+        runs-on: [ubuntu-latest, windows-latest]
+        defaults:
+            run:
+                working-directory: ./
+
+        steps:
+            - uses: actions/checkout@v3.5.2
+            
+            - name: Set up Dart
+              uses: dart-lang/setup-dart@v1.5
+              with:
+                sdk: stable
+
+            - name: Install dependencies
+              run: dart pub get
+            
+            - name: Generate
+              run: dart run build_runner build -d
+
+            - name: Run tests
+              run: dart test
+
+on:
+    pull_request:
+        branches:
+            - main
+
+    
