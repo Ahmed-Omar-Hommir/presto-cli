@@ -42,7 +42,6 @@ void main() {
   late int callCount;
 
   setUp(() {
-    print(Platform.numberOfProcessors);
     mockIProjectChecker = MockIProjectChecker();
     mockILogger = MockILogger();
     mockFileManager = MockIFileManager();
