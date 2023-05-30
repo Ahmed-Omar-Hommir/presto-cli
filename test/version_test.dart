@@ -15,6 +15,7 @@ void main() {
     'should ensure that packageVersion in pubspec.yaml matches generated packageVersion.',
     () async {
       // Arrange
+      print(Directory.current.path);
       final pubspecPath = join(Directory.current.path, 'pubspec.yaml');
       final result = await fileManager.readYaml(pubspecPath);
 
@@ -23,11 +24,12 @@ void main() {
 
       // Assert
       expect(
-          result.fold(
-            (failure) => fail(failure.toString()),
-            (content) => content['version'],
-          ),
-          generatedVersion);
+        result.fold(
+          (failure) => fail(failure.toString()),
+          (content) => content['version'],
+        ),
+        generatedVersion,
+      );
     },
   );
 }
