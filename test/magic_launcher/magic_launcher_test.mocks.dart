@@ -57,6 +57,16 @@ class _FakeIOSink_2 extends _i1.SmartFake implements _i4.IOSink {
         );
 }
 
+class _FakeDirectory_3 extends _i1.SmartFake implements _i4.Directory {
+  _FakeDirectory_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [IProjectChecker].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -324,4 +334,22 @@ class MockIProcessLogger extends _i1.Mock implements _i5.IProcessLogger {
         ),
         returnValueForMissingStub: null,
       );
+}
+
+/// A class which mocks [IDirectoryFactory].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIDirectoryFactory extends _i1.Mock implements _i5.IDirectoryFactory {
+  MockIDirectoryFactory() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Directory get current => (super.noSuchMethod(
+        Invocation.getter(#current),
+        returnValue: _FakeDirectory_3(
+          this,
+          Invocation.getter(#current),
+        ),
+      ) as _i4.Directory);
 }

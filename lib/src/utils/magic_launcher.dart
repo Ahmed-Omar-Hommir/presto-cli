@@ -27,10 +27,12 @@ class MagicLauncher implements IMagicLauncher {
     required ILogger logger,
     required ITasksRunner tasksRunner,
     required IProcessLogger processLogger,
+    @visibleForTesting IDirectoryFactory? directoryFactory,
   })  : _logger = logger,
         _projectChecker = projectChecker,
         _tasksRunner = tasksRunner,
         _processLogger = processLogger,
+        _directoryFactory = directoryFactory ?? const DirectoryFactory(),
         _fileManager = fileManager;
 
   final IProjectChecker _projectChecker;
@@ -38,8 +40,7 @@ class MagicLauncher implements IMagicLauncher {
   final IFileManager _fileManager;
   final ITasksRunner _tasksRunner;
   final IProcessLogger _processLogger;
-  // find all packages. (include root project) [changed by command type]
-  // run command in each package.
+  final IDirectoryFactory _directoryFactory;
 
   Future<Either<CliFailure, Process>> _task(
     Directory dir,
@@ -102,7 +103,8 @@ class MagicLauncher implements IMagicLauncher {
           return ExitCode.noInput.code;
         }
 
-        final targetDir = Directory(join(Directory.current.path, 'packages'));
+        final targetDir =
+            Directory(join(_directoryFactory.current.path, 'packages'));
 
         final packagesDirResult = await _fileManager.findPackages(
           targetDir,
@@ -130,11 +132,11 @@ class MagicLauncher implements IMagicLauncher {
             };
 
             if (packageWhere != null) {
-              if (await packageWhere(Directory.current)) {
-                packagesToProcess.add(Directory.current);
+              if (await packageWhere(_directoryFactory.current)) {
+                packagesToProcess.add(_directoryFactory.current);
               }
             } else {
-              packagesToProcess.add(Directory.current);
+              packagesToProcess.add(_directoryFactory.current);
             }
 
             if (packagesToProcess.isEmpty) {
@@ -159,4 +161,14 @@ class MagicLauncher implements IMagicLauncher {
       },
     );
   }
+}
+
+abstract class IDirectoryFactory {
+  Directory get current;
+}
+
+class DirectoryFactory implements IDirectoryFactory {
+  const DirectoryFactory();
+  @override
+  Directory get current => Directory.current;
 }

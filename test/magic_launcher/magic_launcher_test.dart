@@ -24,6 +24,7 @@ import 'magic_launcher_test.mocks.dart';
   IMagicCommandStrategy,
   Process,
   IProcessLogger,
+  IDirectoryFactory,
 ])
 void main() {
   late IMagicLauncher sut;
@@ -36,6 +37,7 @@ void main() {
   late MockIMagicCommandStrategy mockIMagicCommandStrategy;
   late MockProcess mockProcess;
   late MockIProcessLogger mockIProcessLogger;
+  late MockIDirectoryFactory mockIDirectoryFactory;
 
   late TaskRunner taskRunner;
   late Set<Directory> packages;
@@ -49,17 +51,19 @@ void main() {
     mockIMagicCommandStrategy = MockIMagicCommandStrategy();
     mockProcess = MockProcess();
     mockIProcessLogger = MockIProcessLogger();
+    mockIDirectoryFactory = MockIDirectoryFactory();
+
     sut = MagicLauncher(
       projectChecker: mockIProjectChecker,
       logger: mockILogger,
       fileManager: mockFileManager,
       tasksRunner: taskRunner,
       processLogger: mockIProcessLogger,
+      directoryFactory: mockIDirectoryFactory,
     );
 
-    final dir = Directory.systemTemp.createTempSync();
-    Directory.current = dir;
-    tempDir = Directory.current;
+    tempDir = Directory.systemTemp.createTempSync();
+    when(mockIDirectoryFactory.current).thenReturn(tempDir);
 
     packagesDir = Directory(path.join(tempDir.path, 'packages'));
     packagesDir.createSync();
@@ -88,10 +92,9 @@ void main() {
           utf8.encode(ProceessInfo.stderr),
         ]));
   });
-  // Todo: Fix this
-  // tearDown(() {
-  //   tempDir.deleteSync(recursive: true);
-  // });
+  tearDown(() {
+    tempDir.deleteSync(recursive: true);
+  });
 
   group('Success Cases', () {
     test(
