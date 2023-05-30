@@ -8,25 +8,23 @@ abstract class ITasksRunner<T> {
     required int concurrency,
     Future Function(T)? resultWaiter,
   });
-
-  void dispose();
 }
 
 class TaskRunner<T> implements ITasksRunner<T> {
-  StreamQueue<Future<T> Function()>? _queue;
   @override
   Future<List<T>> run({
     required List<Future<T> Function()> tasks,
     required int concurrency,
     Future Function(T)? resultWaiter,
   }) async {
-    _queue = StreamQueue<Future<T> Function()>(Stream.fromIterable(tasks));
+    final queue = StreamQueue<Future<T> Function()>(Stream.fromIterable(tasks));
 
     final processors = List<Future<List<T>>>.generate(
       min(concurrency, tasks.length),
-      (_) => _processQueue(_queue!, resultWaiter),
+      (_) => _processQueue(queue, resultWaiter),
     );
     final result = await Future.wait(processors);
+    await queue.cancel();
     return result.expand((element) => element).toList();
   }
 
@@ -42,10 +40,5 @@ class TaskRunner<T> implements ITasksRunner<T> {
       }
     }
     return results;
-  }
-
-  @override
-  void dispose() {
-    _queue?.cancel();
   }
 }
