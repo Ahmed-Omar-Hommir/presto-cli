@@ -130,6 +130,30 @@ void main() {
       expect(result.length, equals(6));
     },
   );
+
+  test(
+    'should the second concurrency be ignored when all tasks are executed once in the first concurrency.',
+    () async {
+      // Arrange
+      int runningTasks = 0;
+      int maxConcurrency = 0;
+
+      Future<TaskResultTest> task(int index) async {
+        runningTasks++;
+        maxConcurrency = max(maxConcurrency, runningTasks);
+        runningTasks--;
+        return TaskResultTest(Duration(seconds: 1));
+      }
+
+      final tasks = List<Future<TaskResultTest> Function()>.generate(
+        25,
+        (index) => () => task(index),
+      );
+
+      // Act
+      await sut.run(tasks: tasks, concurrency: 2);
+    },
+  );
 }
 
 class TaskResultTest {

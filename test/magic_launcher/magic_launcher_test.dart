@@ -88,10 +88,10 @@ void main() {
           utf8.encode(ProceessInfo.stderr),
         ]));
   });
-
-  tearDown(() {
-    tempDir.deleteSync(recursive: true);
-  });
+  // Todo: Fix this
+  // tearDown(() {
+  //   tempDir.deleteSync(recursive: true);
+  // });
 
   group('Success Cases', () {
     test(
