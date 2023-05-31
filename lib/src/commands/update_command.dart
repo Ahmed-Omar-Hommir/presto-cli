@@ -5,6 +5,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:http/http.dart' as http;
 import 'package:args/command_runner.dart';
+import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/package_manager.dart';
 import 'package:presto_cli/src/version.dart';
@@ -30,12 +31,11 @@ class UpdateCommand extends Command<int> {
   Future<int> run() async {
     try {
       final checkUpdateProgress = _logger.progress('Checking for updates');
-      final repository = "https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli";
       final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
       // Make an HTTP request to the URI
-      final response =
-          await http.get(Uri.parse('$repository$pathToDartVersion'));
+      final response = await http.get(
+          Uri.parse('${RemoteRepositoryInfo.versionUrl}$pathToDartVersion'));
 
       // Create a temporary file
       final tempDir = await Directory.systemTemp.createTemp();
@@ -98,7 +98,7 @@ class UpdateCommand extends Command<int> {
         'activate',
         '--source',
         'git',
-        repository,
+        RemoteRepositoryInfo.url,
       ]);
 
       final exitCode = await process.exitCode;

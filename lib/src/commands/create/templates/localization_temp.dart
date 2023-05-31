@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:mason/mason.dart';
 import 'package:presto_cli/src/template_generator.dart';
+import 'package:presto_cli/presto_cli.dart';
 
 class LocalizationTemp implements TemplateGenerator<LocalizationTempModel> {
   @override
@@ -31,7 +32,7 @@ class LocalizationTemp implements TemplateGenerator<LocalizationTempModel> {
 
   @override
   Brick get brick => Brick.git(GitPath(
-        'https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli',
+        RemoteRepositoryInfo.url,
         path: 'lib/commands/create/templates/l10n',
       ));
 }
