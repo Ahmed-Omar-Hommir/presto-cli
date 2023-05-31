@@ -16,7 +16,50 @@ dart pub global activate --source git https://github.com/Ahmed-Omar-Hommir/prest
 
 ### Commands ✨
 
-# Magic Commands 🪄 [Soon...]
+# Magic Commands 🪄
+
+Magic Commands is a CLI tool designed to streamline Flutter development by automatically running common commands like `flutter pub get`, `flutter clean`, and more, in the appropriate project directories.
+
+**Note:** Magic Commands should be run in the root project directory.
+
+## Project Structure
+
+Magic Commands is designed to work with the following project structure:
+
+```
+├── lib
+├── test
+├── pubspect.lock
+├── pubspect.yaml
+└── packages
+    ├── package_one
+    ├── package_two
+    └── package_three
+```
+
+## How It Works
+
+When you run a Magic Command, it searches all packages in your project that need the command. For example, some packages might not support `L10N` or `build_runner`. With Magic Commands, there's no need to specify the package path or which packages need a particular command.
+
+## Available Commands
+
+Here are the currently available subcommands:
+
+- `build_runner`: description for this command
+- `clean`: description for this command
+- `get`: description for this command
+- `l10n`: description for this command
+- `upgrade`: description for this command
+
+## Usage
+
+To use Magic Commands, navigate to your root project directory and run the desired command:
+
+```bash
+dart run magic_commands <command>
+```
+
+Replace `<command>` with one of the available subcommands listed above.
 
 # FCM-Test Command <img src="assets/firebase-icon.svg" alt="Alternative Text" width="28" height="28" />
 
