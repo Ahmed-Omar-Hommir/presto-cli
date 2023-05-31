@@ -1,11 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:mockito/mockito.dart';
-import 'package:presto_cli/src/models/response_failure/response_failure.dart';
 
 import '../mocks.mocks.dart';
 
-const command = 'fcm-tester';
-const fileName = 'fcm_tester.json';
+const command = 'fcm-test';
+const fileName = 'fcm_test.json';
 
 const Map<String, dynamic> jsonReuest = {
   'serverKey': 'mockServerKey',
@@ -79,7 +78,7 @@ final List<IvalidJsonCase> invalidJsonRequestCases = [
   ),
 ];
 
-PostExpectation<Future<Either<ResponseFailure, None>>> whenSendNotification({
+PostExpectation<Future<Either<String, None>>> whenSendNotification({
   required MockIFcmService mockIFcmService,
   Map<String, dynamic>? data,
   String? serverKey,

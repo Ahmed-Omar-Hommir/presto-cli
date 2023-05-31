@@ -5,10 +5,9 @@ import 'package:mason/mason.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
-import 'package:presto_cli/src/models/response_failure/response_failure.dart';
 
-class FCMTesterCommand extends Command<int> {
-  FCMTesterCommand({
+class FCMTestCommand extends Command<int> {
+  FCMTestCommand({
     @visibleForTesting IDirectoryFactory? directoryFactory,
     required IFcmService fcmService,
     required ILogger logger,
@@ -24,17 +23,17 @@ class FCMTesterCommand extends Command<int> {
   final IFcmService _fcmService;
 
   @override
-  String get name => 'fcm-tester';
+  String get name => 'fcm-test';
 
   @override
   String get description =>
-      'testing Firebase Cloud Messaging (FCM) push notification.';
+      'Tests FCM push notifications. Requires a JSON file (fcm_test.json) with server key and request data.';
 
   @override
   Future<int> run() async {
     final jsonResunlt = await _fileManager.readJson(join(
       _directoryFactory.current.path,
-      'fcm_tester.json',
+      'fcm_test.json',
     ));
 
     return jsonResunlt.fold(
@@ -71,7 +70,7 @@ class FCMTesterCommand extends Command<int> {
 
         return result.fold(
           (failire) {
-            _logger.error(failire.messageString);
+            _logger.error(failire);
             return ExitCode.usage.code;
           },
           (response) {
