@@ -1,4 +1,4 @@
-![Example Image](assets/presto_cli_logo.png)
+![Presto CLI Logo](assets/presto_cli_logo.png)
 
 ---
 
@@ -18,7 +18,7 @@ dart pub global activate --source git https://github.com/Ahmed-Omar-Hommir/prest
 
 # Magic Commands 🪄 [Soon...]
 
-# FCM-Test Command
+# FCM-Test Command ![Presto CLI Logo](assets/firebase-icon.svg)
 
 The `fcm-test` command is a powerful utility for testing Firebase Cloud Messaging (FCM) push notifications. It's designed to be simple to use.
 
