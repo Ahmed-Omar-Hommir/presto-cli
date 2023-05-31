@@ -45,11 +45,11 @@ When you run a Magic Command, it searches all packages in your project that need
 
 Here are the currently available subcommands:
 
-- `build_runner`: description for this command
-- `clean`: description for this command
-- `get`: description for this command
-- `l10n`: description for this command
-- `upgrade`: description for this command
+- `build_runner`: It's useful for running code generation utilities, typically in conjunction with a package like freezed or json_serializable.
+- `clean`: It deletes the build/ directory and clears up any build artifacts from previous runs, allowing for a fresh build the next time you run your project.
+- `get`: It fetches all the dependencies listed in your pubspec.yaml file, making them available for import in your Dart files.
+- `l10n`: It generates localization files for your Flutter application based on the arb files in the l10n directory.
+- `upgrade`: It updates your dependencies to their latest versions as per the constraints specified in your pubspec.yaml file, and updates the pubspec.lock file.
 
 ## Usage
 
