@@ -2,7 +2,7 @@
 
 ---
 
-A Very Good Command-Line Interface for Dart.
+A Presto Command-Line Interface for Dart.
 
 Developed with 🧡 by Presto Team 🐥
 
