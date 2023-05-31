@@ -53,6 +53,8 @@ Here are the currently available subcommands:
 
 ## Usage
 
+I think you like magic, let's turn this frog into something beautiful 🪄 + 🐸 = 🐣
+
 To use Magic Commands, navigate to your root project directory and run the desired command:
 
 ```bash
@@ -60,6 +62,8 @@ dart run magic_commands <command>
 ```
 
 Replace `<command>` with one of the available subcommands listed above.
+
+---
 
 # FCM-Test Command <img src="assets/firebase-icon.svg" alt="Alternative Text" width="28" height="28" />
 
