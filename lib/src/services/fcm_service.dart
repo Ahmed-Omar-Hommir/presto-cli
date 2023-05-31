@@ -32,6 +32,7 @@ class FcmService implements IFcmService {
       );
       return right(None());
     } catch (e) {
+      print(e);
       // Todo: use hander error
       return left(ResponseFailure.unknownError());
     }
