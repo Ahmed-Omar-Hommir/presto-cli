@@ -4,9 +4,8 @@ import 'package:dartz/dartz.dart';
 import 'package:mason/mason.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
-import 'package:presto_cli/src/commands/fcm_tester_command.dart';
+import 'package:presto_cli/src/commands/fcm_test_command.dart';
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart';
-import 'package:presto_cli/src/models/response_failure/response_failure.dart';
 import 'package:test/test.dart';
 
 import '../mocks.mocks.dart';
@@ -38,7 +37,7 @@ void main() {
     when(mockIDirectoryFactory.current).thenReturn(mockDirectory);
 
     sut = CommandRunner<int>('test', 'test')
-      ..addCommand(FCMTesterCommand(
+      ..addCommand(FCMTestCommand(
         directoryFactory: mockIDirectoryFactory,
         logger: mockILogger,
         fileManager: mockIFileManager,
@@ -180,7 +179,7 @@ void main() {
             (_) async => right(jsonReuest),
           );
 
-          final fcmFailire = ResponseFailure.notFound();
+          final fcmFailire = 'error message';
 
           whenSendNotification(
             mockIFcmService: mockIFcmService,
@@ -200,7 +199,7 @@ void main() {
           verify(mockIDirectoryFactory.current).called(1);
           verifyNoMoreInteractions(mockIDirectoryFactory);
 
-          verify(mockILogger.error(fcmFailire.messageString)).called(1);
+          verify(mockILogger.error(fcmFailire)).called(1);
           verifyNoMoreInteractions(mockILogger);
 
           verify(mockIFileManager.readJson(jsonFilePath())).called(1);

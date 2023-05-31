@@ -15,8 +15,6 @@ import 'package:presto_cli/presto_cli.dart' as _i5;
 import 'package:presto_cli/src/logger.dart' as _i6;
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart'
     as _i8;
-import 'package:presto_cli/src/models/response_failure/response_failure.dart'
-    as _i12;
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart' as _i11;
 
 // ignore_for_file: type=lint
@@ -1622,34 +1620,32 @@ class MockIFcmService extends _i1.Mock implements _i5.IFcmService {
   }
 
   @override
-  _i7.Future<_i4.Either<_i12.ResponseFailure, _i4.None<dynamic>>>
-      sendNotification({
+  _i7.Future<_i4.Either<String, _i4.None<dynamic>>> sendNotification({
     required Map<String, dynamic>? data,
     required String? serverKey,
   }) =>
-          (super.noSuchMethod(
-            Invocation.method(
-              #sendNotification,
-              [],
-              {
-                #data: data,
-                #serverKey: serverKey,
-              },
-            ),
-            returnValue: _i7.Future<
-                    _i4.Either<_i12.ResponseFailure, _i4.None<dynamic>>>.value(
-                _FakeEither_2<_i12.ResponseFailure, _i4.None<dynamic>>(
-              this,
-              Invocation.method(
-                #sendNotification,
-                [],
-                {
-                  #data: data,
-                  #serverKey: serverKey,
-                },
-              ),
-            )),
-          ) as _i7.Future<_i4.Either<_i12.ResponseFailure, _i4.None<dynamic>>>);
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendNotification,
+          [],
+          {
+            #data: data,
+            #serverKey: serverKey,
+          },
+        ),
+        returnValue: _i7.Future<_i4.Either<String, _i4.None<dynamic>>>.value(
+            _FakeEither_2<String, _i4.None<dynamic>>(
+          this,
+          Invocation.method(
+            #sendNotification,
+            [],
+            {
+              #data: data,
+              #serverKey: serverKey,
+            },
+          ),
+        )),
+      ) as _i7.Future<_i4.Either<String, _i4.None<dynamic>>>);
 }
 
 /// A class which mocks [FcmRemoteServiceApi].

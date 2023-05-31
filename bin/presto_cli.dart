@@ -24,7 +24,7 @@ void main(List<String> args) async {
           packageManager: PackageManager(),
           logger: Logger(),
         ))
-        ..addCommand(FCMTesterCommand(
+        ..addCommand(FCMTestCommand(
           fileManager: FileManager(),
           fcmService: FcmService(),
           logger: Logger(),

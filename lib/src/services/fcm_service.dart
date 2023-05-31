@@ -1,13 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:presto_cli/src/models/response_failure/response_failure.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'fcm_service.g.dart';
 
 abstract class IFcmService {
-  Future<Either<ResponseFailure, None>> sendNotification({
+  Future<Either<String, None>> sendNotification({
     required Map<String, dynamic> data,
     required String serverKey,
   });
@@ -21,7 +20,7 @@ class FcmService implements IFcmService {
   final FcmRemoteServiceApi _api;
 
   @override
-  Future<Either<ResponseFailure, None>> sendNotification({
+  Future<Either<String, None>> sendNotification({
     required Map<String, dynamic> data,
     required String serverKey,
   }) async {
@@ -32,9 +31,7 @@ class FcmService implements IFcmService {
       );
       return right(None());
     } catch (e) {
-      print(e);
-      // Todo: use hander error
-      return left(ResponseFailure.unknownError());
+      return left(e.toString());
     }
   }
 }
