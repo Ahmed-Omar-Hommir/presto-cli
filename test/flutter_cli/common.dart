@@ -5,6 +5,7 @@ import 'package:presto_cli/src/models/models.dart';
 import 'package:test/test.dart';
 
 void directoryDoesNotExistTest({
+  required Directory Function() tempDir,
   required Future<Either<CliFailure, Process>> Function(Directory tempDir) act,
   required void Function() assertions,
 }) {
@@ -12,16 +13,10 @@ void directoryDoesNotExistTest({
     'should return Left CliFailureDirectoryNotFound when directory does not exist.',
     () async {
       // Arrange
-      final tempDir = Directory(join(
-        Directory.systemTemp.createTempSync().path,
-        'directory',
-        'does',
-        'not',
-        'exist',
-      ));
+      final notExistTempDir = Directory(join(tempDir().path, 'not', 'exist'));
 
       // Act
-      final result = await act(tempDir);
+      final result = await act(notExistTempDir);
 
       // Assert
       expect(result, isA<Left>());

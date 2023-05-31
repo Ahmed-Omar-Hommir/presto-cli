@@ -1,14 +1,12 @@
 import 'package:dartz/dartz.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart';
 import 'package:presto_cli/src/models/models.dart';
 import 'package:presto_cli/src/utils/utils.dart';
 import 'package:test/test.dart';
 
-import 'project_checker_test.mocks.dart';
+import '../mocks.mocks.dart';
 
-@GenerateMocks([IFileManager])
 void main() {
   late IProjectChecker sut;
   late MockIFileManager mockFileManager;

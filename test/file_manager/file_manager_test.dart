@@ -1,22 +1,16 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart';
 import 'package:test/test.dart';
 
-import 'file_manager_test.mocks.dart';
+import '../mocks.mocks.dart';
+
 import 'helper.dart';
 
-@GenerateMocks([
-  IFileFactory,
-  IYamlWrapper,
-  File,
-  Directory,
-])
 void main() {
   late IFileManager sut;
   late IFileManager sutWithMock;
@@ -242,6 +236,95 @@ void main() {
       );
     },
   );
+  group(
+    'Read Json',
+    () {
+      group(
+        'Success cases',
+        () {
+          test(
+            'should return a Right with a map containing the json content.',
+            () async {
+              // Arrange
+              createJsonFile(tempDir);
+
+              final jsonFile = File(join(tempDir.path, 'file.json'));
+
+              // Act
+              final result = await sut.readJson(jsonFile.path);
+
+              // Assert
+              expect(result, isA<Right>());
+              expect(
+                result.fold(
+                  (failure) => fail('Result returned a Left.'),
+                  (response) => response,
+                ),
+                isA<Map>(),
+              );
+            },
+          );
+        },
+      );
+      group(
+        'Failure cases',
+        () {
+          test(
+            'should return a Left with a $FileManagerFailureFileNotFound when the file does not exist.',
+            () async {
+              // Arrange
+              final jsonPath = File(join(tempDir.path, 'file.json'));
+
+              // Act
+              final result = await sut.readJson(jsonPath.path);
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (response) => fail('Result returned a Right.'),
+                ),
+                isA<FileManagerFailureFileNotFound>(),
+              );
+            },
+          );
+          test(
+            'should return a Left with a $FileManagerFailureUnknown when readAsString throw exception.',
+            () async {
+              // Arrange
+              when(mockIFileFactory.create(any)).thenReturn(mockFile);
+              when(mockFile.existsSync()).thenReturn(true);
+              when(mockFile.readAsString()).thenAnswer((_) async => '');
+
+              // Act
+              final result = await sutWithMock.readJson(
+                join(tempDir.path, 'test.json'),
+              );
+
+              // Assert
+              expect(result, isA<Left>());
+              expect(
+                result.fold(
+                  (failure) => failure,
+                  (response) => fail('Result returned a Right.'),
+                ),
+                isA<FileManagerFailureUnknown>(),
+              );
+
+              verify(mockIFileFactory.create(any)).called(1);
+              verify(mockFile.existsSync()).called(1);
+              verify(mockFile.readAsString()).called(1);
+
+              verifyNoMoreInteractions(mockFile);
+              verifyNoMoreInteractions(mockIFileFactory);
+              verifyZeroInteractions(mockIYamlWrapper);
+            },
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Find Packages',
@@ -349,13 +432,11 @@ void main() {
             'should return Left $FileManagerFailureDirNotFound when dir does not exist.',
             () async {
               // Arrange
-              final tempDir = Directory(join(
-                Directory.systemTemp.createTempSync().path,
-                'not_exist',
-              ));
+              final notExistTempDir =
+                  Directory(join(tempDir.path, 'not_exist'));
 
               // Act
-              final result = await sut.findPackages(tempDir);
+              final result = await sut.findPackages(notExistTempDir);
 
               // Assert
               expect(result, isA<Left>());

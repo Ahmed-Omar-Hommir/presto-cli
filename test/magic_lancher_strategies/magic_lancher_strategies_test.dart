@@ -1,15 +1,12 @@
 import 'dart:io';
-
 import 'package:dartz/dartz.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
 import 'package:test/test.dart';
 
-import 'magic_lancher_strategies_test.mocks.dart';
+import '../mocks.mocks.dart';
 
-@GenerateMocks([IFlutterCLI])
 void main() {
   late IMagicCommandStrategy sut;
   late MockIFlutterCLI mockFlutterCLI;

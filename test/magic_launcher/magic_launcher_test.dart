@@ -1,31 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:mason_logger/mason_logger.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as path;
 import 'package:presto_cli/src/commands/magic/commands/magic_runner_command.dart';
-import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart';
 import 'package:presto_cli/src/models/models.dart';
-import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
 import 'package:presto_cli/src/utils/utils.dart';
 import 'package:test/test.dart';
 
+import '../mocks.mocks.dart';
 import 'helper.dart';
-import 'magic_launcher_test.mocks.dart';
 
-@GenerateMocks([
-  IProjectChecker,
-  ILogger,
-  IFileManager,
-  IMagicCommandStrategy,
-  Process,
-  IProcessLogger,
-  IDirectoryFactory,
-])
 void main() {
   late IMagicLauncher sut;
   late Directory tempDir;

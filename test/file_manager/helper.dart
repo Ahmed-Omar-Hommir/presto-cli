@@ -41,6 +41,30 @@ Future<void> createTempPackage(
   }
 }
 
+Future<void> createJsonFile(Directory dir) async {
+  final jsonFile = File(join(dir.path, 'file.json'));
+  await jsonFile.writeAsString(
+    """
+{
+  "name": "presto",
+  "description": "test package",
+  "version": "0.0.0",
+  "environment": {
+    "sdk": ">=2.19.6 <3.0.0"
+  },
+  "dependencies": {
+    "path": "^1.8.0",
+    "freezed": "^2.3.2"
+  },
+  "dev_dependencies": {
+    "lints": "^2.0.0",
+    "test": "^1.21.0"
+  }
+}
+  """,
+  );
+}
+
 Future<void> createPubspecFile(Directory dir) async {
   final pubspecFile = File(join(dir.path, 'pubspec.yaml'));
   await pubspecFile.writeAsString(

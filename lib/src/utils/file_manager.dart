@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,6 +17,9 @@ abstract class IFileManager {
     Directory dir, {
     Future<bool> Function(Directory dir)? where,
   });
+  Future<Either<FileManagerFailure, Map<String, dynamic>>> readJson(
+    String path,
+  );
 }
 
 class FileManager implements IFileManager {
@@ -115,6 +119,22 @@ class FileManager implements IFileManager {
             File(join(dir.path, 'pubspec.yaml')).existsSync() &&
             (where != null ? await where(dir) : true),
       ).then((value) => Right(value.toSet()));
+    } catch (e) {
+      return left(FileManagerFailure.unknown(e));
+    }
+  }
+
+  @override
+  Future<Either<FileManagerFailure, Map<String, dynamic>>> readJson(
+    String path,
+  ) async {
+    try {
+      final file = _fileFactory.create(path);
+      if (!file.existsSync()) {
+        return left(FileManagerFailure.fileNotFound());
+      }
+      final content = await file.readAsString();
+      return right(jsonDecode(content) as Map<String, dynamic>);
     } catch (e) {
       return left(FileManagerFailure.unknown(e));
     }

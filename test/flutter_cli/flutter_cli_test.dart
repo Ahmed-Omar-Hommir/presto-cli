@@ -1,20 +1,13 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:test/test.dart';
+import '../mocks.mocks.dart';
 import 'common.dart';
-import 'flutter_cli_test.mocks.dart';
 import 'helper.dart';
 
-@GenerateMocks([
-  IProcessManager,
-  Process,
-  ProcessResult,
-  Directory,
-])
 void main() {
   late IProcessManager processManager;
   late IFlutterCLI sut;
@@ -532,6 +525,7 @@ void main() {
       });
       group('Failure cases', () {
         directoryDoesNotExistTest(
+          tempDir: () => tempDir,
           act: (tempDir) => sut.pubGet(tempDir),
           assertions: () => veryifyAllZeroInteraction(),
         );
@@ -667,6 +661,7 @@ void main() {
     });
     group('Failure cases', () {
       directoryDoesNotExistTest(
+        tempDir: () => tempDir,
         act: (tempDir) => sut.buildRunner(tempDir),
         assertions: () => veryifyAllZeroInteraction(),
       );
@@ -769,6 +764,7 @@ void main() {
       });
       group('Failure cases', () {
         directoryDoesNotExistTest(
+          tempDir: () => tempDir,
           act: (tempDir) => sut.clean(tempDir),
           assertions: () => veryifyAllZeroInteraction(),
         );
@@ -876,6 +872,7 @@ void main() {
       });
       group('Failure cases', () {
         directoryDoesNotExistTest(
+          tempDir: () => tempDir,
           act: (tempDir) => sut.pubGet(tempDir),
           assertions: () => veryifyAllZeroInteraction(),
         );
@@ -982,6 +979,7 @@ void main() {
       });
       group('Failure cases', () {
         directoryDoesNotExistTest(
+          tempDir: () => tempDir,
           act: (tempDir) => sut.upgrade(tempDir),
           assertions: () => veryifyAllZeroInteraction(),
         );

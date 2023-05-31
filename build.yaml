@@ -3,3 +3,11 @@ targets:
     sources:
       exclude:
         - lib/src/commands/create/templates/**
+    
+    builders:
+      mockito|mockBuilder:
+        enabled: true
+        generate_for:
+          - test/mocks.dart
+        
+
