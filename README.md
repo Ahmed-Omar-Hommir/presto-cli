@@ -39,7 +39,7 @@ Magic Commands is designed to work with the following project structure:
 
 ## How It Works
 
-When you run a Magic Command, it searches all packages in your project that need the command. For example, some packages might not support `L10N` or `build_runner`. With Magic Commands, there's no need to specify the package path or which packages need a particular command.
+Using a Magic Command simplifies your workflow. It scans your project, identifying the packages that need the command. Whether it's L10N or build_runner, Magic Commands knows which packages require what. There's no need to manually specify the package path or to know which packages require a specific command. Best of all, Magic Commands runs these tasks in parallel across all applicable packages, speeding up your development process.
 
 ## Available Commands
 
