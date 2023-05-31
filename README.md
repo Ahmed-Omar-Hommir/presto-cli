@@ -29,8 +29,8 @@ Magic Commands is designed to work with the following project structure:
 ```
 ├── lib
 ├── test
-├── pubspect.lock
-├── pubspect.yaml
+├── pubspec.lock
+├── pubspec.yaml
 └── packages
     ├── package_one
     ├── package_two
@@ -45,7 +45,7 @@ Using a Magic Command simplifies your workflow. It scans your project, identifyi
 
 Here are the currently available subcommands:
 
-- `build_runner`: build_runner: Executes code generation utilities, useful with packages like freezed or json_serializable.
+- `build_runner`: Executes code generation utilities, useful with packages like freezed or json_serializable.
 - `clean`: Deletes build/ directory and clears previous build artifacts for a fresh build.
 - `get`: Fetches dependencies in pubspec.yaml, making them available in your Dart files.
 - `l10n`: Generates localization files based on the arb files in the l10n directory.
