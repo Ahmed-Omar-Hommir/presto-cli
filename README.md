@@ -1,5 +1,21 @@
 ![Example Image](assets/presto_cli_logo.png)
 
+---
+
+A Very Good Command-Line Interface for Dart.
+
+Developed with 🧡 by Presto Team 🐥
+
+## Quick Start 🚀
+
+### Installing 🧑‍💻
+
+```sh
+dart pub global activate --source git https://github.com/Ahmed-Omar-Hommir/presto-cli
+```
+
+### Commands ✨
+
 # FCM-Test CLI Command
 
 The `fcm-test` command is a powerful utility for testing Firebase Cloud Messaging (FCM) push notifications. It's designed to be simple to use.
