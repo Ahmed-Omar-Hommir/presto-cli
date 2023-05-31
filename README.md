@@ -58,7 +58,7 @@ I think you like magic, let's turn this frog into something beautiful ğŸª„ + ğŸ
 To use Magic Commands, navigate to your root project directory and run the desired command:
 
 ```bash
-dart run magic_commands <command>
+presto magic <command>
 ```
 
 Replace `<command>` with one of the available subcommands listed above.
