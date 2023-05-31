@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:mason/mason.dart';
 import 'package:presto_cli/src/template_generator.dart';
+import 'package:presto_cli/presto_cli.dart';
 
 class FeatureBlocTemp implements TemplateGenerator<FeatureBlocTempModel> {
   @override
   Brick get brick => Brick.git(GitPath(
-        'https://gitlab.com/Ahmed-Omar-Prestoeat/presto_cli',
+        RemoteRepositoryInfo.url,
         path: 'lib/commands/create/templates/bloc_feature',
       ));
 
