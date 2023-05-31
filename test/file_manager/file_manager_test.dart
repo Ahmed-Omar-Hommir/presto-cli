@@ -246,7 +246,7 @@ void main() {
             'should return a Right with a map containing the json content.',
             () async {
               // Arrange
-              createJsonFile(tempDir);
+              await createJsonFile(tempDir);
 
               final jsonFile = File(join(tempDir.path, 'file.json'));
 
