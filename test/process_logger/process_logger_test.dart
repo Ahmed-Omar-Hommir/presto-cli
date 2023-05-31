@@ -1,13 +1,10 @@
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:presto_cli/src/logger.dart';
 import 'package:presto_cli/src/utils/utils.dart';
 import 'package:test/test.dart';
 
 import 'helper.dart';
 import 'parallel_process_logger_test.mocks.dart';
 
-@GenerateMocks([ILogger])
 void main() {
   late ProcessLogger sut;
   late MockILogger mockLogger;
