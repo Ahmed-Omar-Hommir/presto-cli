@@ -28,7 +28,7 @@ class FcmService implements IFcmService {
     try {
       await _api.sendNotification(
         data: data,
-        serverKey: serverKey,
+        serverKey: 'key=$serverKey',
       );
       return right(None());
     } catch (e) {

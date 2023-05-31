@@ -57,15 +57,17 @@ void main() {
         'should return 0 when run command successfully',
         () async {
           // Arrange
-
           when(mockIFileManager.readJson(jsonFilePath())).thenAnswer(
             (_) async => right(jsonReuest),
           );
 
-          when(mockIFcmService.sendNotification(
-            data: jsonReuest['request'],
-            serverKey: jsonReuest['serverKey'],
-          )).thenAnswer(
+          when(mockILogger.info(
+            FCMTesterMessage.sendNotificationSuccess,
+          )).thenReturn(null);
+
+          whenSendNotification(
+            mockIFcmService: mockIFcmService,
+          ).thenAnswer(
             (_) async => right(None()),
           );
 
@@ -84,13 +86,13 @@ void main() {
           verify(mockIFileManager.readJson(jsonFilePath())).called(1);
           verifyNoMoreInteractions(mockIFileManager);
 
-          verify(mockIFcmService.sendNotification(
-            data: jsonReuest['request'],
-            serverKey: jsonReuest['serverKey'],
-          )).called(1);
+          verifySendNotification(mockIFcmService: mockIFcmService).called(1);
           verifyNoMoreInteractions(mockIFcmService);
 
-          verifyZeroInteractions(mockILogger);
+          verify(mockILogger.info(
+            FCMTesterMessage.sendNotificationSuccess,
+          )).called(1);
+          verifyNoMoreInteractions(mockILogger);
         },
       );
     },
@@ -180,10 +182,9 @@ void main() {
 
           final fcmFailire = ResponseFailure.notFound();
 
-          when(mockIFcmService.sendNotification(
-            data: jsonReuest['request'],
-            serverKey: jsonReuest['serverKey'],
-          )).thenAnswer(
+          whenSendNotification(
+            mockIFcmService: mockIFcmService,
+          ).thenAnswer(
             (_) async => left(fcmFailire),
           );
 
@@ -205,10 +206,7 @@ void main() {
           verify(mockIFileManager.readJson(jsonFilePath())).called(1);
           verifyNoMoreInteractions(mockIFileManager);
 
-          verify(mockIFcmService.sendNotification(
-            data: jsonReuest['request'],
-            serverKey: jsonReuest['serverKey'],
-          )).called(1);
+          verifySendNotification(mockIFcmService: mockIFcmService).called(1);
           verifyNoMoreInteractions(mockIFcmService);
         },
       );

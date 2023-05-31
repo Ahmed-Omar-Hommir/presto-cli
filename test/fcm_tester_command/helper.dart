@@ -1,11 +1,16 @@
+import 'package:dartz/dartz.dart';
+import 'package:mockito/mockito.dart';
+import 'package:presto_cli/src/models/response_failure/response_failure.dart';
+
+import '../mocks.mocks.dart';
+
 const command = 'fcm-tester';
 const fileName = 'fcm_tester.json';
-const serverKey = 'mockServerKey';
 
 const Map<String, dynamic> jsonReuest = {
-  'serverKey': serverKey,
+  'serverKey': 'mockServerKey',
   'request': {
-    "token": "mockToken",
+    "to": "mockToken",
     "notification": {
       "title": "Match update",
       "body": "Arsenal goal in added time, score is now 3-0"
@@ -54,22 +59,44 @@ final List<IvalidJsonCase> invalidJsonRequestCases = [
   IvalidJsonCase(
     when: 'request is null',
     request: {
-      'serverKey': serverKey,
+      'serverKey': jsonReuest['serverKey'],
       'request': null,
     },
   ),
   IvalidJsonCase(
     when: 'request is empty',
     request: {
-      'serverKey': serverKey,
+      'serverKey': jsonReuest['serverKey'],
       'request': {},
     },
   ),
   IvalidJsonCase(
     when: 'request is not Map<String, dynamic>',
     request: {
-      'serverKey': serverKey,
+      'serverKey': jsonReuest['serverKey'],
       'request': 1,
     },
   ),
 ];
+
+PostExpectation<Future<Either<ResponseFailure, None>>> whenSendNotification({
+  required MockIFcmService mockIFcmService,
+  Map<String, dynamic>? data,
+  String? serverKey,
+}) {
+  return when(mockIFcmService.sendNotification(
+    serverKey: serverKey ?? jsonReuest['serverKey'],
+    data: data ?? jsonReuest['request'],
+  ));
+}
+
+VerificationResult verifySendNotification({
+  required MockIFcmService mockIFcmService,
+  Map<String, dynamic>? data,
+  String? serverKey,
+}) {
+  return verify(mockIFcmService.sendNotification(
+    data: data ?? jsonReuest['request'],
+    serverKey: serverKey ?? jsonReuest['serverKey'],
+  ));
+}

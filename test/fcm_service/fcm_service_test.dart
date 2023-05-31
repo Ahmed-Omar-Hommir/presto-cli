@@ -20,10 +20,9 @@ void main() {
       'should return a Right when the request is successful',
       () async {
         // Arrange
-        when(mockApi.sendNotification(
-          data: sendNotificationRequest,
-          serverKey: serverKey,
-        )).thenAnswer((_) async => Future.value());
+        whenSendNotification(
+          mockApi: mockApi,
+        ).thenAnswer((_) async => Future.value());
 
         // Act
         final result = await sut.sendNotification(
@@ -34,10 +33,9 @@ void main() {
         // Assert
         expect(result, isA<Right>());
 
-        verify(mockApi.sendNotification(
-          data: sendNotificationRequest,
-          serverKey: serverKey,
-        )).called(1);
+        verifySendNotification(
+          mockApi: mockApi,
+        ).called(1);
 
         verifyNoMoreInteractions(mockApi);
       },
@@ -49,10 +47,9 @@ void main() {
       () async {
         // Arrange
 
-        when(mockApi.sendNotification(
-          data: sendNotificationRequest,
-          serverKey: serverKey,
-        )).thenThrow(Exception());
+        whenSendNotification(
+          mockApi: mockApi,
+        ).thenThrow(Exception());
 
         // Act
         final result = await sut.sendNotification(
@@ -63,10 +60,9 @@ void main() {
         // Assert
         expect(result, isA<Left>());
 
-        verify(mockApi.sendNotification(
-          data: sendNotificationRequest,
-          serverKey: serverKey,
-        )).called(1);
+        verifySendNotification(
+          mockApi: mockApi,
+        ).called(1);
 
         verifyNoMoreInteractions(mockApi);
       },

@@ -74,7 +74,10 @@ class FCMTesterCommand extends Command<int> {
             _logger.error(failire.messageString);
             return ExitCode.usage.code;
           },
-          (response) => ExitCode.success.code,
+          (response) {
+            _logger.info(FCMTesterMessage.sendNotificationSuccess);
+            return ExitCode.success.code;
+          },
         );
       },
     );
@@ -87,4 +90,6 @@ abstract class FCMTesterMessage {
       'unknown error when trying reading json file.';
   static String get invlidServerKey => 'invalid server key.';
   static String get invalidData => 'invalid data.';
+  static String get sendNotificationSuccess =>
+      'send notification successfully.';
 }
