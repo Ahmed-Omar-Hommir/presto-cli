@@ -29,13 +29,18 @@ class UpdateCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    // Check for updates
+    // If there is an update, update the cli
+    // If there is no update, exit
+
     try {
       final checkUpdateProgress = _logger.progress('Checking for updates');
       final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
       // Make an HTTP request to the URI
       final response = await http.get(
-          Uri.parse('${RemoteRepositoryInfo.versionUrl}$pathToDartVersion'));
+        Uri.parse('${RemoteRepositoryInfo.versionUrl}$pathToDartVersion'),
+      );
 
       // Create a temporary file
       final tempDir = await Directory.systemTemp.createTemp();
