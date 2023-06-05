@@ -28,7 +28,7 @@ jobs:
               run: dart run build_runner build -d
 
             - name: Run tests
-              run: dart test
+              run: dart test --concurrency=100
 
 on:
     pull_request:

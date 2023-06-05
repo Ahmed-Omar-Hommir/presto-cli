@@ -40,17 +40,16 @@ void main() {
     'should run next task immediately after one of the running tasks completes.',
     () async {
       // Arrange
-
-      Future<TaskResultTest> task(Duration durarion) async {
-        await Future<void>.delayed(durarion);
-        return TaskResultTest(Duration(seconds: 1));
+      Future<TaskResultTest> task(Duration duration) async {
+        await Future<void>.delayed(duration);
+        return TaskResultTest(Duration(milliseconds: 1));
       }
 
       final List<Future<TaskResultTest> Function()> tasks = [
-        () => task(Duration(seconds: 1)),
-        () => task(Duration(seconds: 1)),
-        () => task(Duration(milliseconds: 500)),
-        () => task(Duration(milliseconds: 500)),
+        () => task(Duration(milliseconds: 20)),
+        () => task(Duration(milliseconds: 20)),
+        () => task(Duration(milliseconds: 10)),
+        () => task(Duration(milliseconds: 10)),
       ];
 
       // Act
@@ -60,10 +59,11 @@ void main() {
       final duration = endTime.difference(startTime);
 
       // Assert
-      expect(duration.inSeconds, lessThan(1.1));
+      expect(duration.inMilliseconds, lessThan(30));
       expect(result.length, 4);
     },
   );
+
   test(
     'should run tasks when concurrency large than number of tasks.',
     () async {
@@ -71,14 +71,14 @@ void main() {
 
       Future<TaskResultTest> task(Duration durarion) async {
         await Future<void>.delayed(durarion);
-        return TaskResultTest(Duration(seconds: 1));
+        return TaskResultTest(Duration(milliseconds: 1));
       }
 
       final List<Future<TaskResultTest> Function()> tasks = [
-        () => task(Duration(seconds: 1)),
-        () => task(Duration(seconds: 1)),
-        () => task(Duration(milliseconds: 500)),
-        () => task(Duration(milliseconds: 500)),
+        () => task(Duration(milliseconds: 20)),
+        () => task(Duration(milliseconds: 20)),
+        () => task(Duration(milliseconds: 10)),
+        () => task(Duration(milliseconds: 10)),
       ];
 
       // Act
@@ -91,7 +91,7 @@ void main() {
       final duration = endTime.difference(startTime);
 
       // Assert
-      expect(duration.inSeconds, lessThan(1.1));
+      expect(duration.inMilliseconds, lessThan(30));
       expect(result.length, 4);
     },
   );
@@ -100,8 +100,9 @@ void main() {
     'should wait result function after task complete.',
     () async {
       // Arrange
+      final milliseconds = 20;
       Future<TaskResultTest> task() async {
-        return TaskResultTest(Duration(seconds: 1));
+        return TaskResultTest(Duration(milliseconds: milliseconds));
       }
 
       final List<Future<TaskResultTest> Function()> tasks = [
@@ -113,11 +114,14 @@ void main() {
         () => task(),
       ];
 
+      final concurrency = 3;
+      final total = (tasks.length * 20) / concurrency;
+
       // Act
       final startTime = DateTime.now();
       final result = await sut.run(
           tasks: tasks,
-          concurrency: 3,
+          concurrency: concurrency,
           resultWaiter: (result) async {
             await result.exitCode();
           });
@@ -125,8 +129,8 @@ void main() {
       final duration = endTime.difference(startTime);
 
       // Assert
-      expect(duration.inSeconds, lessThan(2.1));
-      expect(duration.inSeconds, greaterThan(1.9));
+      expect(duration.inMilliseconds, lessThan(total + 10));
+      expect(duration.inMilliseconds, greaterThan(total - 10));
       expect(result.length, equals(6));
     },
   );
@@ -142,7 +146,7 @@ void main() {
         runningTasks++;
         maxConcurrency = max(maxConcurrency, runningTasks);
         runningTasks--;
-        return TaskResultTest(Duration(seconds: 1));
+        return TaskResultTest(Duration(milliseconds: 1));
       }
 
       final tasks = List<Future<TaskResultTest> Function()>.generate(
