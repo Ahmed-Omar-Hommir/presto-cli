@@ -1,38 +1,48 @@
 name: Presto Cli Tests
 
-jobs:
-    test:
-        runs-on: ${{ matrix.os }}
-        strategy:
-          matrix:
-            os: [ubuntu-latest, windows-latest]
-        defaults:
-            run:
-                working-directory: ./
-
-        steps:
-            - uses: actions/checkout@v3.5.2
-            
-            - name: Set up Dart
-              uses: dart-lang/setup-dart@v1.4
-              with:
-                sdk: stable
-
-            - name: Install dependencies
-              run: dart pub get
-
-            - name: Check package version
-              run:  dart test test/version_test.dart
-            
-            - name: Generate
-              run: dart run build_runner build -d
-
-            - name: Run tests
-              run: dart test
-
 on:
-    pull_request:
-        branches:
-            - main
+  pull_request:
+    branches:
+      - main
 
-    
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    defaults:
+      run:
+        working-directory: ./
+        
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1.4
+        with:
+          sdk: stable
+
+      - name: Cache Pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: "~/.pub-cache"
+          key: "${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}"
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Check package version
+        run: dart test test/version_test.dart
+
+      - name: Generate
+        run: dart run build_runner build -d
+
+      - name: Run tests
+        run: dart test --concurrency=100
