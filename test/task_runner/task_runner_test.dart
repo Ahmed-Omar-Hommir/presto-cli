@@ -22,7 +22,7 @@ void main() {
         maxConcurrency = max(maxConcurrency, runningTasks);
         await Future<void>.delayed(Duration(microseconds: 200));
         runningTasks--;
-        return TaskResultTest(Duration(seconds: 1));
+        return TaskResultTest(Duration(microseconds: 1));
       }
 
       final tasks = List<Future<TaskResultTest> Function()>.generate(
@@ -46,10 +46,10 @@ void main() {
       }
 
       final List<Future<TaskResultTest> Function()> tasks = [
-        () => task(Duration(milliseconds: 20)),
-        () => task(Duration(milliseconds: 20)),
-        () => task(Duration(milliseconds: 10)),
-        () => task(Duration(milliseconds: 10)),
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 100)),
+        () => task(Duration(milliseconds: 100)),
       ];
 
       // Act
@@ -59,7 +59,7 @@ void main() {
       final duration = endTime.difference(startTime);
 
       // Assert
-      expect(duration.inMilliseconds, lessThan(30));
+      expect(duration.inMilliseconds, lessThan(300));
       expect(result.length, 4);
     },
   );
@@ -75,10 +75,10 @@ void main() {
       }
 
       final List<Future<TaskResultTest> Function()> tasks = [
-        () => task(Duration(milliseconds: 20)),
-        () => task(Duration(milliseconds: 20)),
-        () => task(Duration(milliseconds: 10)),
-        () => task(Duration(milliseconds: 10)),
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 100)),
+        () => task(Duration(milliseconds: 100)),
       ];
 
       // Act
@@ -91,7 +91,7 @@ void main() {
       final duration = endTime.difference(startTime);
 
       // Assert
-      expect(duration.inMilliseconds, lessThan(30));
+      expect(duration.inMilliseconds, lessThan(300));
       expect(result.length, 4);
     },
   );
@@ -100,7 +100,7 @@ void main() {
     'should wait result function after task complete.',
     () async {
       // Arrange
-      final milliseconds = 20;
+      final milliseconds = 200;
       Future<TaskResultTest> task() async {
         return TaskResultTest(Duration(milliseconds: milliseconds));
       }
@@ -115,7 +115,7 @@ void main() {
       ];
 
       final concurrency = 3;
-      final total = (tasks.length * 20) / concurrency;
+      final total = (tasks.length * milliseconds) / concurrency;
 
       // Act
       final startTime = DateTime.now();
@@ -129,8 +129,8 @@ void main() {
       final duration = endTime.difference(startTime);
 
       // Assert
-      expect(duration.inMilliseconds, lessThan(total + 10));
-      expect(duration.inMilliseconds, greaterThan(total - 10));
+      expect(duration.inMilliseconds, lessThan(total + 100));
+      expect(duration.inMilliseconds, greaterThan(total - 100));
       expect(result.length, equals(6));
     },
   );
@@ -145,6 +145,7 @@ void main() {
       Future<TaskResultTest> task(int index) async {
         runningTasks++;
         maxConcurrency = max(maxConcurrency, runningTasks);
+        await Future<void>.delayed(Duration.zero);
         runningTasks--;
         return TaskResultTest(Duration(milliseconds: 1));
       }
