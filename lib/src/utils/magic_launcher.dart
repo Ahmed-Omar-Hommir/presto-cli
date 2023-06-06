@@ -14,6 +14,7 @@ import 'magic_lancher_strategies.dart';
 
 abstract class IMagicLauncher {
   Future<int> launch({
+    int? numberOfProcessors,
     required IMagicCommandStrategy magicCommandStrategy,
     Future<bool> Function(Directory dir)? packageWhere,
   });
@@ -92,6 +93,7 @@ class MagicLauncher implements IMagicLauncher {
 
   @override
   Future<int> launch({
+    int? numberOfProcessors,
     required IMagicCommandStrategy magicCommandStrategy,
     Future<bool> Function(Directory dir)? packageWhere,
   }) async {
@@ -147,6 +149,9 @@ class MagicLauncher implements IMagicLauncher {
               _logger.error(LoggerMessage.noPackagesToProcess);
               return ExitCode.noInput.code;
             }
+            print("=" * 40);
+            print(numberOfProcessors);
+            print("=" * 40);
 
             await _tasksRunner.run(
               tasks: List.generate(
@@ -156,7 +161,7 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
-              concurrency: Platform.numberOfProcessors,
+              concurrency: numberOfProcessors ?? Platform.numberOfProcessors,
               resultWaiter: (value) {
                 return value.fold(
                   (_) => Future.value(),

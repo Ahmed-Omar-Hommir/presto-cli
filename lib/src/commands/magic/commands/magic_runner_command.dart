@@ -15,6 +15,7 @@ class MagicRunnerCommand extends Command<int> {
       abbr: 'd',
       negatable: false,
     );
+    argParser.addOption('number-of-process');
   }
 
   final IMagicLauncher _magicLauncher;
@@ -35,6 +36,7 @@ class MagicRunnerCommand extends Command<int> {
   @override
   Future<int> run() async {
     return await _magicLauncher.launch(
+      numberOfProcessors: int.parse(argResults?['number-of-process']),
       magicCommandStrategy: MagicBuildRunnerStrategy(
         deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
       ),
