@@ -8,13 +8,11 @@ import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/magic/commands/magic_runner_command.dart';
 import 'package:presto_cli/src/logger.dart';
-import 'package:presto_cli/src/utils/task_distribution_manager.dart';
 
 import 'magic_lancher_strategies.dart';
 
 abstract class IMagicLauncher {
   Future<int> launch({
-    int? numberOfProcessors,
     required IMagicCommandStrategy magicCommandStrategy,
     Future<bool> Function(Directory dir)? packageWhere,
   });
@@ -34,7 +32,6 @@ class MagicLauncher implements IMagicLauncher {
         _projectChecker = projectChecker,
         _tasksRunner = tasksRunner,
         _processLogger = processLogger,
-        _taskDistributionManager = const TaskDistributionManager(),
         _directoryFactory = directoryFactory ?? const DirectoryFactory(),
         _fileManager = fileManager;
 
@@ -44,8 +41,6 @@ class MagicLauncher implements IMagicLauncher {
   final ITasksRunner<Either<CliFailure, Process>> _tasksRunner;
   final IProcessLogger _processLogger;
   final IDirectoryFactory _directoryFactory;
-  final ITaskDistributionManager<Future<Either<CliFailure, Process>> Function()>
-      _taskDistributionManager;
 
   Future<Either<CliFailure, Process>> _task(
     Directory dir,
@@ -93,7 +88,6 @@ class MagicLauncher implements IMagicLauncher {
 
   @override
   Future<int> launch({
-    int? numberOfProcessors,
     required IMagicCommandStrategy magicCommandStrategy,
     Future<bool> Function(Directory dir)? packageWhere,
   }) async {
@@ -149,9 +143,6 @@ class MagicLauncher implements IMagicLauncher {
               _logger.error(LoggerMessage.noPackagesToProcess);
               return ExitCode.noInput.code;
             }
-            print("=" * 40);
-            print(numberOfProcessors);
-            print("=" * 40);
 
             await _tasksRunner.run(
               tasks: List.generate(
@@ -161,7 +152,7 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
-              concurrency: numberOfProcessors ?? Platform.numberOfProcessors,
+              concurrency: Platform.numberOfProcessors,
               resultWaiter: (value) {
                 return value.fold(
                   (_) => Future.value(),
