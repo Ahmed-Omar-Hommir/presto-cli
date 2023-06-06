@@ -152,7 +152,7 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
-              concurrency: Platform.numberOfProcessors ~/ 2,
+              concurrency: 1,
             );
 
             return ExitCode.success.code;
