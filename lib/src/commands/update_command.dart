@@ -1,25 +1,18 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:http/http.dart' as http;
 import 'package:args/command_runner.dart';
+import 'package:mason/mason.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
-import 'package:presto_cli/src/package_manager.dart';
-import 'package:presto_cli/src/version.dart';
-import 'package:path/path.dart';
 
 class UpdateCommand extends Command<int> {
   UpdateCommand({
-    required IPackageManager packageManager,
+    required ICliService cliService,
     required ILogger logger,
-  })  : _packageManager = packageManager,
+  })  : _cliService = cliService,
         _logger = logger;
 
-  final IPackageManager _packageManager;
   final ILogger _logger;
+  final ICliService _cliService;
 
   @override
   String get name => 'update';
@@ -30,10 +23,22 @@ class UpdateCommand extends Command<int> {
   @override
   Future<int> run() async {
     // Check for updates
+
+    final progress = _logger.progress(UpdateCommandMessage.checkingForUpdates);
+
+    final lastVersionResult = await _cliService.getLastVersion();
+
+    return lastVersionResult.fold(
+      (failire) => throw UnimplementedError(),
+      (lastVersion) {
+        progress.update(UpdateCommandMessage.updating);
+        progress.complete(UpdateCommandMessage.updated);
+        return ExitCode.success.code;
+      },
+    );
+
     // If there is an update, update the cli
     // If there is no update, exit
-
-    throw UnimplementedError();
 
     // try {
     //   final checkUpdateProgress = _logger.progress('Checking for updates');
@@ -123,4 +128,14 @@ class UpdateCommand extends Command<int> {
     //   exit(1);
     // }
   }
+}
+
+abstract class UpdateCommandMessage {
+  static const String checkingForUpdates = 'Checking for updates';
+  static const String checkedForUpdates = 'Checked for updates';
+  static const String updating = 'Updating to';
+  static const String updated = 'Updated to';
+  static const String failedToUpdate = 'Failed to update';
+  static const String alreadyLatestVersion =
+      'Presto CLI is already at the latest version.';
 }
