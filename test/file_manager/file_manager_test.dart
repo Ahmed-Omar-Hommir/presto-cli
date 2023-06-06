@@ -73,7 +73,7 @@ void main() {
             'should return a Right with a map containing the yaml content.',
             () async {
               // Arrange
-              createPubspecFile(tempDir);
+              await createPubspecFile(tempDir);
 
               final pubspecFile = File(join(tempDir.path, 'pubspec.yaml'));
 
@@ -336,10 +336,12 @@ void main() {
             // Arrange
             final subDir = Directory(join(tempDir.path, 'sub_dir'))
               ..createSync();
-            createTempPackage(tempDir, packageName: 'package_1');
-            createTempPackage(tempDir, packageName: 'package_2');
-            createTempPackage(subDir, packageName: 'package_3');
-            createTempPackage(tempDir, packageName: 'package_4');
+            await Future.wait([
+              createTempPackage(tempDir, packageName: 'package_1'),
+              createTempPackage(tempDir, packageName: 'package_2'),
+              createTempPackage(subDir, packageName: 'package_3'),
+              createTempPackage(tempDir, packageName: 'package_4'),
+            ]);
 
             // Act
             final result = await sut.findPackages(tempDir);
@@ -366,11 +368,13 @@ void main() {
               // Arrange
               final subDir = Directory(join(tempDir.path, 'sub_dir'))
                 ..createSync();
-              createTempPackage(tempDir, packageName: 'ahmed_package_1');
-              createTempPackage(tempDir, packageName: 'package_2');
-              createTempPackage(subDir, packageName: 'ahmed_package_3');
-              createTempPackage(tempDir, packageName: 'ahmed_package_4');
-              createTempPackage(tempDir, packageName: 'package_5');
+              await Future.wait([
+                createTempPackage(tempDir, packageName: 'ahmed_package_1'),
+                createTempPackage(tempDir, packageName: 'package_2'),
+                createTempPackage(subDir, packageName: 'ahmed_package_3'),
+                createTempPackage(tempDir, packageName: 'ahmed_package_4'),
+                createTempPackage(tempDir, packageName: 'package_5'),
+              ]);
 
               // Act
               final result = await sut.findPackages(
@@ -400,10 +404,12 @@ void main() {
               // Arrange
               final subDir = Directory(join(tempDir.path, 'sub_dir'))
                 ..createSync();
-              createTempPackage(tempDir, packageName: 'package_1');
-              createTempPackage(tempDir, packageName: 'package_2');
-              createTempPackage(subDir, packageName: 'package_3');
-              createTempPackage(tempDir, packageName: 'package_4');
+              await Future.wait([
+                createTempPackage(tempDir, packageName: 'package_1'),
+                createTempPackage(tempDir, packageName: 'package_2'),
+                createTempPackage(subDir, packageName: 'package_3'),
+                createTempPackage(tempDir, packageName: 'package_4'),
+              ]);
 
               // Act
               final result = await sut.findPackages(
