@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -149,8 +148,7 @@ class MagicLauncher implements IMagicLauncher {
               return ExitCode.noInput.code;
             }
 
-            final tasksGroup = _taskDistributionManager.distributeTasks(
-              numberOfIsolates: Platform.numberOfProcessors,
+            await _tasksRunner.run(
               tasks: List.generate(
                 packagesToProcess.length,
                 (index) => () => _task(
@@ -158,48 +156,17 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
+              concurrency: Platform.numberOfProcessors,
+              resultWaiter: (value) {
+                return value.fold(
+                  (_) => Future.value(),
+                  (process) => process.exitCode,
+                );
+              },
             );
-
-            final List<Future> waiters = [];
-
-            for (var tasks in tasksGroup) {
-              final value = ReceivePort();
-              waiters.add(value.first);
-              Isolate.spawn(
-                _run,
-                tasks,
-                onExit: value.sendPort,
-              );
-              // await _tasksRunner.run(
-              //   tasks: tasks,
-              //   concurrency: Platform.numberOfProcessors,
-              //   resultWaiter: (value) {
-              //     return value.fold(
-              //       (l) => Future.value(),
-              //       (r) => r.exitCode,
-              //     );
-              //   },
-              //
-              // );
-            }
-
-            await Future.wait(waiters);
 
             return ExitCode.success.code;
           },
-        );
-      },
-    );
-  }
-
-  Future _run(tasks) {
-    return _tasksRunner.run(
-      tasks: tasks,
-      concurrency: 1,
-      resultWaiter: (value) {
-        return value.fold(
-          (l) => Future.value(),
-          (r) => r.exitCode,
         );
       },
     );
