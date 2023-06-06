@@ -25,7 +25,7 @@ class MagicLauncher implements IMagicLauncher {
     ),
     required IFileManager fileManager,
     required ILogger logger,
-    required ITasksRunner tasksRunner,
+    required ITasksRunner<Either<CliFailure, Process>> tasksRunner,
     required IProcessLogger processLogger,
     @visibleForTesting IDirectoryFactory? directoryFactory,
   })  : _logger = logger,
@@ -38,7 +38,7 @@ class MagicLauncher implements IMagicLauncher {
   final IProjectChecker _projectChecker;
   final ILogger _logger;
   final IFileManager _fileManager;
-  final ITasksRunner _tasksRunner;
+  final ITasksRunner<Either<CliFailure, Process>> _tasksRunner;
   final IProcessLogger _processLogger;
   final IDirectoryFactory _directoryFactory;
 
@@ -152,7 +152,13 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
-              concurrency: 1,
+              concurrency: Platform.numberOfProcessors,
+              resultWaiter: (value) {
+                return value.fold(
+                  (l) => Future.value(),
+                  (r) => r.exitCode,
+                );
+              },
             );
 
             return ExitCode.success.code;
