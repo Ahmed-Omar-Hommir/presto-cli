@@ -1675,3 +1675,22 @@ class MockFcmRemoteServiceApi extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
 }
+
+/// A class which mocks [CliRemoteServiceApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCliRemoteServiceApi extends _i1.Mock
+    implements _i5.CliRemoteServiceApi {
+  MockCliRemoteServiceApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<String> getVersionDartFile() => (super.noSuchMethod(
+        Invocation.method(
+          #getVersionDartFile,
+          [],
+        ),
+        returnValue: _i7.Future<String>.value(''),
+      ) as _i7.Future<String>);
+}

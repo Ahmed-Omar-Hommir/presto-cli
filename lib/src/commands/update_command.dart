@@ -33,92 +33,94 @@ class UpdateCommand extends Command<int> {
     // If there is an update, update the cli
     // If there is no update, exit
 
-    try {
-      final checkUpdateProgress = _logger.progress('Checking for updates');
-      final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
+    throw UnimplementedError();
 
-      // Make an HTTP request to the URI
-      final response = await http.get(
-        Uri.parse('${RemoteRepositoryInfo.versionUrl}$pathToDartVersion'),
-      );
+    // try {
+    //   final checkUpdateProgress = _logger.progress('Checking for updates');
+    //   final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
 
-      // Create a temporary file
-      final tempDir = await Directory.systemTemp.createTemp();
-      final tempFile = File(join(tempDir.path, 'version.dart'));
+    //   // Make an HTTP request to the URI
+    //   final response = await http.get(
+    //     Uri.parse('${RemoteRepositoryInfo.versionUrl}$pathToDartVersion'),
+    //   );
 
-      // Write the response content to the temporary file
-      await tempFile.writeAsBytes(response.bodyBytes);
+    //   // Create a temporary file
+    //   final tempDir = await Directory.systemTemp.createTemp();
+    //   final tempFile = File(join(tempDir.path, 'version.dart'));
 
-      final path = tempFile.path;
+    //   // Write the response content to the temporary file
+    //   await tempFile.writeAsBytes(response.bodyBytes);
 
-      final sdkPath = await _packageManager.sdkPath().then(
-            (value) => value.fold(
-              (_) {
-                checkUpdateProgress.cancel();
-                _logger.error('Cannot find sdk path');
-                exit(1);
-              },
-              (sdkPath) => sdkPath,
-            ),
-          );
+    //   final path = tempFile.path;
 
-      final AnalysisContextCollection contextCollection =
-          AnalysisContextCollection(
-        includedPaths: [path],
-        resourceProvider: PhysicalResourceProvider.INSTANCE,
-        sdkPath: sdkPath,
-      );
+    //   final sdkPath = await _packageManager.sdkPath().then(
+    //         (value) => value.fold(
+    //           (_) {
+    //             checkUpdateProgress.cancel();
+    //             _logger.error('Cannot find sdk path');
+    //             exit(1);
+    //           },
+    //           (sdkPath) => sdkPath,
+    //         ),
+    //       );
 
-      final context = contextCollection.contextFor(path);
+    //   final AnalysisContextCollection contextCollection =
+    //       AnalysisContextCollection(
+    //     includedPaths: [path],
+    //     resourceProvider: PhysicalResourceProvider.INSTANCE,
+    //     sdkPath: sdkPath,
+    //   );
 
-      final result = await context.currentSession.getResolvedLibrary(path);
+    //   final context = contextCollection.contextFor(path);
 
-      String? latestVersion;
+    //   final result = await context.currentSession.getResolvedLibrary(path);
 
-      if (result is ResolvedLibraryResult) {
-        latestVersion = result.element.definingCompilationUnit.topLevelVariables
-            .firstWhere((element) => element.name == 'packageVersion')
-            .computeConstantValue()
-            ?.toStringValue();
-      }
+    //   String? latestVersion;
 
-      if (latestVersion == null) {
-        checkUpdateProgress.cancel();
-        _logger.error("Cannot get latest version");
-        exit(1);
-      }
+    //   if (result is ResolvedLibraryResult) {
+    //     latestVersion = result.element.definingCompilationUnit.topLevelVariables
+    //         .firstWhere((element) => element.name == 'packageVersion')
+    //         .computeConstantValue()
+    //         ?.toStringValue();
+    //   }
 
-      checkUpdateProgress.complete('Checked for updates');
+    //   if (latestVersion == null) {
+    //     checkUpdateProgress.cancel();
+    //     _logger.error("Cannot get latest version");
+    //     exit(1);
+    //   }
 
-      if (latestVersion == packageVersion) {
-        _logger.info("Presto CLI is already at the latest version.");
-        exit(0);
-      }
+    //   checkUpdateProgress.complete('Checked for updates');
 
-      final updatingProgress = _logger.progress('Updating to $latestVersion');
+    //   if (latestVersion == packageVersion) {
+    //     _logger.info("Presto CLI is already at the latest version.");
+    //     exit(0);
+    //   }
 
-      final process = await Process.start('dart', [
-        'pub',
-        'global',
-        'activate',
-        '--source',
-        'git',
-        RemoteRepositoryInfo.url,
-      ]);
+    //   final updatingProgress = _logger.progress('Updating to $latestVersion');
 
-      final exitCode = await process.exitCode;
+    //   final process = await Process.start('dart', [
+    //     'pub',
+    //     'global',
+    //     'activate',
+    //     '--source',
+    //     'git',
+    //     RemoteRepositoryInfo.url,
+    //   ]);
 
-      if (exitCode == 0) {
-        updatingProgress.complete('Updated to $latestVersion');
-        exit(0);
-      } else {
-        updatingProgress.cancel();
-        _logger.error('Failed to update');
-        exit(1);
-      }
-    } catch (e) {
-      _logger.error(e.toString());
-      exit(1);
-    }
+    //   final exitCode = await process.exitCode;
+
+    //   if (exitCode == 0) {
+    //     updatingProgress.complete('Updated to $latestVersion');
+    //     exit(0);
+    //   } else {
+    //     updatingProgress.cancel();
+    //     _logger.error('Failed to update');
+    //     exit(1);
+    //   }
+    // } catch (e) {
+    //   _logger.error(e.toString());
+    //   exit(1);
+    // }
   }
 }

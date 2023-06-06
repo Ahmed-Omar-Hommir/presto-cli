@@ -21,5 +21,6 @@ import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
   IProcessLogger,
   IFcmService,
   FcmRemoteServiceApi,
+  CliRemoteServiceApi,
 ])
 void setupMocks() {}
