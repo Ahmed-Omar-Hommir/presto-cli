@@ -195,7 +195,7 @@ class MagicLauncher implements IMagicLauncher {
   Future _run(tasks) {
     return _tasksRunner.run(
       tasks: tasks,
-      concurrency: Platform.numberOfProcessors,
+      concurrency: 1,
       resultWaiter: (value) {
         return value.fold(
           (l) => Future.value(),
