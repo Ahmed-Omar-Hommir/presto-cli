@@ -148,8 +148,7 @@ class MagicLauncher implements IMagicLauncher {
               return ExitCode.noInput.code;
             }
 
-            final tasksGroup = _taskDistributionManager.distributeTasks(
-              numberOfIsolates: Platform.numberOfProcessors,
+            await _tasksRunner.run(
               tasks: List.generate(
                 packagesToProcess.length,
                 (index) => () => _task(
@@ -157,20 +156,14 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
+              concurrency: Platform.numberOfProcessors,
+              resultWaiter: (value) {
+                return value.fold(
+                  (_) => Future.value(),
+                  (process) => process.exitCode,
+                );
+              },
             );
-
-            for (var tasks in tasksGroup) {
-              await _tasksRunner.run(
-                tasks: tasks,
-                concurrency: Platform.numberOfProcessors,
-                resultWaiter: (value) {
-                  return value.fold(
-                    (l) => Future.value(),
-                    (r) => r.exitCode,
-                  );
-                },
-              );
-            }
 
             return ExitCode.success.code;
           },
