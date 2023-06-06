@@ -26,7 +26,7 @@ void main() {
   late MockIProcessLogger mockIProcessLogger;
   late MockIDirectoryFactory mockIDirectoryFactory;
 
-  late TaskRunner taskRunner;
+  late TaskRunner<Either<CliFailure, Process>> taskRunner;
   late Set<Directory> packages;
   late int callCount;
 
@@ -123,6 +123,7 @@ void main() {
         verifyNoMoreInteractions(mockIMagicCommandStrategy);
 
         verify(mockProcess.stdout).called(callCount);
+        verify(mockProcess.exitCode).called(callCount);
         verify(mockProcess.stderr).called(callCount);
         verify(mockProcess.pid).called(callCount * 2);
         verifyNoMoreInteractions(mockProcess);
@@ -184,6 +185,7 @@ void main() {
 
         verify(mockProcess.stdout).called(callCount);
         verify(mockProcess.stderr).called(callCount);
+        verify(mockProcess.exitCode).called(callCount);
         verify(mockProcess.pid).called(callCount * 3);
         verifyNoMoreInteractions(mockProcess);
 
@@ -286,6 +288,7 @@ void main() {
 
         verify(mockProcess.stdout).called(callCount);
         verify(mockProcess.stderr).called(callCount);
+        verify(mockProcess.exitCode).called(callCount);
         verify(mockProcess.pid).called(callCount * 2);
         verifyNoMoreInteractions(mockProcess);
 

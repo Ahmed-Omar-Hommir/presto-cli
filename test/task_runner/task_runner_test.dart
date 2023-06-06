@@ -63,6 +63,37 @@ void main() {
       expect(result.length, 4);
     },
   );
+  test(
+    'test',
+    () async {
+      // Arrange
+      Future<TaskResultTest> task(Duration duration) async {
+        await Future<void>.delayed(duration);
+        return TaskResultTest(Duration(seconds: 1));
+      }
+
+      final List<Future<TaskResultTest> Function()> tasks = [
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 200)),
+        () => task(Duration(milliseconds: 200)),
+      ];
+
+      // Act
+      final startTime = DateTime.now();
+      final result = await sut.run(
+        tasks: tasks,
+        concurrency: 3,
+        resultWaiter: (value) => value.exitCode(),
+      );
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+
+      // Assert
+      // expect(duration.inMilliseconds, lessThan(300));
+      // expect(result.length, 4);
+    },
+  );
 
   test(
     'should run tasks when concurrency large than number of tasks.',
@@ -120,11 +151,10 @@ void main() {
       // Act
       final startTime = DateTime.now();
       final result = await sut.run(
-          tasks: tasks,
-          concurrency: concurrency,
-          resultWaiter: (result) async {
-            await result.exitCode();
-          });
+        tasks: tasks,
+        concurrency: concurrency,
+        resultWaiter: (result) => result.exitCode(),
+      );
       final endTime = DateTime.now();
       final duration = endTime.difference(startTime);
 
