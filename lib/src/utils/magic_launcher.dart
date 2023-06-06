@@ -152,7 +152,7 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
-              concurrency: Platform.numberOfProcessors * 2,
+              concurrency: Platform.numberOfProcessors,
               resultWaiter: (value) {
                 return value.fold(
                   (l) => Future.value(),
