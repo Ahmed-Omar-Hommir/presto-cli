@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -8,6 +9,7 @@ import 'package:path/path.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/magic/commands/magic_runner_command.dart';
 import 'package:presto_cli/src/logger.dart';
+import 'package:presto_cli/src/utils/task_distribution_manager.dart';
 
 import 'magic_lancher_strategies.dart';
 
@@ -32,6 +34,7 @@ class MagicLauncher implements IMagicLauncher {
         _projectChecker = projectChecker,
         _tasksRunner = tasksRunner,
         _processLogger = processLogger,
+        _taskDistributionManager = const TaskDistributionManager(),
         _directoryFactory = directoryFactory ?? const DirectoryFactory(),
         _fileManager = fileManager;
 
@@ -41,6 +44,8 @@ class MagicLauncher implements IMagicLauncher {
   final ITasksRunner<Either<CliFailure, Process>> _tasksRunner;
   final IProcessLogger _processLogger;
   final IDirectoryFactory _directoryFactory;
+  final ITaskDistributionManager<Future<Either<CliFailure, Process>> Function()>
+      _taskDistributionManager;
 
   Future<Either<CliFailure, Process>> _task(
     Directory dir,
@@ -144,7 +149,8 @@ class MagicLauncher implements IMagicLauncher {
               return ExitCode.noInput.code;
             }
 
-            await _tasksRunner.run(
+            final tasksGroup = _taskDistributionManager.distributeTasks(
+              numberOfIsolates: Platform.numberOfProcessors,
               tasks: List.generate(
                 packagesToProcess.length,
                 (index) => () => _task(
@@ -152,17 +158,48 @@ class MagicLauncher implements IMagicLauncher {
                       magicCommandStrategy,
                     ),
               ),
-              concurrency: Platform.numberOfProcessors,
-              resultWaiter: (value) {
-                return value.fold(
-                  (l) => Future.value(),
-                  (r) => r.exitCode,
-                );
-              },
             );
+
+            final List<Future> waiters = [];
+
+            for (var tasks in tasksGroup) {
+              final value = ReceivePort();
+              waiters.add(value.first);
+              Isolate.spawn(
+                _run,
+                tasks,
+                onExit: value.sendPort,
+              );
+              // await _tasksRunner.run(
+              //   tasks: tasks,
+              //   concurrency: Platform.numberOfProcessors,
+              //   resultWaiter: (value) {
+              //     return value.fold(
+              //       (l) => Future.value(),
+              //       (r) => r.exitCode,
+              //     );
+              //   },
+              //
+              // );
+            }
+
+            await Future.wait(waiters);
 
             return ExitCode.success.code;
           },
+        );
+      },
+    );
+  }
+
+  Future _run(tasks) {
+    return _tasksRunner.run(
+      tasks: tasks,
+      concurrency: Platform.numberOfProcessors,
+      resultWaiter: (value) {
+        return value.fold(
+          (l) => Future.value(),
+          (r) => r.exitCode,
         );
       },
     );
