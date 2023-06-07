@@ -46,13 +46,13 @@ void main() {
             .thenReturn(mockProgress);
 
         when(mockCliService.getLastVersion()).thenAnswer(
-          (_) async => Right(oldVersion),
+          (_) async => Right(newVersion),
         );
 
-        when(mockProgress.update(UpdateCommandMessage.updating(packageVersion)))
+        when(mockProgress.update(UpdateCommandMessage.updating(newVersion)))
             .thenReturn(null);
 
-        when(mockProgress.complete(UpdateCommandMessage.updated))
+        when(mockProgress.complete(UpdateCommandMessage.updated(newVersion)))
             .thenReturn(null);
 
         when(mockDartCLI.installCliFromRepository(
@@ -74,10 +74,10 @@ void main() {
         verify(mockCliService.getLastVersion()).called(1);
         verifyNoMoreInteractions(mockCliService);
 
-        verify(mockProgress
-                .update(UpdateCommandMessage.updating(packageVersion)))
+        verify(mockProgress.update(UpdateCommandMessage.updating(newVersion)))
             .called(1);
-        verify(mockProgress.complete(UpdateCommandMessage.updated)).called(1);
+        verify(mockProgress.complete(UpdateCommandMessage.updated(newVersion)))
+            .called(1);
         verifyNoMoreInteractions(mockProgress);
 
         verify(mockDartCLI.installCliFromRepository(
@@ -173,11 +173,10 @@ void main() {
               .thenReturn(mockProgress);
 
           when(mockCliService.getLastVersion()).thenAnswer(
-            (_) async => Right(oldVersion),
+            (_) async => Right(newVersion),
           );
 
-          when(mockProgress
-                  .update(UpdateCommandMessage.updating(packageVersion)))
+          when(mockProgress.update(UpdateCommandMessage.updating(newVersion)))
               .thenReturn(null);
 
           when(mockDartCLI.installCliFromRepository(
@@ -204,8 +203,7 @@ void main() {
           verify(mockCliService.getLastVersion()).called(1);
           verifyNoMoreInteractions(mockCliService);
 
-          verify(mockProgress
-                  .update(UpdateCommandMessage.updating(packageVersion)))
+          verify(mockProgress.update(UpdateCommandMessage.updating(newVersion)))
               .called(1);
           verify(mockProgress.cancel()).called(1);
           verifyNoMoreInteractions(mockProgress);

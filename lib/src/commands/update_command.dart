@@ -56,7 +56,7 @@ class UpdateCommand extends Command<int> {
               return mason.ExitCode.unavailable.code;
             },
             (process) async {
-              progress.complete(UpdateCommandMessage.updated);
+              progress.complete(UpdateCommandMessage.updated(lastVersion));
               return await process.exitCode;
             },
           );
@@ -73,7 +73,7 @@ abstract class UpdateCommandMessage {
   static const String checkingForUpdates = 'Checking for updates';
   static const String checkedForUpdates = 'Checked for updates';
   static String updating(String version) => 'Updating to $version';
-  static const String updated = 'Updated to';
+  static String updated(String version) => 'Updated to $version';
   static const String failedToUpdate = 'Failed to update';
   static const String alreadyLatestVersion =
       'Presto CLI is already at the latest version.';
