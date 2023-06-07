@@ -20,7 +20,7 @@ class CliService implements ICliService {
   @override
   Future<Either<String, String>> getLastVersion() async {
     try {
-      final content = await _api.getVersionDartFile();
+      final content = await _api.getVersionDartFileFromRepo();
       final version = _extractVersion(content);
 
       if (version == null) return left(CliServiceMessage.versionFileNotFound);
@@ -43,7 +43,7 @@ abstract class CliRemoteServiceApi {
   factory CliRemoteServiceApi(Dio dio) = _CliRemoteServiceApi;
 
   @GET(RemoteRepositoryInfo.versionUrl)
-  Future<String> getVersionDartFile();
+  Future<String> getVersionDartFileFromRepo();
 }
 
 abstract class CliServiceMessage {

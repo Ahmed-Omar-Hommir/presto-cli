@@ -19,7 +19,7 @@ class _CliRemoteServiceApi implements CliRemoteServiceApi {
   String? baseUrl;
 
   @override
-  Future<String> getVersionDartFile() async {
+  Future<String> getVersionDartFileFromRepo() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};

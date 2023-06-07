@@ -20,7 +20,7 @@ void main() {
       'should return a Right when the request is successful',
       () async {
         // Arrange
-        when(mockApi.getVersionDartFile()).thenAnswer(
+        when(mockApi.getVersionDartFileFromRepo()).thenAnswer(
           (_) async => versionFileContent,
         );
 
@@ -36,7 +36,7 @@ void main() {
           ),
         );
 
-        verify(mockApi.getVersionDartFile()).called(1);
+        verify(mockApi.getVersionDartFileFromRepo()).called(1);
         verifyNoMoreInteractions(mockApi);
       },
     );
@@ -47,7 +47,7 @@ void main() {
       () async {
         // Arrange
 
-        when(mockApi.getVersionDartFile()).thenThrow(Exception());
+        when(mockApi.getVersionDartFileFromRepo()).thenThrow(Exception());
 
         // Act
         final result = await sut.getLastVersion();
@@ -55,7 +55,7 @@ void main() {
         // Assert
         expect(result, isA<Left>());
 
-        verify(mockApi.getVersionDartFile()).called(1);
+        verify(mockApi.getVersionDartFileFromRepo()).called(1);
         verifyNoMoreInteractions(mockApi);
       },
     );
@@ -64,7 +64,7 @@ void main() {
       () async {
         // Arrange
 
-        when(mockApi.getVersionDartFile()).thenAnswer(
+        when(mockApi.getVersionDartFileFromRepo()).thenAnswer(
           (_) async => invalidVersionFileContent,
         );
 
@@ -80,7 +80,7 @@ void main() {
           ),
         );
 
-        verify(mockApi.getVersionDartFile()).called(1);
+        verify(mockApi.getVersionDartFileFromRepo()).called(1);
         verifyNoMoreInteractions(mockApi);
       },
     );

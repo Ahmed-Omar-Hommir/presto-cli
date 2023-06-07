@@ -1687,9 +1687,9 @@ class MockCliRemoteServiceApi extends _i1.Mock
   }
 
   @override
-  _i7.Future<String> getVersionDartFile() => (super.noSuchMethod(
+  _i7.Future<String> getVersionDartFileFromRepo() => (super.noSuchMethod(
         Invocation.method(
-          #getVersionDartFile,
+          #getVersionDartFileFromRepo,
           [],
         ),
         returnValue: _i7.Future<String>.value(''),
