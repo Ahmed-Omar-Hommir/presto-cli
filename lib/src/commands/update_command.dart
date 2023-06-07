@@ -44,7 +44,7 @@ class UpdateCommand extends Command<int> {
             progress.complete(UpdateCommandMessage.alreadyLatestVersion);
             return mason.ExitCode.success.code;
           }
-          progress.update(UpdateCommandMessage.updating);
+          progress.update(UpdateCommandMessage.updating(lastVersion));
           final response = await _dartCLI.installCliFromRepository(
             url: RemoteRepositoryInfo.url,
           );
@@ -72,7 +72,7 @@ class UpdateCommand extends Command<int> {
 abstract class UpdateCommandMessage {
   static const String checkingForUpdates = 'Checking for updates';
   static const String checkedForUpdates = 'Checked for updates';
-  static const String updating = 'Updating to';
+  static String updating(String version) => 'Updating to $version';
   static const String updated = 'Updated to';
   static const String failedToUpdate = 'Failed to update';
   static const String alreadyLatestVersion =

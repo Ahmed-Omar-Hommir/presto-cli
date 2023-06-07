@@ -49,7 +49,7 @@ void main() {
           (_) async => Right(oldVersion),
         );
 
-        when(mockProgress.update(UpdateCommandMessage.updating))
+        when(mockProgress.update(UpdateCommandMessage.updating(packageVersion)))
             .thenReturn(null);
 
         when(mockProgress.complete(UpdateCommandMessage.updated))
@@ -74,7 +74,9 @@ void main() {
         verify(mockCliService.getLastVersion()).called(1);
         verifyNoMoreInteractions(mockCliService);
 
-        verify(mockProgress.update(UpdateCommandMessage.updating)).called(1);
+        verify(mockProgress
+                .update(UpdateCommandMessage.updating(packageVersion)))
+            .called(1);
         verify(mockProgress.complete(UpdateCommandMessage.updated)).called(1);
         verifyNoMoreInteractions(mockProgress);
 
@@ -174,7 +176,8 @@ void main() {
             (_) async => Right(oldVersion),
           );
 
-          when(mockProgress.update(UpdateCommandMessage.updating))
+          when(mockProgress
+                  .update(UpdateCommandMessage.updating(packageVersion)))
               .thenReturn(null);
 
           when(mockDartCLI.installCliFromRepository(
@@ -201,7 +204,9 @@ void main() {
           verify(mockCliService.getLastVersion()).called(1);
           verifyNoMoreInteractions(mockCliService);
 
-          verify(mockProgress.update(UpdateCommandMessage.updating)).called(1);
+          verify(mockProgress
+                  .update(UpdateCommandMessage.updating(packageVersion)))
+              .called(1);
           verify(mockProgress.cancel()).called(1);
           verifyNoMoreInteractions(mockProgress);
 
