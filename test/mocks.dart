@@ -3,6 +3,7 @@ import 'package:mason/mason.dart';
 import 'package:mockito/annotations.dart';
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
+import 'package:presto_cli/src/utils/dart_cli.dart';
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
 
 @GenerateMocks([
@@ -25,5 +26,6 @@ import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
   CliRemoteServiceApi,
   CliService,
   Progress,
+  IDartCLI,
 ])
 void setupMocks() {}

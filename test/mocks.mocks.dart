@@ -15,6 +15,7 @@ import 'package:presto_cli/presto_cli.dart' as _i5;
 import 'package:presto_cli/src/logger.dart' as _i6;
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart'
     as _i8;
+import 'package:presto_cli/src/utils/dart_cli.dart' as _i12;
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart' as _i11;
 
 // ignore_for_file: type=lint
@@ -1761,4 +1762,33 @@ class MockProgress extends _i1.Mock implements _i3.Progress {
         ),
         returnValueForMissingStub: null,
       );
+}
+
+/// A class which mocks [IDartCLI].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIDartCLI extends _i1.Mock implements _i12.IDartCLI {
+  MockIDartCLI() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>> installCliFromRepository(
+          {required String? url}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #installCliFromRepository,
+          [],
+          {#url: url},
+        ),
+        returnValue: _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>>.value(
+            _FakeEither_2<_i5.CliFailure, _i2.Process>(
+          this,
+          Invocation.method(
+            #installCliFromRepository,
+            [],
+            {#url: url},
+          ),
+        )),
+      ) as _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>>);
 }

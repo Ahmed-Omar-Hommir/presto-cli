@@ -5,6 +5,7 @@ import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/commands/commands.dart';
 import 'package:presto_cli/src/dependency_composer.dart';
 import 'package:presto_cli/src/logger.dart';
+import 'package:presto_cli/src/utils/dart_cli.dart';
 import 'package:presto_cli/src/version.dart';
 
 void main(List<String> args) async {
@@ -22,6 +23,7 @@ void main(List<String> args) async {
         ..addCommand(UpdateCommand(
           logger: Logger(),
           cliService: CliService(),
+          dartCLI: DartCLI(),
         ))
         ..addCommand(FCMTestCommand(
           fileManager: FileManager(),
