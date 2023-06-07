@@ -15,6 +15,7 @@ import 'package:presto_cli/presto_cli.dart' as _i5;
 import 'package:presto_cli/src/logger.dart' as _i6;
 import 'package:presto_cli/src/models/file_manager/file_manager_failure.dart'
     as _i8;
+import 'package:presto_cli/src/utils/dart_cli.dart' as _i12;
 import 'package:presto_cli/src/utils/magic_lancher_strategies.dart' as _i11;
 
 // ignore_for_file: type=lint
@@ -1674,4 +1675,120 @@ class MockFcmRemoteServiceApi extends _i1.Mock
         returnValue: _i7.Future<void>.value(),
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
+}
+
+/// A class which mocks [CliRemoteServiceApi].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCliRemoteServiceApi extends _i1.Mock
+    implements _i5.CliRemoteServiceApi {
+  MockCliRemoteServiceApi() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<String> getVersionDartFileFromRepo() => (super.noSuchMethod(
+        Invocation.method(
+          #getVersionDartFileFromRepo,
+          [],
+        ),
+        returnValue: _i7.Future<String>.value(''),
+      ) as _i7.Future<String>);
+}
+
+/// A class which mocks [CliService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCliService extends _i1.Mock implements _i5.CliService {
+  MockCliService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<_i4.Either<String, String>> getLastVersion() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getLastVersion,
+          [],
+        ),
+        returnValue: _i7.Future<_i4.Either<String, String>>.value(
+            _FakeEither_2<String, String>(
+          this,
+          Invocation.method(
+            #getLastVersion,
+            [],
+          ),
+        )),
+      ) as _i7.Future<_i4.Either<String, String>>);
+}
+
+/// A class which mocks [Progress].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProgress extends _i1.Mock implements _i3.Progress {
+  MockProgress() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void complete([String? update]) => super.noSuchMethod(
+        Invocation.method(
+          #complete,
+          [update],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void fail([String? update]) => super.noSuchMethod(
+        Invocation.method(
+          #fail,
+          [update],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void update(String? update) => super.noSuchMethod(
+        Invocation.method(
+          #update,
+          [update],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void cancel() => super.noSuchMethod(
+        Invocation.method(
+          #cancel,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+}
+
+/// A class which mocks [IDartCLI].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIDartCLI extends _i1.Mock implements _i12.IDartCLI {
+  MockIDartCLI() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>> installCliFromRepository(
+          {required String? url}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #installCliFromRepository,
+          [],
+          {#url: url},
+        ),
+        returnValue: _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>>.value(
+            _FakeEither_2<_i5.CliFailure, _i2.Process>(
+          this,
+          Invocation.method(
+            #installCliFromRepository,
+            [],
+            {#url: url},
+          ),
+        )),
+      ) as _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>>);
 }

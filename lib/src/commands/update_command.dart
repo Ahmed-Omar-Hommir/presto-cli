@@ -1,25 +1,23 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:http/http.dart' as http;
 import 'package:args/command_runner.dart';
+import 'package:mason/mason.dart' as mason;
 import 'package:presto_cli/presto_cli.dart';
 import 'package:presto_cli/src/logger.dart';
-import 'package:presto_cli/src/package_manager.dart';
+import 'package:presto_cli/src/utils/dart_cli.dart';
 import 'package:presto_cli/src/version.dart';
-import 'package:path/path.dart';
 
 class UpdateCommand extends Command<int> {
   UpdateCommand({
-    required IPackageManager packageManager,
+    required ICliService cliService,
     required ILogger logger,
-  })  : _packageManager = packageManager,
+    required IDartCLI dartCLI,
+  })  : _cliService = cliService,
+        _dartCLI = dartCLI,
         _logger = logger;
 
-  final IPackageManager _packageManager;
   final ILogger _logger;
+  final ICliService _cliService;
+  final IDartCLI _dartCLI;
 
   @override
   String get name => 'update';
@@ -30,90 +28,53 @@ class UpdateCommand extends Command<int> {
   @override
   Future<int> run() async {
     try {
-      final checkUpdateProgress = _logger.progress('Checking for updates');
-      final pathToDartVersion = "/-/raw/main/lib/src/version.dart";
+      final progress =
+          _logger.progress(UpdateCommandMessage.checkingForUpdates);
 
-      // Make an HTTP request to the URI
-      final response = await http.get(
-          Uri.parse('${RemoteRepositoryInfo.versionUrl}$pathToDartVersion'));
+      final lastVersionResult = await _cliService.getLastVersion();
 
-      // Create a temporary file
-      final tempDir = await Directory.systemTemp.createTemp();
-      final tempFile = File(join(tempDir.path, 'version.dart'));
-
-      // Write the response content to the temporary file
-      await tempFile.writeAsBytes(response.bodyBytes);
-
-      final path = tempFile.path;
-
-      final sdkPath = await _packageManager.sdkPath().then(
-            (value) => value.fold(
-              (_) {
-                checkUpdateProgress.cancel();
-                _logger.error('Cannot find sdk path');
-                exit(1);
-              },
-              (sdkPath) => sdkPath,
-            ),
+      return await lastVersionResult.fold(
+        (failire) {
+          progress.cancel();
+          _logger.error(failire);
+          return mason.ExitCode.unavailable.code;
+        },
+        (lastVersion) async {
+          if (lastVersion == packageVersion) {
+            progress.complete(UpdateCommandMessage.alreadyLatestVersion);
+            return mason.ExitCode.success.code;
+          }
+          progress.update(UpdateCommandMessage.updating(lastVersion));
+          final response = await _dartCLI.installCliFromRepository(
+            url: RemoteRepositoryInfo.url,
           );
 
-      final AnalysisContextCollection contextCollection =
-          AnalysisContextCollection(
-        includedPaths: [path],
-        resourceProvider: PhysicalResourceProvider.INSTANCE,
-        sdkPath: sdkPath,
+          return await response.fold(
+            (_) {
+              _logger.error(UpdateCommandMessage.failedToUpdate);
+              progress.cancel();
+              return mason.ExitCode.unavailable.code;
+            },
+            (process) async {
+              progress.complete(UpdateCommandMessage.updated(lastVersion));
+              return await process.exitCode;
+            },
+          );
+        },
       );
-
-      final context = contextCollection.contextFor(path);
-
-      final result = await context.currentSession.getResolvedLibrary(path);
-
-      String? latestVersion;
-
-      if (result is ResolvedLibraryResult) {
-        latestVersion = result.element.definingCompilationUnit.topLevelVariables
-            .firstWhere((element) => element.name == 'packageVersion')
-            .computeConstantValue()
-            ?.toStringValue();
-      }
-
-      if (latestVersion == null) {
-        checkUpdateProgress.cancel();
-        _logger.error("Cannot get latest version");
-        exit(1);
-      }
-
-      checkUpdateProgress.complete('Checked for updates');
-
-      if (latestVersion == packageVersion) {
-        _logger.info("Presto CLI is already at the latest version.");
-        exit(0);
-      }
-
-      final updatingProgress = _logger.progress('Updating to $latestVersion');
-
-      final process = await Process.start('dart', [
-        'pub',
-        'global',
-        'activate',
-        '--source',
-        'git',
-        RemoteRepositoryInfo.url,
-      ]);
-
-      final exitCode = await process.exitCode;
-
-      if (exitCode == 0) {
-        updatingProgress.complete('Updated to $latestVersion');
-        exit(0);
-      } else {
-        updatingProgress.cancel();
-        _logger.error('Failed to update');
-        exit(1);
-      }
     } catch (e) {
       _logger.error(e.toString());
-      exit(1);
+      return mason.ExitCode.unavailable.code;
     }
   }
+}
+
+abstract class UpdateCommandMessage {
+  static const String checkingForUpdates = 'Checking for updates';
+  static const String checkedForUpdates = 'Checked for updates';
+  static String updating(String version) => 'Updating to $version';
+  static String updated(String version) => 'Updated to $version';
+  static const String failedToUpdate = 'Failed to update';
+  static const String alreadyLatestVersion =
+      'Presto CLI is already at the latest version.';
 }
