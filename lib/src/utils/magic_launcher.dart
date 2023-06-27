@@ -13,7 +13,6 @@ import 'magic_lancher_strategies.dart';
 
 abstract class IMagicLauncher {
   Future<int> launch({
-    List<Directory> packages = const [],
     required IMagicCommandStrategy magicCommandStrategy,
     Future<bool> Function(Directory dir)? packageWhere,
   });
@@ -89,7 +88,6 @@ class MagicLauncher implements IMagicLauncher {
 
   @override
   Future<int> launch({
-    List<Directory> packages = const [],
     required IMagicCommandStrategy magicCommandStrategy,
     Future<bool> Function(Directory dir)? packageWhere,
   }) async {
@@ -108,71 +106,64 @@ class MagicLauncher implements IMagicLauncher {
         final targetDir =
             Directory(join(_directoryFactory.current.path, 'packages'));
 
-        final Set<Directory> packagesDir = {};
-
-        if (packages.isNotEmpty) {
-          packagesDir.addAll(packages.toSet());
-        } else {
-          final packagesDirResult = await _fileManager.findPackages(
-            targetDir,
-            where: packageWhere,
-          );
-
-          int? errorCode = packagesDirResult.fold(
-            (failure) => failure.maybeMap(
-              dirNotFound: (value) {
-                _logger.error(LoggerMessage.dirNotFound(targetDir.path));
-                return ExitCode.noInput.code;
-              },
-              unknown: (value) {
-                _logger.error(value.e.toString());
-                return ExitCode.unavailable.code;
-              },
-              orElse: () {
-                _logger.error(LoggerMessage.somethingWentWrong);
-                return ExitCode.unavailable.code;
-              },
-            ),
-            (packagesDirList) {
-              packagesDir.addAll(packagesDirList);
-              return null;
-            },
-          );
-
-          if (errorCode != null) return errorCode;
-        }
-
-        if (packageWhere != null) {
-          if (await packageWhere(_directoryFactory.current)) {
-            packagesDir.add(_directoryFactory.current);
-          }
-        } else {
-          packagesDir.add(_directoryFactory.current);
-        }
-
-        if (packagesDir.isEmpty) {
-          _logger.error(LoggerMessage.noPackagesToProcess);
-          return ExitCode.noInput.code;
-        }
-
-        await _tasksRunner.run(
-          tasks: List.generate(
-            packagesDir.length,
-            (index) => () => _task(
-                  packagesDir.elementAt(index),
-                  magicCommandStrategy,
-                ),
-          ),
-          concurrency: Platform.numberOfProcessors,
-          resultWaiter: (value) {
-            return value.fold(
-              (_) => Future.value(),
-              (process) => process.exitCode,
-            );
-          },
+        final packagesDirResult = await _fileManager.findPackages(
+          targetDir,
+          where: packageWhere,
         );
 
-        return ExitCode.success.code;
+        return packagesDirResult.fold(
+          (failure) => failure.maybeMap(
+            dirNotFound: (value) {
+              _logger.error(LoggerMessage.dirNotFound(targetDir.path));
+              return ExitCode.noInput.code;
+            },
+            unknown: (value) {
+              _logger.error(value.e.toString());
+              return ExitCode.unavailable.code;
+            },
+            orElse: () {
+              _logger.error(LoggerMessage.somethingWentWrong);
+              return ExitCode.unavailable.code;
+            },
+          ),
+          (packagesDir) async {
+            final Set<Directory> packagesToProcess = {
+              ...packagesDir,
+            };
+
+            if (packageWhere != null) {
+              if (await packageWhere(_directoryFactory.current)) {
+                packagesToProcess.add(_directoryFactory.current);
+              }
+            } else {
+              packagesToProcess.add(_directoryFactory.current);
+            }
+
+            if (packagesToProcess.isEmpty) {
+              _logger.error(LoggerMessage.noPackagesToProcess);
+              return ExitCode.noInput.code;
+            }
+
+            await _tasksRunner.run(
+              tasks: List.generate(
+                packagesToProcess.length,
+                (index) => () => _task(
+                      packagesToProcess.elementAt(index),
+                      magicCommandStrategy,
+                    ),
+              ),
+              concurrency: Platform.numberOfProcessors,
+              resultWaiter: (value) {
+                return value.fold(
+                  (_) => Future.value(),
+                  (process) => process.exitCode,
+                );
+              },
+            );
+
+            return ExitCode.success.code;
+          },
+        );
       },
     );
   }

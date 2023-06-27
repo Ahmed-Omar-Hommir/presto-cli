@@ -34,11 +34,10 @@ class MagicRunnerCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final strategy = MagicBuildRunnerStrategy(
-      deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
-    );
     return await _magicLauncher.launch(
-      magicCommandStrategy: strategy,
+      magicCommandStrategy: MagicBuildRunnerStrategy(
+        deleteConflictingOutputs: argResults?['delete-conflicting-outputs'],
+      ),
       packageWhere: (dir) async => _packageWhere(dir),
     );
   }

@@ -312,69 +312,6 @@ void main() {
         verifyZeroInteractions(mockILogger);
       },
     );
-
-    test(
-      'should run command successfully when pass packages and return ${ExitCode.success.code}.',
-      () async {
-        // Arrange
-        when(mockIProjectChecker.checkInRootProject()).thenAnswer(
-          (_) async => right(true),
-        );
-
-        when(mockIMagicCommandStrategy.runCommand(any)).thenAnswer(
-          (_) async => right(mockProcess),
-        );
-
-        when(mockFileManager.readYaml(any)).thenAnswer(
-          (_) async => Right(
-            {'name': 'package_name'},
-          ),
-        );
-
-        // Act
-        final result = await sut.launch(
-          packages: packages.toList(),
-          magicCommandStrategy: mockIMagicCommandStrategy,
-        );
-
-        // Assert
-        expect(result, equals(0));
-
-        verify(mockIProjectChecker.checkInRootProject()).called(1);
-        verifyNoMoreInteractions(mockIProjectChecker);
-
-        verify(mockFileManager.readYaml(any)).called(callCount);
-        verifyNoMoreInteractions(mockFileManager);
-
-        verify(mockIMagicCommandStrategy.runCommand(any)).called(callCount);
-        verifyNoMoreInteractions(mockIMagicCommandStrategy);
-
-        verify(mockProcess.stdout).called(callCount);
-        verify(mockProcess.exitCode).called(callCount);
-        verify(mockProcess.stderr).called(callCount);
-        verify(mockProcess.pid).called(callCount * 2);
-        verifyNoMoreInteractions(mockProcess);
-
-        verify(
-          mockIProcessLogger.stderr(
-            processId: ProceessInfo.pid,
-            processName: ProceessInfo.packageName,
-            stderr: ProceessInfo.stderr,
-          ),
-        ).called(callCount);
-
-        verify(
-          mockIProcessLogger.stdout(
-            processId: ProceessInfo.pid,
-            processName: ProceessInfo.packageName,
-            stdout: ProceessInfo.stdout,
-          ),
-        ).called(callCount);
-        verifyNoMoreInteractions(mockIProcessLogger);
-
-        verifyZeroInteractions(mockILogger);
-      },
-    );
   });
 
   group('Failure Cases', () {
