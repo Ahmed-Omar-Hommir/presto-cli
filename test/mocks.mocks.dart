@@ -1792,3 +1792,31 @@ class MockIDartCLI extends _i1.Mock implements _i12.IDartCLI {
         )),
       ) as _i7.Future<_i4.Either<_i5.CliFailure, _i2.Process>>);
 }
+
+/// A class which mocks [IMagicLauncher].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIMagicLauncher extends _i1.Mock implements _i5.IMagicLauncher {
+  MockIMagicLauncher() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.Future<int> launch({
+    List<_i2.Directory>? packages = const [],
+    required _i11.IMagicCommandStrategy? magicCommandStrategy,
+    _i7.Future<bool> Function(_i2.Directory)? packageWhere,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #launch,
+          [],
+          {
+            #packages: packages,
+            #magicCommandStrategy: magicCommandStrategy,
+            #packageWhere: packageWhere,
+          },
+        ),
+        returnValue: _i7.Future<int>.value(0),
+      ) as _i7.Future<int>);
+}

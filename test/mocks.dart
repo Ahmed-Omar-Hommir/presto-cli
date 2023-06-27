@@ -27,5 +27,6 @@ import 'package:presto_cli/src/utils/magic_lancher_strategies.dart';
   CliService,
   Progress,
   IDartCLI,
+  IMagicLauncher,
 ])
 void setupMocks() {}
